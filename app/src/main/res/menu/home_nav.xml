@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:title="Home"
+        android:icon="@drawable/home" />
+
+    <item
+        android:id="@+id/nav_leads"
+        android:title="My Leads"
+        android:icon="@drawable/leadschange" />
+
+    <item
+        android:id="@+id/nav_task"
+        android:title="Task"
+        android:icon="@drawable/taskchange" />
+
+    <item
+        android:id="@+id/nav_settings"
+        android:title="Settings"
+        android:icon="@drawable/settings" />
+</menu>

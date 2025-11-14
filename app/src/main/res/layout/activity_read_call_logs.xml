@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".view.ReadCallLogsActivity">
+
+    <ImageView
+        android:layout_width="@dimen/_80sdp"
+        android:layout_height="@dimen/_80sdp"
+        android:src="@drawable/calls"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_50sdp"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Read Call Logs"
+        android:textSize="@dimen/_26sdp"
+        android:textStyle="bold"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:textAlignment="center"
+
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="By granting Technfest crm access to your call logs , the app can efficient capture and manage your call data as leads within the CRM."
+        android:layout_margin="@dimen/_14sdp"
+        android:textSize="@dimen/_10sdp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Your data is securely stored on Technfest crm's cloud server, exclusively for your teams use . Technfest crm also offers real time reporting capabilities and the ability to access call logs even when the app is not open through our web app"
+        android:layout_margin="@dimen/_14sdp"
+        android:textSize="@dimen/_10sdp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Call log access is mandatory for Technfest crm as it is essential to its core function of calls and leads management"
+        android:layout_margin="@dimen/_14sdp"
+        android:textSize="@dimen/_10sdp"
+        android:textStyle="bold"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAllow"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_50sdp"
+        android:text="Allow Access"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/_18ssp"
+        app:cornerRadius="@dimen/_8sdp"
+        android:background="@drawable/btn_gradient"
+        app:backgroundTint="@null"
+        app:rippleColor="#5E00C0"
+        android:padding="@dimen/_10sdp"
+        android:layout_marginStart="@dimen/_14sdp"
+        android:layout_marginEnd="@dimen/_14sdp"
+        android:layout_marginTop="@dimen/_30sdp"
+        android:layout_marginBottom="@dimen/_14sdp"
+        android:elevation="@dimen/_4sdp"
+        android:fontFamily="sans-serif-medium"
+        />
+
+
+
+</LinearLayout>

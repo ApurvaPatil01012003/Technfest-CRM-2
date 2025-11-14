@@ -1,0 +1,741 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.ReportFragment">
+
+    <!-- App bar (toolbar only) -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/toolbar_gradient"
+        app:liftOnScroll="true">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:title="Reports"
+            app:titleTextColor="@color/white"
+            app:navigationIcon="@drawable/baseline_keyboard_backspace_24"
+            app:navigationIconTint="@color/white"
+            app:subtitle="Recognize your performance"
+            app:subtitleTextColor="@color/white"/>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Content -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <!-- Filters card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardFilters"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="8dp">
+
+                    <!-- date filter buttons row -->
+                    <LinearLayout
+                        android:id="@+id/dateFilterLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tvToday"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_filter_unselected"
+                            android:gravity="center"
+                            android:paddingHorizontal="@dimen/_8sdp"
+                            android:paddingVertical="@dimen/_10sdp"
+                            android:text="Today"
+                            android:textColor="@android:color/white" />
+
+                        <TextView
+                            android:id="@+id/tvYesterday"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_filter_unselected"
+                            android:gravity="center"
+                            android:paddingHorizontal="@dimen/_8sdp"
+                            android:paddingVertical="@dimen/_10sdp"
+                            android:text="Yesterday"
+                            android:textColor="@android:color/white" />
+
+                        <TextView
+                            android:id="@+id/tvThisWeek"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_filter_unselected"
+                            android:gravity="center"
+                            android:paddingHorizontal="@dimen/_8sdp"
+                            android:paddingVertical="@dimen/_10sdp"
+                            android:text="This Week"
+                            android:textColor="@android:color/white" />
+
+                        <TextView
+                            android:id="@+id/tvCustom"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_filter_unselected"
+                            android:gravity="center"
+                            android:paddingHorizontal="@dimen/_8sdp"
+                            android:paddingVertical="@dimen/_10sdp"
+                            android:text="Custom"
+                            android:textColor="@android:color/white" />
+                    </LinearLayout>
+
+                    <!-- contact row -->
+                    <LinearLayout
+                        android:id="@+id/dateRange"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_8sdp"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingStart="@dimen/_10sdp"
+                                android:text="From :"
+                                android:textSize="@dimen/_12ssp" />
+
+                            <EditText
+                                android:id="@+id/etPhone"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_6sdp"
+                                android:background="@drawable/edit_text_bg"
+                                android:drawableEnd="@drawable/baseline_date_range_24"
+                                android:hint="12/10/2025"
+                                android:focusable="false"
+                                android:clickable="true"
+                                android:inputType="none"
+                                android:padding="@dimen/_10sdp"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_8sdp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingStart="@dimen/_10sdp"
+                                android:text="To:"
+                                android:textSize="@dimen/_12ssp" />
+
+                            <EditText
+                                android:id="@+id/etEmail"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_6sdp"
+                                android:background="@drawable/edit_text_bg"
+                                android:drawableEnd="@drawable/baseline_date_range_24"
+                                android:hint="13/11/2025"
+                                android:focusable="false"
+                                android:clickable="true"
+                                android:inputType="none"
+                                android:padding="@dimen/_10sdp"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Lead status     -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_12sdp">
+
+                    <!-- Title + range -->
+                    <TextView
+                        android:id="@+id/tvCardTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Lead Status"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/_16ssp" />
+
+                    <TextView
+                        android:id="@+id/tvDateRange"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Today"
+                        android:paddingTop="@dimen/_4sdp"
+                        android:textSize="@dimen/_12ssp" />
+
+                    <!-- Chart (left) + Legend (right) -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="@dimen/_8sdp"
+                        android:weightSum="5"
+                        android:gravity="center_vertical">
+
+                        <!-- Pie on left (≈60%) -->
+                        <com.github.mikephil.charting.charts.PieChart
+                            android:id="@+id/pieLeadRevenue"
+                            android:layout_width="0dp"
+                            android:layout_height="@dimen/_200sdp"
+                            android:layout_weight="3" />
+
+                        <!-- Legend on right (≈40%) -->
+                        <LinearLayout
+                            android:id="@+id/layoutLegend"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="2"
+                            android:orientation="vertical"
+                            android:gravity="bottom"
+                            android:layout_marginBottom="@dimen/_20sdp"
+                            android:paddingStart="@dimen/_12sdp">
+
+                            <!-- All Leads -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingVertical="@dimen/_4sdp">
+                                <View
+                                    android:layout_width="@dimen/_10sdp"
+                                    android:layout_height="@dimen/_10sdp"
+                                    android:layout_marginEnd="@dimen/_4sdp"
+                                    android:background="@color/legend_all_leads" />
+                                <TextView
+                                    android:id="@+id/tvAllLead"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="All Leads: 200"
+                                    android:textSize="@dimen/_10ssp" />
+                            </LinearLayout>
+
+                            <!-- Interested -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingVertical="@dimen/_4sdp">
+                                <View
+                                    android:layout_width="@dimen/_10sdp"
+                                    android:layout_height="@dimen/_10sdp"
+                                    android:layout_marginEnd="@dimen/_4sdp"
+                                    android:background="@color/legend_interested" />
+                                <TextView
+                                    android:id="@+id/tvInterested"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Interested: 105"
+                                    android:textSize="@dimen/_10ssp" />
+                            </LinearLayout>
+
+                            <!-- Not Interested -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingVertical="@dimen/_2sdp">
+                                <View
+                                    android:layout_width="@dimen/_10sdp"
+                                    android:layout_height="@dimen/_10sdp"
+                                    android:layout_marginEnd="@dimen/_4sdp"
+                                    android:background="@color/legend_not_interested" />
+                                <TextView
+                                    android:id="@+id/tvNotInterested"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Not Interested: 56"
+                                    android:textSize="@dimen/_10ssp" />
+                            </LinearLayout>
+
+                            <!-- Just Curious -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingVertical="@dimen/_2sdp">
+                                <View
+                                    android:layout_width="@dimen/_10sdp"
+                                    android:layout_height="@dimen/_10sdp"
+                                    android:layout_marginEnd="@dimen/_4sdp"
+                                    android:background="@color/legend_just_curious" />
+                                <TextView
+                                    android:id="@+id/tvCurious"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Just Curious: 15"
+                                    android:textSize="@dimen/_10ssp" />
+                            </LinearLayout>
+
+                            <!-- Deal Closed -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingVertical="@dimen/_2sdp">
+                                <View
+                                    android:layout_width="@dimen/_10sdp"
+                                    android:layout_height="@dimen/_10sdp"
+                                    android:layout_marginEnd="@dimen/_4sdp"
+                                    android:background="@color/legend_deal_closed" />
+                                <TextView
+                                    android:id="@+id/tvDealClosed"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Deal Closed: 67"
+                                    android:textSize="@dimen/_10ssp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="@dimen/_14sdp"
+                android:layout_marginTop="@dimen/_20sdp"
+                app:strokeWidth="@dimen/_1sdp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_10sdp">
+
+                    <!-- Title + range -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Call Campaign Status"
+                        android:textSize="@dimen/_14ssp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvCallCampRange"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/_2sdp"
+                        android:text="Today"
+                        android:textSize="@dimen/_10ssp" />
+
+                    <!-- Chart (left) + Legend (right) -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_8sdp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:weightSum="5">
+
+                        <!-- Pie on left (≈60%) -->
+                        <com.github.mikephil.charting.charts.PieChart
+                            android:id="@+id/pieCallCampRevenue"
+                            android:layout_width="0dp"
+                            android:layout_height="@dimen/_200sdp"
+                            android:layout_weight="3" />
+
+                        <!-- Legend on right (≈40%) -->
+                        <LinearLayout
+                            android:id="@+id/layoutLegendRight"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="2"
+                            android:orientation="vertical"
+                            android:layout_gravity="bottom"
+                            android:gravity="bottom"
+                            android:layout_marginBottom="@dimen/_20sdp"
+                            android:paddingStart="@dimen/_10sdp">
+
+                            <!-- All -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingVertical="@dimen/_4sdp">
+
+                                <View
+                                    android:layout_width="@dimen/_10sdp"
+                                    android:layout_height="@dimen/_10sdp"
+                                    android:layout_marginEnd="@dimen/_4sdp"
+                                    android:background="@color/legend_all_leads" />
+
+                                <TextView
+                                    android:id="@+id/tvAllCallCamp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="All Call: 200"
+                                    android:textSize="@dimen/_10ssp" />
+                            </LinearLayout>
+
+                            <!-- Connected -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingVertical="@dimen/_2sdp">
+
+                                <View
+                                    android:layout_width="@dimen/_10sdp"
+                                    android:layout_height="@dimen/_10sdp"
+                                    android:layout_marginEnd="@dimen/_4sdp"
+                                    android:background="@color/legend_interested" />
+
+                                <TextView
+                                    android:id="@+id/tvConnected"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Connected: 105"
+                                    android:textSize="@dimen/_10ssp" />
+                            </LinearLayout>
+
+                            <!-- Not Connected -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingVertical="@dimen/_2sdp">
+
+                                <View
+                                    android:layout_width="@dimen/_10sdp"
+                                    android:layout_height="@dimen/_10sdp"
+                                    android:layout_marginEnd="@dimen/_4sdp"
+                                    android:background="@color/legend_not_interested" />
+
+                                <TextView
+                                    android:id="@+id/tvNotConnected"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Not Connected: 56"
+                                    android:textSize="@dimen/_10ssp" />
+                            </LinearLayout>
+
+                            <!-- Call Later -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingVertical="@dimen/_2sdp">
+
+                                <View
+                                    android:layout_width="@dimen/_10sdp"
+                                    android:layout_height="@dimen/_10sdp"
+                                    android:layout_marginEnd="@dimen/_4sdp"
+                                    android:background="@color/legend_just_curious" />
+
+                                <TextView
+                                    android:id="@+id/tvCallLater"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Call Later: 15"
+                                    android:textSize="@dimen/_10ssp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_20sdp"
+                app:cardCornerRadius="@dimen/_14sdp"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_10sdp">
+
+                    <!-- Title and Date -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="WhatsApp Campaign Status"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/_14ssp" />
+
+                    <TextView
+                        android:id="@+id/txtDateRangeWhatsappCamp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Today"
+                        android:textSize="@dimen/_10ssp"
+                        android:paddingTop="@dimen/_2sdp" />
+
+                    <!-- Chart (left) + Legend (right) -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="@dimen/_6sdp"
+                        android:weightSum="5">
+
+                        <!-- Pie Chart (Left Side) -->
+                        <com.github.mikephil.charting.charts.PieChart
+                            android:id="@+id/pieWhatsAppCampRevenue"
+                            android:layout_width="0dp"
+                            android:layout_height="@dimen/_200sdp"
+                            android:layout_weight="3"
+                            android:layout_gravity="center" />
+
+                        <!-- Legend (Right Side) -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="2"
+                            android:orientation="vertical"
+                            android:gravity="bottom"
+                            android:layout_marginBottom="@dimen/_20sdp"
+                            android:paddingStart="@dimen/_10sdp">
+
+                            <!-- All Messages -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingVertical="@dimen/_2sdp">
+                                <View
+                                    android:layout_width="@dimen/_10sdp"
+                                    android:layout_height="@dimen/_10sdp"
+                                    android:layout_marginEnd="@dimen/_4sdp"
+                                    android:background="@color/legend_all_leads" />
+                                <TextView
+                                    android:id="@+id/tvAllWhatsAppCamp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="All Messages: 200"
+                                    android:textSize="@dimen/_10ssp" />
+                            </LinearLayout>
+
+                            <!-- Message Sent -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingVertical="@dimen/_2sdp">
+                                <View
+                                    android:layout_width="@dimen/_10sdp"
+                                    android:layout_height="@dimen/_10sdp"
+                                    android:layout_marginEnd="@dimen/_4sdp"
+                                    android:background="@color/legend_interested" />
+                                <TextView
+                                    android:id="@+id/tvMsgSend"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Messages Sent: 105"
+                                    android:textSize="@dimen/_10sdp" />
+                            </LinearLayout>
+
+                            <!-- Message Not Sent -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingVertical="@dimen/_2sdp">
+                                <View
+                                    android:layout_width="@dimen/_10sdp"
+                                    android:layout_height="@dimen/_10sdp"
+                                    android:layout_marginEnd="@dimen/_4sdp"
+                                    android:background="@color/legend_not_interested" />
+                                <TextView
+                                    android:id="@+id/tvMsgNotSend"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Messages Not Sent: 56"
+                                    android:textSize="@dimen/_10sdp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_20sdp"
+                app:cardCornerRadius="@dimen/_14sdp"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_10sdp">
+
+                    <!-- Title and Date -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Task Status"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/_14ssp" />
+
+                    <TextView
+                        android:id="@+id/txtDateRangeTask"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Today"
+                        android:textSize="@dimen/_10ssp"
+                        android:paddingTop="@dimen/_2sdp" />
+
+                    <!-- Chart (left) + Legend (right) -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="@dimen/_6sdp"
+                        android:weightSum="5">
+
+                        <!-- Pie Chart (Left Side) -->
+                        <com.github.mikephil.charting.charts.PieChart
+                            android:id="@+id/pieTaskRevenue"
+                            android:layout_width="0dp"
+                            android:layout_height="@dimen/_200sdp"
+                            android:layout_weight="3"
+                            android:layout_gravity="center" />
+
+                        <!-- Legend (Right Side) -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="2"
+                            android:orientation="vertical"
+                            android:gravity="bottom"
+                            android:layout_marginBottom="@dimen/_20sdp"
+                            android:paddingStart="@dimen/_10sdp">
+
+                            <!-- All Messages -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingVertical="@dimen/_2sdp">
+                                <View
+                                    android:layout_width="@dimen/_10sdp"
+                                    android:layout_height="@dimen/_10sdp"
+                                    android:layout_marginEnd="@dimen/_4sdp"
+                                    android:background="@color/legend_all_leads" />
+                                <TextView
+                                    android:id="@+id/tvAllTask"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="All Task: 200"
+                                    android:textSize="@dimen/_10ssp" />
+                            </LinearLayout>
+
+                            <!-- Message Sent -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingVertical="@dimen/_2sdp">
+                                <View
+                                    android:layout_width="@dimen/_10sdp"
+                                    android:layout_height="@dimen/_10sdp"
+                                    android:layout_marginEnd="@dimen/_4sdp"
+                                    android:background="@color/legend_interested" />
+                                <TextView
+                                    android:id="@+id/tvTaskcompleted"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Task Completed: 105"
+                                    android:textSize="@dimen/_10sdp" />
+                            </LinearLayout>
+
+                            <!-- Message Not Sent -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingVertical="@dimen/_2sdp">
+                                <View
+                                    android:layout_width="@dimen/_10sdp"
+                                    android:layout_height="@dimen/_10sdp"
+                                    android:layout_marginEnd="@dimen/_4sdp"
+                                    android:background="@color/legend_not_interested" />
+                                <TextView
+                                    android:id="@+id/tvTaskPending"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Pending Task: 56"
+                                    android:textSize="@dimen/_10sdp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="24dp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".view.ReadContactsActivity">
+
+    <ImageView
+        android:layout_width="@dimen/_100sdp"
+        android:layout_height="@dimen/_100sdp"
+        android:src="@drawable/profile"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_50sdp"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Read Contacts"
+        android:textSize="@dimen/_26sdp"
+        android:textStyle="bold"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:textAlignment="center"
+
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="By granting Technfest crm access to your contacts , you can add leads into CRM from your phonebook and analyse contact call data in CRM."
+        android:layout_margin="@dimen/_14sdp"
+        android:textSize="@dimen/_10sdp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Technfest crm only uploads contact added as leads to its cloud server , enabling cross-device management of CRM leads .Additionally , Technfest does not share your conatacts data with any third-party providers"
+        android:layout_margin="@dimen/_14sdp"
+        android:textSize="@dimen/_10sdp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Contact access is mandatory for Technfest crm as it is essential to its core function of calls and leads management."
+        android:layout_margin="@dimen/_14sdp"
+        android:textSize="@dimen/_10sdp"
+        android:textStyle="bold"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAllow"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_50sdp"
+        android:text="Allow Access"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/_18ssp"
+        app:cornerRadius="@dimen/_8sdp"
+        android:background="@drawable/btn_gradient"
+        app:backgroundTint="@null"
+        app:rippleColor="#5E00C0"
+        android:padding="@dimen/_10sdp"
+        android:layout_marginStart="@dimen/_14sdp"
+        android:layout_marginEnd="@dimen/_14sdp"
+        android:layout_marginTop="@dimen/_30sdp"
+        android:layout_marginBottom="@dimen/_14sdp"
+        android:elevation="@dimen/_4sdp"
+        android:fontFamily="sans-serif-medium"
+        />
+
+
+
+    <TextView
+        android:id="@+id/txtSkip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="skip"
+        android:textColor="#223499"
+        android:textAlignment="center"
+        android:textSize="@dimen/_12ssp"
+        />
+</LinearLayout>

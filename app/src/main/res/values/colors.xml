@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <!-- Technfest CRM PieChart Legend Colors -->
+    <color name="legend_all_leads">#9FC1D6</color>        <!-- light blue -->
+    <color name="legend_interested">#4EB179</color>       <!-- green -->
+    <color name="legend_not_interested">#7C99C5</color>   <!-- gray-blue -->
+    <color name="legend_just_curious">#FFD54F</color>     <!-- yellow -->
+    <color name="legend_deal_closed">#2E7D32</color>      <!-- dark green -->
+
+</resources>
