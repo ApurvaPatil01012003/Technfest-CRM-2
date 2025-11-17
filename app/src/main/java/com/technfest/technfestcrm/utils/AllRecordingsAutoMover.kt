@@ -7,8 +7,11 @@ import android.os.Environment
 import androidx.annotation.RequiresApi
 import androidx.documentfile.provider.DocumentFile
 import android.provider.DocumentsContract
+import android.util.Log
 import java.io.File
 import java.io.FileOutputStream
+import androidx.core.content.edit
+import androidx.core.net.toUri
 
 class AllRecordingsAutoMover(private val context: Context) {
 
@@ -16,8 +19,9 @@ class AllRecordingsAutoMover(private val context: Context) {
     fun autoMoveRecordings() {
         val prefs = context.getSharedPreferences("recordings_prefs", Context.MODE_PRIVATE)
         val treeUri = prefs.getString("folder_path", null) ?: return
+        Log.d("AutoMover", "Folder Uri = $treeUri")
 
-        val root = DocumentFile.fromTreeUri(context, Uri.parse(treeUri)) ?: return
+        val root = DocumentFile.fromTreeUri(context, treeUri.toUri()) ?: return
 
         val targetFolder = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
@@ -28,19 +32,34 @@ class AllRecordingsAutoMover(private val context: Context) {
         root.listFiles().forEach { file ->
 
             val name = file.name ?: return@forEach
+            val lower = name.lowercase()
+            Log.d("AutoMover", "Processing file = $name")
 
-            if (!name.endsWith(".mp3") && !name.endsWith(".m4a")) return@forEach
+            if (!lower.endsWith(".mp3") &&
+                !lower.endsWith(".m4a") &&
+                !lower.endsWith(".aac") &&
+                !lower.endsWith(".wav")
+            ) return@forEach
+
+            val recordingId = file.uri.toString()
+            if (isAlreadyMoved(recordingId)) {
+                Log.d("AutoMover", "SKIP (already moved) → $recordingId")
+                return@forEach
+            }
 
             val phone = extractPhone(name) ?: "unknown"
             val timestamp = getTimestamp(file.uri)
 
-            val uniqueKey = "$phone-$timestamp"
+            val outName = "$phone-$timestamp.mp3"
+            val outFile = File(targetFolder, outName)
+            Log.d("AutoMover", "Saving to = $outFile")
 
-            if (isAlreadyMoved(uniqueKey)) {
+            // If file already exists, just mark as moved and skip copying
+            if (outFile.exists()) {
+                Log.d("AutoMover", "File already exists, marking moved → $outName")
+                markMoved(recordingId)
                 return@forEach
             }
-
-            val outFile = File(targetFolder, "$uniqueKey.mp3")
 
             // Copy file
             context.contentResolver.openInputStream(file.uri)?.use { input ->
@@ -49,14 +68,15 @@ class AllRecordingsAutoMover(private val context: Context) {
                 }
             }
 
-            markMoved(uniqueKey)
+            markMoved(recordingId)
+            Log.d("AutoMover", "MOVED: $name → $outName")
         }
     }
 
     private fun extractPhone(filename: String): String? {
         val groups = Regex("\\d+").findAll(filename).map { it.value }.toList()
         val longest = groups.maxByOrNull { it.length } ?: return null
-        return longest.takeLast(10)
+        return if (longest.length >= 10) longest.takeLast(10) else null
     }
 
     private fun getTimestamp(uri: Uri): Long {
@@ -72,13 +92,14 @@ class AllRecordingsAutoMover(private val context: Context) {
         return ts
     }
 
-    private fun markMoved(key: String) {
+    // 🔑 Now key = recordingId (uri string), not phone+timestamp
+    private fun markMoved(recordingId: String) {
         val prefs = context.getSharedPreferences("MovedRecordings", Context.MODE_PRIVATE)
-        prefs.edit().putBoolean(key, true).apply()
+        prefs.edit { putBoolean(recordingId, true) }
     }
 
-    private fun isAlreadyMoved(key: String): Boolean {
+    private fun isAlreadyMoved(recordingId: String): Boolean {
         val prefs = context.getSharedPreferences("MovedRecordings", Context.MODE_PRIVATE)
-        return prefs.getBoolean(key, false)
+        return prefs.getBoolean(recordingId, false)
     }
 }

@@ -21,7 +21,6 @@ class CallRecordingFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         _binding = FragmentCallRecordingBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -164,6 +163,8 @@ class CallRecordingFragment : Fragment() {
         return recordings
     }
 
+
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onResume() {
         super.onResume()
 
@@ -181,6 +182,7 @@ class CallRecordingFragment : Fragment() {
             e.printStackTrace()
         }
     }
+
 
 
 

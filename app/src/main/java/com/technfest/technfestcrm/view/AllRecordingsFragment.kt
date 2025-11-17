@@ -171,50 +171,42 @@ class AllRecordingsFragment : Fragment() {
             override fun onStopTrackingTouch(sb: SeekBar?) {}
         })
     }
-
-
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun moveAllRecordings() {
         val prefs = requireContext().getSharedPreferences("recordings_prefs", Context.MODE_PRIVATE)
-       // val treeUri = prefs.getString("tree_uri", null) ?: return
         val treeUri = prefs.getString("folder_path", null) ?: return
-
-
 
         val root = DocumentFile.fromTreeUri(requireContext(), treeUri.toUri()) ?: return
 
-//        val targetFolder = File(
-//            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-//            "downloaded_rom"
-//        )
-//        if (!targetFolder.exists()) targetFolder.mkdirs()
         val targetFolder = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
             "downloaded_rom"
         )
         if (!targetFolder.exists()) targetFolder.mkdirs()
 
-
         root.listFiles().forEach { file ->
             val name = file.name ?: return@forEach
 
-            if (!name.endsWith(".mp3") && !name.endsWith(".m4a")) return@forEach
+            if (!name.endsWith(".mp3", true) &&
+                !name.endsWith(".m4a", true) &&
+                !name.endsWith(".aac", true) &&
+                !name.endsWith(".wav", true)
+            ) return@forEach
 
-            val phone = extractValidPhoneNumber(file.name.toString()) ?: "unknown"
-            val timestamp = getFileTimestamp(requireContext(), file.uri)
-
-            val uniqueKey = "$phone-$timestamp"
-
-            if (isAlreadyMoved(uniqueKey)) {
-                Log.d("Recordings", "SKIP: Already Moved → $uniqueKey")
+            val recordingId = file.uri.toString()
+            if (isAlreadyMoved(recordingId)) {
+                Log.d("Recordings", "SKIP (already moved by URI) → $recordingId")
                 return@forEach
             }
 
+            val phone = extractValidPhoneNumber(name) ?: "unknown"
+            val timestamp = getFileTimestamp(requireContext(), file.uri)
             val outName = "$phone-$timestamp.mp3"
             val outFile = File(targetFolder, outName)
 
             if (outFile.exists()) {
-                markMoved(uniqueKey)
+                markMoved(recordingId)
+                Log.d("Recordings", "File already exists, just marking moved → $outName")
                 return@forEach
             }
 
@@ -224,12 +216,21 @@ class AllRecordingsFragment : Fragment() {
                 }
             }
 
-            markMoved(uniqueKey)
-
+            markMoved(recordingId)
             Log.d("Recordings", "MOVED: $name → $outName")
         }
 
         refreshList()
+    }
+
+    private fun markMoved(recordingId: String) {
+        val prefs = requireContext().getSharedPreferences("MovedRecordings", Context.MODE_PRIVATE)
+        prefs.edit { putBoolean(recordingId, true) }
+    }
+
+    private fun isAlreadyMoved(recordingId: String): Boolean {
+        val prefs = requireContext().getSharedPreferences("MovedRecordings", Context.MODE_PRIVATE)
+        return prefs.getBoolean(recordingId, false)
     }
 
     private fun getFileTimestamp(ctx: Context, uri: Uri): Long {
@@ -245,15 +246,7 @@ class AllRecordingsFragment : Fragment() {
         return result
     }
 
-    private fun markMoved(key: String) {
-        val prefs = requireContext().getSharedPreferences("MovedRecordings", Context.MODE_PRIVATE)
-        prefs.edit { putBoolean(key, true) }
-    }
 
-    private fun isAlreadyMoved(key: String): Boolean {
-        val prefs = requireContext().getSharedPreferences("MovedRecordings", Context.MODE_PRIVATE)
-        return prefs.getBoolean(key, false)
-    }
 
 
     override fun onDestroyView() {
@@ -263,23 +256,17 @@ class AllRecordingsFragment : Fragment() {
         _binding = null
     }
     fun extractValidPhoneNumber(filename: String): String? {
-        // Extract continuous digit groups from filename
         val groups = Regex("\\d+").findAll(filename)
             .map { it.value }
             .toList()
 
         if (groups.isEmpty()) return null
-
-        // Find the longest digit group (most likely phone)
         val longest = groups.maxByOrNull { it.length } ?: return null
-
-        // If shorter than 10 digits → not a phone number
         if (longest.length < 10) return null
 
-        // Handle Indian & International numbers
         return when {
-            longest.length == 10 -> longest                       // Indian exact
-            longest.length in 11..15 -> longest.takeLast(10)      // Strip country code
+            longest.length == 10 -> longest
+            longest.length in 11..15 -> longest.takeLast(10)
             else -> null
         }
     }
