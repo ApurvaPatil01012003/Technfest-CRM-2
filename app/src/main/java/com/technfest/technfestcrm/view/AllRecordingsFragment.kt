@@ -17,7 +17,6 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.SeekBar
 import android.widget.TextView
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
@@ -184,11 +183,17 @@ class AllRecordingsFragment : Fragment() {
 
         val root = DocumentFile.fromTreeUri(requireContext(), treeUri.toUri()) ?: return
 
+//        val targetFolder = File(
+//            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+//            "downloaded_rom"
+//        )
+//        if (!targetFolder.exists()) targetFolder.mkdirs()
         val targetFolder = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
             "downloaded_rom"
         )
         if (!targetFolder.exists()) targetFolder.mkdirs()
+
 
         root.listFiles().forEach { file ->
             val name = file.name ?: return@forEach

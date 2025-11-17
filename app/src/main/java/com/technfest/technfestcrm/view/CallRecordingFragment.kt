@@ -57,10 +57,13 @@ class CallRecordingFragment : Fragment() {
 
     private val folderPickerLauncher =
         registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+
             if (uri != null) {
+
                 requireContext().contentResolver.takePersistableUriPermission(
                     uri,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 )
 
                 saveFolderPath(uri.toString())
@@ -68,6 +71,7 @@ class CallRecordingFragment : Fragment() {
                 showSyncDialog()
             }
         }
+
 
     private fun saveFolderPath(path: String) {
         val prefs = requireContext().getSharedPreferences("recordings_prefs", Context.MODE_PRIVATE)
@@ -177,6 +181,7 @@ class CallRecordingFragment : Fragment() {
             e.printStackTrace()
         }
     }
+
 
 
 }

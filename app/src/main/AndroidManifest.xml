@@ -69,6 +69,9 @@
             </intent-filter>
 
         </receiver>
+        <service
+            android:name=".receiver.AutoMoveService"
+            android:exported="false" />
 
 
 
