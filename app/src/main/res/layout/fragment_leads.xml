@@ -142,8 +142,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_4sdp"
-                android:background="@drawable/textview_bg"
+                android:background="@drawable/bg_missed"
                 android:text="My Leads"
+                android:padding="@dimen/_6sdp"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_10ssp" />
 
@@ -151,8 +152,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_4sdp"
-                android:background="@drawable/textview_bg"
+                android:background="@drawable/bg_missed"
                 android:text="All Leads"
+                android:padding="@dimen/_6sdp"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_10ssp" />
 
@@ -160,8 +162,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_4sdp"
-                android:background="@drawable/textview_bg"
+                android:background="@drawable/bg_missed"
                 android:text="New"
+                android:padding="@dimen/_6sdp"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_10ssp" />
 
@@ -169,7 +172,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_4sdp"
-                android:background="@drawable/textview_bg"
+                android:background="@drawable/bg_missed"
                 android:text="Demo"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_10ssp" />
@@ -177,7 +180,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/textview_bg"
+                android:background="@drawable/bg_missed"
                 android:text="Customer"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_10ssp" />

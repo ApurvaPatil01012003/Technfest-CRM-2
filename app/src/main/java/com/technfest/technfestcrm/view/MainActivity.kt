@@ -2,8 +2,10 @@ package com.technfest.technfestcrm.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.telecom.TelecomManager
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -19,11 +21,27 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+
+            // Apply ONLY top inset to the main container (status bar)
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
+
+            // Remove bottom padding from BottomNavigationView
+            binding.bottomNavigationView.setPadding(0, 0, 0, 0)
+
             insets
         }
+        val intent = Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
+        intent.putExtra(
+            TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME,
+            this.packageName
+        )
+
+        startActivity(intent)
+
+
+
 
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
@@ -39,6 +57,7 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+
     }
 
     private fun loadFragment(fragment: Fragment) {

@@ -761,7 +761,7 @@
                     android:textSize="@dimen/_14ssp"
                     android:textStyle="bold" />
                 <ImageView
-
+android:id="@+id/imageCallSetting"
                     android:layout_width="@dimen/_20sdp"
                     android:layout_height="@dimen/_20sdp"
                     android:src="@drawable/baseline_arrow_drop_down_24" />
@@ -773,6 +773,75 @@
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
                 android:background="#B1AEAE" />
+
+
+
+        <LinearLayout
+            android:id="@+id/CallLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_6sdp"
+            android:background="@color/white"
+            android:backgroundTint="@color/white"
+            android:clipToOutline="true"
+            android:elevation="@dimen/_2sdp"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:padding="@dimen/_6sdp"
+          >
+
+            <!-- Permission Rows -->
+            <LinearLayout
+                android:id="@+id/callAutomation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/row_bg_selector"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/_8sdp">
+
+
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Call Automation"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/_14ssp" />
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#E5E5E5" />
+
+            <LinearLayout
+                android:id="@+id/callRecordings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/row_bg_selector"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/_8sdp">
+
+
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Call Recordings"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/_14ssp" />
+
+
+            </LinearLayout>
+        </LinearLayout>
 
 
             <LinearLayout

@@ -96,12 +96,13 @@
 
                 <!-- Today's Snapshot -->
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="@dimen/_150sdp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:layout_marginStart="@dimen/_20sdp"
                     android:textStyle="bold"
                     android:text="Today’s Snapshot"
+                    android:textAlignment="center"
                     android:padding="@dimen/_6sdp"
                     android:background="@drawable/bg_home_text"
                     android:textColor="@color/black"
@@ -262,12 +263,13 @@
 
                 <!-- Quick Actions -->
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="@dimen/_150sdp"
                     android:layout_height="wrap_content"
                     android:text="Quick Actions"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_12ssp"
                     android:padding="@dimen/_6sdp"
+                    android:textAlignment="center"
                     android:background="@drawable/bg_home_text"
                     android:layout_marginStart="@dimen/_20sdp"
                     android:layout_marginTop="@dimen/_10sdp"
@@ -509,7 +511,8 @@
                 </androidx.gridlayout.widget.GridLayout>
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="@dimen/_150sdp"
+                    android:textAlignment="center"
                     android:layout_height="wrap_content"
                     android:text="Hot Leads (Today)"
                     android:textColor="@color/black"
@@ -543,10 +546,11 @@
                 </androidx.cardview.widget.CardView>
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="@dimen/_150sdp"
                     android:layout_height="wrap_content"
                     android:text="Today’s Tasks"
                     android:textColor="@color/black"
+                    android:textAlignment="center"
                     android:background="@drawable/bg_home_text"
                     android:textSize="@dimen/_12ssp"
                     android:padding="@dimen/_6sdp"

@@ -23,6 +23,7 @@ class ReadContactsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityReadContactsBinding
     private val CONTACT_PERMISSION_CODE = 1001
 
+
     private val fromSettings: Boolean by lazy {
         intent.getBooleanExtra(EXTRA_FROM_SETTINGS, false)
     }
@@ -30,8 +31,11 @@ class ReadContactsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val sharedPref = getSharedPreferences("AppPrefs", MODE_PRIVATE)
+        val pref = getSharedPreferences("AppPrefs", MODE_PRIVATE)
 
+        // ⛔ Removed the wrong finish()
+
+        // If coming back from Settings AND permission is already granted → close
         if (fromSettings &&
             ContextCompat.checkSelfPermission(
                 this,
@@ -42,9 +46,10 @@ class ReadContactsActivity : AppCompatActivity() {
             return
         }
 
+        // Not from settings → skip if already completed first time flow
         if (!fromSettings) {
-            val isFirstTime = sharedPref.getBoolean("isFirstTimeContacts", true)
-            if (!isFirstTime) {
+            val firstTime = pref.getBoolean("isFirstTimeContacts", true)
+            if (!firstTime) {
                 goToNextActivity()
                 finish()
                 return
@@ -61,14 +66,10 @@ class ReadContactsActivity : AppCompatActivity() {
             insets
         }
 
-        binding.btnAllow.setOnClickListener {
-            checkContactPermission()
-        }
+        binding.btnAllow.setOnClickListener { checkContactPermission() }
 
         binding.txtSkip.setOnClickListener {
-            sharedPref.edit {
-                putBoolean("isFirstTimeContacts", false)
-            }
+            pref.edit { putBoolean("isFirstTimeContacts", false) }
             if (fromSettings) {
                 finish()
             } else {
@@ -110,10 +111,9 @@ class ReadContactsActivity : AppCompatActivity() {
     }
 
     private fun saveAndGoNext() {
-        getSharedPreferences("AppPrefs", MODE_PRIVATE)
-            .edit {
-                putBoolean("isFirstTimeContacts", false)
-            }
+        getSharedPreferences("AppPrefs", MODE_PRIVATE).edit {
+            putBoolean("isFirstTimeContacts", false)
+        }
 
         if (fromSettings) {
             finish()
@@ -129,6 +129,8 @@ class ReadContactsActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+
+        // If user allowed permission from settings → close
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.READ_CONTACTS

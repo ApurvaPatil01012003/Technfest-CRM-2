@@ -140,7 +140,7 @@
                             android:paddingHorizontal="@dimen/_8sdp"
                             android:paddingVertical="@dimen/_4sdp"
                             android:text="Priority:"
-                            android:textColor="#B84545"
+                            android:textColor="#000000"
                             android:textSize="@dimen/_12ssp" />
 
                         <TextView
@@ -151,7 +151,7 @@
                             android:paddingHorizontal="@dimen/_8sdp"
                             android:paddingVertical="@dimen/_4sdp"
                             android:text="High"
-                            android:textColor="#4CAF50"
+                            android:textColor="#000000"
                             android:textSize="@dimen/_12ssp" />
                     </LinearLayout>
 
@@ -164,7 +164,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/status_background"
+                            android:background="@drawable/bg_text"
                             android:paddingHorizontal="@dimen/_8sdp"
                             android:paddingVertical="@dimen/_4sdp"
                             android:text="Billing"
@@ -495,6 +495,7 @@
                         android:layout_height="wrap_content"
                         android:text="Today 11:00"
                         android:textColor="@color/black"
+                        android:padding="@dimen/_6sdp"
                         android:textSize="@dimen/_12ssp"
                         android:background="@drawable/status_background"
                         android:textStyle="bold" />

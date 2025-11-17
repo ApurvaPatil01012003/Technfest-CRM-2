@@ -49,6 +49,19 @@ class CallsFragment : Fragment() {
                 "noteeee",
                 "P"
             ),
+            Calls(
+                "Ankita Gholap",
+                "outgoing",
+                "9322779404",
+                "Yesturday",
+                "2:17 PM",
+                "12 sec",
+                "asdf",
+                "from 1234567890",
+                "Lead linked",
+                "noteeee",
+                "P"
+            ),
 
             )
        binding.leadRecyclerView.layoutManager = LinearLayoutManager(requireContext())

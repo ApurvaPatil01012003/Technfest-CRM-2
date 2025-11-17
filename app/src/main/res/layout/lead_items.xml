@@ -6,7 +6,6 @@
     android:orientation="vertical"
     android:paddingVertical="@dimen/_8sdp">
 
-    <!-- Name + Location + Priority -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:text="Amit Sharma"
                 android:textStyle="bold"
-                android:textColor="@android:color/black"
+                android:textColor="@color/black"
                 android:textSize="@dimen/_14ssp"
                 android:ellipsize="end"
                 android:singleLine="true" />
@@ -96,7 +95,6 @@
             android:textSize="@dimen/_10ssp" />
     </LinearLayout>
 
-    <!-- Status + Stage + Time -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

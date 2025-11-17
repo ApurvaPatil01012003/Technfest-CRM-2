@@ -35,6 +35,7 @@ class SettingFragment : Fragment() {
     private var isProfileExpanded = false
     private var isWorkspaceExpanded = false
     private var ignoreListenerUpdates = false
+    private var isCallExpanded = false
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
@@ -117,12 +118,30 @@ class SettingFragment : Fragment() {
             )
         }
 
+
         binding.headerCallLayout.setOnClickListener {
-            val callAutomationFragment = CallAutomationFragment()
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, callAutomationFragment)
-                .addToBackStack(null)
-                .commit()
+            isCallExpanded = !isCallExpanded
+            binding.CallLayout.visibility =
+                if (isCallExpanded) View.VISIBLE else View.GONE
+            binding.imageCallSetting.setImageResource(
+                if (isCallExpanded) R.drawable.baseline_arrow_right_24
+                else R.drawable.baseline_arrow_drop_down_24
+            )
+            binding.callAutomation.setOnClickListener {
+                val callAutomationFragment = CallAutomationFragment()
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, callAutomationFragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
+            binding.callRecordings.setOnClickListener {
+                val callRecordingFragment = CallRecordingFragment()
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, callRecordingFragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
+
         }
 
         binding.btnLogout.setOnClickListener {
@@ -369,7 +388,6 @@ class SettingFragment : Fragment() {
                 syncSwitchImmediate(button, false)
 
             } else if (!isChecked && hasNow) {
-                // User wants to turn OFF overlay → send to system settings
                 openOverlaySettings()
                 syncSwitchImmediate(button, true)
             }
