@@ -3,12 +3,10 @@ package com.technfest.technfestcrm.view
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.telecom.TelecomManager
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -17,6 +15,7 @@ import com.technfest.technfestcrm.R
 import com.technfest.technfestcrm.databinding.ActivityMainBinding
 import androidx.core.content.edit
 import com.technfest.technfestcrm.receiver.AutoMoveForegroundService
+import com.technfest.technfestcrm.receiver.CallStateForegroundService
 import com.technfest.technfestcrm.utils.AllRecordingsAutoMover
 
 class MainActivity : AppCompatActivity() {
@@ -29,15 +28,12 @@ class MainActivity : AppCompatActivity() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
 
-            // Apply ONLY top inset to the main container (status bar)
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
-
-            // Remove bottom padding from BottomNavigationView
             binding.bottomNavigationView.setPadding(0, 0, 0, 0)
 
             insets
         }
-        // In MainActivity or SplashActivity
+        startCallStateServiceSafely()
         val serviceIntent = Intent(this, AutoMoveForegroundService::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(serviceIntent)
@@ -100,5 +96,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
+    private fun startCallStateServiceSafely() {
+        val intent = Intent(this, CallStateForegroundService::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
+        }
+    }
 }

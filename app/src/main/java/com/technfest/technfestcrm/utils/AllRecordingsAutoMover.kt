@@ -92,7 +92,6 @@ class AllRecordingsAutoMover(private val context: Context) {
         return ts
     }
 
-    // 🔑 Now key = recordingId (uri string), not phone+timestamp
     private fun markMoved(recordingId: String) {
         val prefs = context.getSharedPreferences("MovedRecordings", Context.MODE_PRIVATE)
         prefs.edit { putBoolean(recordingId, true) }
