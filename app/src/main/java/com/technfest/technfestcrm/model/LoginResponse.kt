@@ -1,7 +1,12 @@
 package com.technfest.technfestcrm.model
 
 data class LoginResponse(
-    val success: Boolean,
+    val employeeId: Int,
+    val expiresIn: Int,
+    val fullName: String,
+    val id: Int,
     val token: String,
-    val user: LoginUser
+    val userType: String,
+    val uuid: String,
+    val workspaceId: Int
 )

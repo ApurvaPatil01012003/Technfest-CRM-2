@@ -28,10 +28,12 @@
             app:subtitleTextAppearance="@style/ToolbarSubtitleText" />
 
     </com.google.android.material.appbar.AppBarLayout>
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/_10sdp">
     <HorizontalScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scrollbars="none"
@@ -50,7 +52,8 @@
                 android:layout_marginEnd="@dimen/_6sdp"
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:paddingVertical="@dimen/_4sdp"
-                android:background="@drawable/bg_missed"
+                android:padding="@dimen/_8sdp"
+                android:background="@drawable/status_background"
                 android:text="All"
                 android:textColor="@color/black"
                 android:textStyle="bold"
@@ -64,7 +67,8 @@
                 android:layout_marginEnd="@dimen/_6sdp"
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:paddingVertical="@dimen/_4sdp"
-                android:background="@drawable/bg_missed"
+                android:padding="@dimen/_8sdp"
+                android:background="@drawable/status_background"
                 android:text="Today"
                 android:textColor="@color/black"
                 android:textStyle="bold"
@@ -78,7 +82,8 @@
                 android:layout_marginEnd="@dimen/_6sdp"
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:paddingVertical="@dimen/_4sdp"
-                android:background="@drawable/bg_missed"
+                android:padding="@dimen/_8sdp"
+                android:background="@drawable/status_background"
                 android:text="Overdue"
                 android:textColor="@color/black"
                 android:textStyle="bold"
@@ -92,7 +97,8 @@
                 android:layout_marginEnd="@dimen/_6sdp"
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:paddingVertical="@dimen/_4sdp"
-                android:background="@drawable/bg_missed"
+                android:padding="@dimen/_8sdp"
+                android:background="@drawable/status_background"
                 android:text="Completed"
                 android:textColor="@color/black"
                 android:textStyle="bold"
@@ -106,7 +112,8 @@
                 android:layout_marginEnd="@dimen/_6sdp"
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:paddingVertical="@dimen/_4sdp"
-                android:background="@drawable/bg_missed"
+                android:padding="@dimen/_8sdp"
+                android:background="@drawable/status_background"
                 android:text="High priority"
                 android:textColor="@color/black"
                 android:textStyle="bold"
@@ -119,7 +126,8 @@
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:paddingVertical="@dimen/_4sdp"
-                android:background="@drawable/bg_missed"
+                android:padding="@dimen/_8sdp"
+                android:background="@drawable/status_background"
                 android:text="History"
                 android:textColor="@color/black"
                 android:textStyle="bold"
@@ -129,6 +137,7 @@
 
         </LinearLayout>
     </HorizontalScrollView>
+    </LinearLayout>
 
 
 

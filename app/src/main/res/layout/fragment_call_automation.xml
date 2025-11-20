@@ -122,6 +122,7 @@
                         android:textSize="@dimen/_12ssp" />
 
                     <EditText
+                        android:id="@+id/edtStartTime"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_6sdp"
@@ -148,6 +149,7 @@
                         android:textSize="@dimen/_12ssp" />
 
                     <EditText
+                        android:id="@+id/edtEndTime"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_6sdp"

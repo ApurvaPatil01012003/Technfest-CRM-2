@@ -14,69 +14,37 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="@dimen/_10sdp">
+        android:padding="@dimen/_12sdp">
 
+        <!-- Campaign Name -->
         <TextView
             android:id="@+id/campaignName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/_6sdp"
             android:text="Name of Campaign"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/_14ssp"
-            android:textStyle="bold"
-            android:paddingBottom="@dimen/_4sdp" />
+            android:textSize="@dimen/_15ssp"
+            android:textStyle="bold" />
 
+        <!-- Type -->
+        <TextView
+            android:id="@+id/txtType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/_8sdp"
+            android:text="Type : Call"
+            android:textColor="#444444"
+            android:textSize="@dimen/_13ssp" />
+
+        <!-- Date + Owner Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="@dimen/_6sdp">
+            android:paddingBottom="@dimen/_8sdp">
 
-            <TextView
-                android:id="@+id/txtType"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/green_status_bg"
-                android:gravity="center"
-                android:paddingVertical="@dimen/_4sdp"
-                android:paddingHorizontal="@dimen/_8sdp"
-                android:text="Type"
-                android:textSize="@dimen/_10ssp" />
-
-            <TextView
-                android:id="@+id/txtStatus"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="@dimen/_4sdp"
-                android:background="@drawable/status_background"
-                android:gravity="center"
-                android:paddingVertical="@dimen/_4sdp"
-                android:paddingHorizontal="@dimen/_8sdp"
-                android:text="Status"
-                android:textSize="@dimen/_10ssp" />
-
-            <TextView
-                android:id="@+id/txtROI"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="@dimen/_4sdp"
-                android:background="@drawable/red_status_bg"
-                android:gravity="center"
-                android:paddingVertical="@dimen/_4sdp"
-                android:paddingHorizontal="@dimen/_8sdp"
-                android:text="ROI"
-                android:textSize="@dimen/_10ssp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/_6sdp"
-            android:orientation="horizontal">
-
+            <!-- Date Range -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -87,19 +55,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Date Range"
-                    android:textColor="#625C5C"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textColor="#716E6E"
+                    android:textSize="@dimen/_11ssp" />
 
                 <TextView
                     android:id="@+id/txtDateRange"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="01 Nov 2025 → Ongoing"
-                    android:textColor="@color/black"
+                    android:textColor="@android:color/black"
                     android:textSize="@dimen/_12ssp"
                     android:textStyle="bold" />
             </LinearLayout>
 
+            <!-- Owner -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -110,105 +79,100 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Owner"
-                    android:textColor="#625C5C"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textColor="#716E6E"
+                    android:textSize="@dimen/_11ssp" />
 
                 <TextView
                     android:id="@+id/txtOwnerName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="XYZ"
-                    android:textColor="@color/black"
+                    android:textColor="@android:color/black"
                     android:textSize="@dimen/_12ssp"
                     android:textStyle="bold" />
             </LinearLayout>
+
         </LinearLayout>
 
+        <!-- Budget / Leads -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/_6sdp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/_8sdp">
 
-            <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:padding="@dimen/_4sdp">
-
-            <!-- Label -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Budget / Spend"
-                android:textColor="#625C5C"
-                android:textSize="@dimen/_12ssp" />
-
-            <!-- Values -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/txtBudget"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="₹8,000"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_12ssp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=" / "
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_12ssp"
-                    android:paddingStart="@dimen/_2sdp"
-                    android:paddingEnd="@dimen/_2sdp" />
-
-                <TextView
-                    android:id="@+id/txtSpend"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="₹3,100"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_12ssp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </LinearLayout>
-
-
+            <!-- Budget / Spend -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:padding="@dimen/_4sdp">
+                android:orientation="vertical">
 
-                <!-- Label -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Budget / Spend"
+                    android:textColor="#716E6E"
+                    android:textSize="@dimen/_11ssp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/txtBudget"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="₹8,000"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/_12ssp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" / "
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/_12ssp" />
+
+                    <TextView
+                        android:id="@+id/txtSpend"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="₹3,100"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/_12ssp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Leads / CPL -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Leads / CPL"
-                    android:textColor="#625C5C"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textColor="#716E6E"
+                    android:textSize="@dimen/_11ssp" />
 
-                <!-- Values -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginTop="@dimen/_2sdp">
+                    android:paddingTop="@dimen/_2sdp">
 
                     <TextView
                         android:id="@+id/txtLeads"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="24 leads"
-                        android:textColor="@color/black"
+                        android:textColor="@android:color/black"
                         android:textSize="@dimen/_12ssp"
                         android:textStyle="bold" />
 
@@ -216,95 +180,110 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" • "
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_12ssp"
-                        android:paddingStart="@dimen/_2sdp"
-                        android:paddingEnd="@dimen/_2sdp" />
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/_12ssp" />
 
                     <TextView
                         android:id="@+id/txtCpl"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="₹129"
-                        android:textColor="@color/black"
+                        android:textColor="@android:color/black"
                         android:textSize="@dimen/_12ssp"
                         android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
-
         </LinearLayout>
 
-        <!-- Tags Section -->
+        <!-- Status / ROI -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginBottom="@dimen/_6sdp">
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/_8sdp">
+
+            <TextView
+                android:id="@+id/txtStatus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/textview_bg"
+                android:gravity="center"
+                android:layout_margin="@dimen/_2sdp"
+                android:padding="@dimen/_6sdp"
+                android:text="Status"
+                android:textSize="@dimen/_10ssp" />
+
+            <TextView
+                android:id="@+id/txtROI"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="@dimen/_2sdp"
+                android:background="@drawable/textview_bg"
+                android:gravity="center"
+                android:padding="@dimen/_6sdp"
+                android:text="ROI"
+                android:textSize="@dimen/_10ssp" />
+        </LinearLayout>
+
+        <!-- Tags Label -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/_4sdp"
+            android:text="Tags"
+            android:textColor="#716E6E"
+            android:textSize="@dimen/_12ssp" />
+
+        <!-- Tag Chips -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/_8sdp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tags"
-                android:textColor="#625C5C"
-                android:textSize="@dimen/_12ssp"
-                android:layout_marginBottom="@dimen/_2sdp" />
+                android:background="#E7CFEB"
+                android:padding="@dimen/_4sdp"
+                android:text="billing" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:background="#E7CFEB"
+                android:padding="@dimen/_4sdp"
+                android:layout_marginStart="@dimen/_4sdp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:text="demo" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/_4sdp"
-                    android:background="@drawable/bg_text"
-                    android:paddingHorizontal="@dimen/_8sdp"
-                    android:paddingVertical="@dimen/_2sdp"
-                    android:text="billing"
-                    android:textSize="@dimen/_10ssp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/_4sdp"
-                    android:background="@drawable/bg_text"
-                    android:paddingHorizontal="@dimen/_8sdp"
-                    android:paddingVertical="@dimen/_2sdp"
-                    android:text="demo"
-                    android:textSize="@dimen/_10ssp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_text"
-                    android:paddingHorizontal="@dimen/_8sdp"
-                    android:paddingVertical="@dimen/_2sdp"
-                    android:text="location"
-                    android:textSize="@dimen/_10ssp" />
-            </LinearLayout>
+            <TextView
+                android:background="#E7CFEB"
+                android:padding="@dimen/_4sdp"
+                android:layout_marginStart="@dimen/_4sdp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="location" />
         </LinearLayout>
 
-        <!-- Buttons -->
+        <!-- Buttons Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_8sdp"
-            android:gravity="center"
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnStart"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_6sdp"
                 android:layout_weight="1"
+                android:background="@drawable/btn_gradient"
                 android:text="Pause campaign"
-                android:textAllCaps="false"
                 android:textColor="@android:color/white"
-                android:layout_marginEnd="@dimen/_4sdp"
-                app:cornerRadius="@dimen/_10sdp"
                 app:backgroundTint="@null"
-                android:background="@drawable/btn_gradient" />
+                app:cornerRadius="@dimen/_10sdp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnEdit"
@@ -312,14 +291,14 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Edit"
-                android:textAllCaps="false"
                 android:textColor="#6475D0"
-                android:layout_marginStart="@dimen/_4sdp"
-                app:cornerRadius="@dimen/_10sdp"
                 app:backgroundTint="@android:color/white"
-                app:strokeWidth="@dimen/_1sdp"
-                app:strokeColor="#6475D0" />
+                app:cornerRadius="@dimen/_10sdp"
+                app:strokeColor="#6475D0"
+                app:strokeWidth="@dimen/_1sdp" />
+
         </LinearLayout>
+
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

@@ -154,22 +154,12 @@
                 android:id="@+id/tvLeadLinked"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_text"
+                android:background="@drawable/status_background"
                 android:paddingHorizontal="@dimen/_8sdp"
                 android:paddingVertical="@dimen/_3sdp"
                 android:text="Lead Linked"
-                android:textColor="#762B83"
+                android:textColor="@color/black"
                 android:textSize="11sp" />
-
-            <TextView
-                android:id="@+id/tvNoteAdded"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_2sdp"
-                android:text="Note added"
-                android:paddingHorizontal="@dimen/_8sdp"
-                android:paddingVertical="@dimen/_3sdp"
-                android:textSize="@dimen/_10ssp" />
         </LinearLayout>
     </LinearLayout>
 

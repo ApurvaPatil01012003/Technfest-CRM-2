@@ -16,7 +16,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Horizontal divider line -->
     <View
         android:id="@+id/dividerView"
         android:layout_width="0dp"

@@ -108,7 +108,6 @@
                     android:textColor="@color/black"
                     android:textSize="@dimen/_12ssp" />
 
-                <!-- Snapshot Cards Grid -->
                 <androidx.gridlayout.widget.GridLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -359,7 +358,6 @@
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
-                    <!-- Card 3: WhatsApp Blast -->
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/calls"
                         android:layout_width="0dp"
@@ -433,7 +431,6 @@
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
-                    <!-- Card 5: My Lead -->
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/myLead"
                         android:layout_width="0dp"

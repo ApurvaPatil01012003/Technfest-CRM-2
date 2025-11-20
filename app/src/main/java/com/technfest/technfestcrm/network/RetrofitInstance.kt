@@ -5,7 +5,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
-    private val BASEURL ="https://erpapi.technfest.com/"
+    private val BASEURL ="https://apiv2.technfest.com/"
     private val retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BASEURL)

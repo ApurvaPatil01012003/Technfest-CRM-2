@@ -21,7 +21,7 @@ class CallsAdapter(private val callsList: List<Calls>) :
         val assign_user: TextView = itemView.findViewById(R.id.tvAssignUser)
         val assign_number: TextView = itemView.findViewById(R.id.tvAssignNumber)
         val linkedLink: TextView = itemView.findViewById(R.id.tvLeadLinked)
-        val note: TextView = itemView.findViewById(R.id.tvNoteAdded)
+        //val note: TextView = itemView.findViewById(R.id.tvNoteAdded)
         val initial: TextView = itemView.findViewById(R.id.tvInitials)
     }
 
@@ -47,7 +47,7 @@ class CallsAdapter(private val callsList: List<Calls>) :
         holder.assign_user.text=call.assign_user
         holder.assign_number.text = call.assign_number
         holder.linkedLink.text = call.linkedLink
-        holder.note.text = call.note
+       // holder.note.text = call.note
         holder.initial.text=call.initial
     }
 

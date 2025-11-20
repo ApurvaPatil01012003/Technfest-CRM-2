@@ -2,54 +2,44 @@ package com.technfest.technfestcrm.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
+import android.text.method.PasswordTransformationMethod
 import android.util.Log
+import android.view.MotionEvent
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.technfest.technfestcrm.R
 import com.technfest.technfestcrm.databinding.ActivityLoginBinding
 import com.technfest.technfestcrm.repository.LoginRepository
 import com.technfest.technfestcrm.viewmodel.LoginViewModel
 import com.technfest.technfestcrm.viewmodel.LoginViewModelFactory
-import kotlin.toString
+import androidx.core.content.edit
+import com.technfest.technfestcrm.R
 
 class LoginActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityLoginBinding
-    private val viewModel : LoginViewModel by viewModels()
-    {
+
+    private val viewModel: LoginViewModel by viewModels {
         LoginViewModelFactory(LoginRepository())
     }
-    private var email: String = ""
+    private var isPasswordVisible = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
-        val sharedPrefs = getSharedPreferences("App_Prefs", MODE_PRIVATE)
-        val isLoggedIn = sharedPrefs.getBoolean("is_logged_in", false)
-        val isWorkspaceSelected = sharedPrefs.getBoolean("is_workspace_selected", false)
 
-        if (isLoggedIn) {
-            val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("Email", sharedPrefs.getString("Email", ""))
-            intent.putExtra("Name", sharedPrefs.getString("Name", ""))
-            intent.putExtra("Token", sharedPrefs.getString("Token", ""))
-            startActivity(intent)
+        val prefs = getSharedPreferences("UserSession", MODE_PRIVATE)
+        if (prefs.getBoolean("is_logged_in", false)) {
+            startActivity(Intent(this, MainActivity::class.java))
             finish()
             return
         }
 
-        enableEdgeToEdge()
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+
         binding.btnLogin.setOnClickListener {
-            email = binding.edtUserName.text.toString().trim()
+            val email = binding.edtUserName.text.toString().trim()
             val password = binding.edtPassword.text.toString().trim()
 
             if (email.isEmpty() || password.isEmpty()) {
@@ -59,39 +49,97 @@ class LoginActivity : AppCompatActivity() {
 
             viewModel.loginUser(email, password)
         }
-        viewModel.loginResult.observe(this) { result ->
-            Toast.makeText(this, result, Toast.LENGTH_LONG).show()
+
+        viewModel.loginResponseLiveData.observe(this) { data ->
+            if (data != null) {
+                Toast.makeText(this, "Login Successful!", Toast.LENGTH_SHORT).show()
+                saveUserData(data)
+                val intent = Intent(this, MainActivity::class.java)
+                intent.putExtra("FullName",data.fullName)
+                intent.putExtra("workspaceId",data.workspaceId)
+                intent.putExtra("Token",data.token)
+                startActivity(intent)
+                finish()
+            }
         }
 
-        viewModel.tokenLiveData.observe(this) {
-            navigateIfReady()
+        viewModel.errorLiveData.observe(this) { msg ->
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
         }
-        viewModel.userNameLiveData.observe(this) {
-            navigateIfReady()
+
+
+
+        binding.edtPassword.setOnTouchListener { v, event ->
+            // react only on finger up to avoid double-triggering
+            if (event.action != MotionEvent.ACTION_UP) return@setOnTouchListener false
+
+            val editText = binding.edtPassword
+            val drawables = editText.compoundDrawablesRelative // safer for RTL
+            val drawableEnd = drawables[2] // index 2 -> end drawable
+
+            // if no drawable, nothing to do
+            if (drawableEnd == null) return@setOnTouchListener false
+
+            // calculate touch area (consider padding)
+            val touchX = event.x.toInt()
+            val width = editText.width
+            val drawableWidth = drawableEnd.bounds.width()
+            val paddingEnd = editText.paddingEnd
+            val clickableStart = width - paddingEnd - drawableWidth
+
+            if (touchX >= clickableStart) {
+                // toggle visibility
+                isPasswordVisible = !isPasswordVisible
+
+                if (isPasswordVisible) {
+                    // show password (remove transformation)
+                    editText.transformationMethod = null
+                    // change end icon to "visibility_off" (eye-off)
+                    editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        R.drawable.baseline_lock_open_24, // start
+                        0,
+                        R.drawable.baseline_visibility_off_24, // end (eye-off)
+                        0
+                    )
+                } else {
+                    // hide password (apply password transformation)
+                    editText.transformationMethod = PasswordTransformationMethod.getInstance()
+                    // change end icon to "visibility" (eye)
+                    editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        R.drawable.baseline_lock_open_24,
+                        0,
+                        R.drawable.baseline_remove_red_eye_24,
+                        0
+                    )
+                }
+
+                // restore cursor position safely (post to ensure transformation applied)
+                editText.post {
+                    editText.setSelection(editText.text?.length ?: 0)
+                }
+
+                // consume the touch event
+                return@setOnTouchListener true
+            }
+
+            false
         }
 
 
     }
-    private fun navigateIfReady() {
-        val token = viewModel.tokenLiveData.value
-        val userName = viewModel.userNameLiveData.value
 
-        if (!token.isNullOrEmpty() && !userName.isNullOrEmpty()) {
-            val sharedPrefs = getSharedPreferences("App_Prefs", MODE_PRIVATE)
-            with(sharedPrefs.edit()) {
-                putBoolean("is_logged_in", true)
-                putString("Token", token)
-                putString("Name", userName)
-                putString("Email", email)
-                apply()
-            }
-            Log.d("TOKKKKK","$token")
-            val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("Email", email)
-            intent.putExtra("Name", userName)
-            intent.putExtra("Token", token)
-            startActivity(intent)
-            finish()
+    private fun saveUserData(data: com.technfest.technfestcrm.model.LoginResponse) {
+        val prefs = getSharedPreferences("UserSession", MODE_PRIVATE)
+        prefs.edit {
+            putBoolean("is_logged_in", true)
+            putString("token", data.token)
+            putString("fullName", data.fullName)
+            putString("userType", data.userType)
+            putInt("workspaceId", data.workspaceId)
+            putInt("employeeId", data.employeeId)
+            Log.d("FullName",data.fullName)
+
+            Log.d("workspaceId", data.workspaceId.toString())
         }
     }
 }

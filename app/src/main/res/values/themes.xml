@@ -10,7 +10,8 @@
 
 
     <style name="ToolbarTitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <item name="android:textSize">18sp</item> <!-- Change title size -->
+        <item name="android:textSize">18sp</item>
+        <!-- Change title size -->
         <item name="android:textStyle">bold</item>
     </style>
 

@@ -112,7 +112,6 @@
                         android:id="@+id/txtTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/green_status_bg"
                         android:text="Today 11AM"
                         android:padding="@dimen/_4sdp"
                         android:textColor="@color/black"
@@ -143,9 +142,8 @@
                             android:id="@+id/txtStatus"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/status_background"
-                            android:text="open"
                             android:padding="@dimen/_4sdp"
+                            android:text="open"
                             android:textColor="@color/black"
                             android:textSize="@dimen/_12ssp" />
 
@@ -154,9 +152,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_8sdp"
-                            android:background="@drawable/red_status_bg"
-                            android:text="high"
                             android:padding="@dimen/_4sdp"
+                            android:text="high"
                             android:textColor="@color/black"
                             android:textSize="@dimen/_12ssp" />
                     </LinearLayout>

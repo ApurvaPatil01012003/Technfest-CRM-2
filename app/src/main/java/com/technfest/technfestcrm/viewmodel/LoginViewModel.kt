@@ -5,32 +5,29 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.technfest.technfestcrm.model.LoginRequest
 import com.technfest.technfestcrm.model.LoginResponse
-import com.technfest.technfestcrm.network.RetrofitInstance
 import com.technfest.technfestcrm.repository.LoginRepository
 import kotlinx.coroutines.launch
 
-class LoginViewModel(val repository: LoginRepository): ViewModel() {
+class LoginViewModel(private val repository: LoginRepository) : ViewModel() {
 
-    val loginResult = MutableLiveData<String>()
-    val tokenLiveData = MutableLiveData<String>()
-    val userNameLiveData = MutableLiveData<String>()
+    val loginResponseLiveData = MutableLiveData<LoginResponse?>()
+    val errorLiveData = MutableLiveData<String>()
+
     fun loginUser(email: String, password: String) {
+
         viewModelScope.launch {
             try {
                 val response = repository.loginUser(LoginRequest(email, password))
+
                 if (response.isSuccessful) {
-                    val token = response.body()?.token ?: "No token"
-                    val userName = response.body()?.user?.name ?: "User"
-                    loginResult.postValue("Login successful!")
-                    tokenLiveData.postValue(token)
-                    userNameLiveData.postValue(userName)
+                    loginResponseLiveData.postValue(response.body())
                 } else {
-                    loginResult.postValue("Login failed")
+                    errorLiveData.postValue("Invalid email or password")
                 }
+
             } catch (e: Exception) {
-                loginResult.postValue("Error: ${e.localizedMessage}")
+                errorLiveData.postValue("Error: ${e.localizedMessage}")
             }
         }
     }
-
 }
