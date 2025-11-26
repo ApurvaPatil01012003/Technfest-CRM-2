@@ -1,5 +1,6 @@
 package com.technfest.technfestcrm.adapter
 
+import android.graphics.Color
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +17,6 @@ class TaskAdapter(
     private var taskList: List<TaskResponseItem>,
     private val onItemClick: (TaskResponseItem) -> Unit
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
-
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val heading: TextView = itemView.findViewById(R.id.txtHeading)
         val leadName: TextView = itemView.findViewById(R.id.txtLeadName)
@@ -33,6 +33,13 @@ class TaskAdapter(
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.task_item, parent, false)
         return TaskViewHolder(view)
+    }
+
+    private var highlightedTaskId: Int? = null
+
+    fun highlightItem(taskId: Int) {
+        highlightedTaskId = taskId
+        notifyDataSetChanged()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -60,7 +67,9 @@ class TaskAdapter(
         holder.assignName.text = task.assignedEmployeeName ?: "null"
         holder.summary.text = task.description ?: "null"
 
-
+        holder.itemView.setBackgroundColor(
+            if (task.id == highlightedTaskId) Color.GRAY else Color.WHITE
+        )
         holder.itemView.setOnClickListener { onItemClick(task) }
     }
 

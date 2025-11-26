@@ -7,14 +7,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.technfest.technfestcrm.R
 
 import com.technfest.technfestcrm.model.HotLead
+import com.technfest.technfestcrm.model.LeadResponseItem
 
-class HotLeadAdapter(private val leadList: List<HotLead>) :
+class HotLeadAdapter(private val leadList: List<LeadResponseItem>,
+                     private val onItemClick: (LeadResponseItem) -> Unit) :
     RecyclerView.Adapter<HotLeadAdapter.LeadViewHolder>() {
 
     inner class LeadViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val leadName: TextView = itemView.findViewById(R.id.leadName)
-        val leadDetails: TextView = itemView.findViewById(R.id.leadDetails)
-        val leadStatus: TextView = itemView.findViewById(R.id.leadStatus)
+        val leadCampaign: TextView = itemView.findViewById(R.id.leadCampaign)
+        val leadStage: TextView = itemView.findViewById(R.id.leadStage)
+        val leadSourceType : TextView = itemView.findViewById(R.id.leadSource)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LeadViewHolder {
@@ -25,9 +28,13 @@ class HotLeadAdapter(private val leadList: List<HotLead>) :
 
     override fun onBindViewHolder(holder: LeadViewHolder, position: Int) {
         val lead = leadList[position]
-        holder.leadName.text = lead.name
-        holder.leadDetails.text = lead.details + " •"
-        holder.leadStatus.text = lead.status
+        holder.leadName.text = lead.fullName
+        holder.leadCampaign.text = lead.campaignName
+        holder.leadStage.text = lead.stage as CharSequence?
+        holder.leadSourceType.text = lead.source as CharSequence?
+        holder.itemView.setOnClickListener {
+            onItemClick(lead)
+        }
     }
 
     override fun getItemCount(): Int = leadList.size

@@ -24,6 +24,12 @@ class LeadAdapter(
         val companyName: TextView = itemView.findViewById(R.id.companyName)
         val leadOwner: TextView = itemView.findViewById(R.id.leadOwner)
     }
+    private var selectedLeadId = -1
+
+    fun setSelectedLead(id: Int) {
+        selectedLeadId = id
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LeadViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -71,6 +77,12 @@ class LeadAdapter(
                 )
             }
         }
+        if (lead.id == selectedLeadId) {
+            holder.itemView.setBackgroundResource(R.color.legend_all_leads)
+        } else {
+            holder.itemView.setBackgroundResource(R.color.white)
+        }
+
         holder.itemView.setOnClickListener { onItemClick(lead) }
     }
 
@@ -80,4 +92,5 @@ class LeadAdapter(
         leadList = newList
         notifyDataSetChanged()
     }
+
 }

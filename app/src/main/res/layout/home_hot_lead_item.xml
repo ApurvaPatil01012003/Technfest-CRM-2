@@ -6,12 +6,11 @@
     android:orientation="vertical"
     android:paddingVertical="@dimen/_8sdp">
 
-    <!-- Content Row -->
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-        <!-- Lead Name -->      <TextView
+        <TextView
             android:id="@+id/leadName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -20,12 +19,12 @@
             android:textColor="@android:color/black"
             android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/leadStatus"
+            app:layout_constraintEnd_toStartOf="@id/leadStage"
             app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Status Tag -->
         <TextView
-            android:id="@+id/leadStatus"
+            android:id="@+id/leadStage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="demo_scheduled"
@@ -38,17 +37,42 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Details -->
-        <TextView
-            android:id="@+id/leadDetails"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Billing software demo • 11:00 AM"
-            android:textColor="#757575"
-            android:textSize="13sp"
-            android:layout_marginTop="4dp"
             app:layout_constraintTop_toBottomOf="@id/leadName"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/leadCampaign"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Billing software demo"
+                android:textColor="#757575"
+                android:textSize="13sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/leadSource"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:layout_marginEnd="8dp"/>
+
+            <TextView
+                android:id="@+id/leadSource"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="call/whatsapp"
+                android:textColor="#757575"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

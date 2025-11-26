@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -23,8 +24,11 @@ import com.technfest.technfestcrm.viewmodel.GetWorkspacesViewModel
 import com.technfest.technfestcrm.viewmodel.GetWorkspacesViewModelFactory
 import com.technfest.technfestcrm.viewmodel.LeadViewModel
 import com.technfest.technfestcrm.viewmodel.LeadViewModelFactory
+import java.util.Locale
+
 
 class LeadsFragment : Fragment() {
+    private var selectedLeadId = -1
 
     private var _binding: FragmentLeadsBinding? = null
     private val binding get() = _binding!!
@@ -35,6 +39,12 @@ class LeadsFragment : Fragment() {
 
     private var fullLeadList = mutableListOf<LeadResponseItem>()
     private var leadList = mutableListOf<LeadResponseItem>()
+    private fun String?.safeLower() = this?.trim()?.lowercase() ?: ""
+    private fun String?.safeString() = this ?: ""
+    fun Int?.safeInt(): Int {
+        return this ?: 0
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,6 +53,7 @@ class LeadsFragment : Fragment() {
     ): View {
 
         _binding = FragmentLeadsBinding.inflate(inflater, container, false)
+        selectedLeadId = arguments?.getInt("leadId", -1) ?: -1
 
         val fullName = arguments?.getString("Name")
         val token = arguments?.getString("Token")
@@ -97,22 +108,38 @@ class LeadsFragment : Fragment() {
         binding.leadRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.leadRecyclerView.adapter = leadAdapter
 
+        setupFilters()
+        updateSelected(binding.filterAll)
+
         setupSearchView(binding.searchView)
 
         if (!token.isNullOrEmpty() && workspaceId != null && workspaceId != -1) {
             leadViewModel.fetchLeads(token, workspaceId)
         }
 
-        leadViewModel.leadsLiveData.observe(viewLifecycleOwner, Observer { data ->
+        leadViewModel.leadsLiveData.observe(viewLifecycleOwner) { data ->
 
             fullLeadList.clear()
             fullLeadList.addAll(data)
 
             leadList.clear()
             leadList.addAll(data)
+            updateFilteredList(fullLeadList)
 
-            leadAdapter.notifyDataSetChanged()
-        })
+            binding.txtCountLead.text = "Leads Count: ${data.size}"
+
+            if (selectedLeadId != -1) {
+                val position = fullLeadList.indexOfFirst { it.id == selectedLeadId }
+
+                if (position != -1) {
+                    binding.leadRecyclerView.post {
+                        binding.leadRecyclerView.scrollToPosition(position)
+                        leadAdapter.setSelectedLead(selectedLeadId)
+                    }
+                }
+            }
+        }
+
 
 
         binding.fabAddLead.setOnClickListener {
@@ -206,5 +233,85 @@ class LeadsFragment : Fragment() {
             .map { it[0].uppercaseChar() }
             .joinToString("")
     }
+
+    private fun setupFilters() {
+
+        // All Leads
+        binding.filterAll.setOnClickListener {
+            updateSelected(binding.filterAll)
+            updateFilteredList(fullLeadList)
+        }
+
+//        binding.filterMyLead.setOnClickListener {
+//            updateSelected(binding.filterMyLead)
+//
+//            val prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
+//            val currentUserId = prefs.getInt("userId", -1)
+//
+//            val filtered = fullLeadList.filter {
+//                it.ownerUserId.safeInt() == currentUserId
+//            }
+//
+//            updateFilteredList(filtered)
+//        }
+
+        binding.filterNew.setOnClickListener {
+            updateSelected(binding.filterNew)
+
+            val filtered = fullLeadList.filter {
+                it.status.safeLower() == "new"
+            }
+
+            updateFilteredList(filtered)
+        }
+
+        // Demo Status
+        binding.filterDemo.setOnClickListener {
+            updateSelected(binding.filterDemo)
+
+            val filtered = fullLeadList.filter {
+                it.stage?.equals("Demo Scheduled") == true
+            }
+
+            updateFilteredList(filtered)
+        }
+
+        // High Priority
+        binding.filterHigh.setOnClickListener {
+            updateSelected(binding.filterHigh)
+
+            val filtered = fullLeadList.filter {
+                it.priority.safeLower() == "high"
+            }
+
+            updateFilteredList(filtered)
+        }
+    }
+
+    private fun updateSelected(selected: TextView) {
+
+        val allButtons = listOf(
+            binding.filterAll,
+            binding.filterMyLead,
+            binding.filterNew,
+            binding.filterDemo,
+            binding.filterHigh
+        )
+
+        allButtons.forEach {
+            it.setBackgroundResource(R.drawable.textview_bg)
+            it.setTextColor(requireContext().getColor(R.color.black))
+        }
+
+        selected.setBackgroundResource(R.drawable.selected_campaign_bg)
+        selected.setTextColor(requireContext().getColor(R.color.white))
+    }
+    private fun updateFilteredList(filtered: List<LeadResponseItem>) {
+        leadList.clear()
+        leadList.addAll(filtered)
+        leadAdapter.notifyDataSetChanged()
+    }
+
+
 
 }

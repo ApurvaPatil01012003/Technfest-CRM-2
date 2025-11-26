@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.gridlayout)
     implementation(libs.documentfile)
     implementation(libs.work.runtime.ktx)

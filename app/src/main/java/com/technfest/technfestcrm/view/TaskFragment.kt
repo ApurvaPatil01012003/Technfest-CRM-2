@@ -1,11 +1,13 @@
 package com.technfest.technfestcrm.view
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,14 +19,18 @@ import com.technfest.technfestcrm.repository.TaskRepository
 import com.technfest.technfestcrm.viewmodel.TaskViewModel
 import com.technfest.technfestcrm.viewmodel.TaskViewModelFactory
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.ZonedDateTime
 import java.util.Date
 import java.util.Locale
 
 class TaskFragment : Fragment() {
+    private var highlightTaskId: Int? = null
 
     private lateinit var taskAdapter: TaskAdapter
     private lateinit var viewModel: TaskViewModel
     private var originalList: List<TaskResponseItem> = emptyList()
+
 
     private lateinit var filterAll: TextView
     private lateinit var filterToday: TextView
@@ -41,9 +47,12 @@ class TaskFragment : Fragment() {
         arguments?.let {
             token = it.getString("token")
             workspaceId = it.getInt("workspaceId", -1)
+            highlightTaskId = it.getInt("highlightTaskId", -1).takeIf { id -> id != -1 }
         }
+
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -78,11 +87,24 @@ class TaskFragment : Fragment() {
 
         viewModel.taskResult.observe(viewLifecycleOwner) { list ->
             originalList = list
-            applyFilter("All") // Default
+            applyFilter("All")
         }
 
         viewModel.errorMsg.observe(viewLifecycleOwner) {
             Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+        }
+        viewModel.taskResult.observe(viewLifecycleOwner) { tasks ->
+            originalList = tasks
+            taskAdapter.updateList(tasks)
+            highlightTaskId?.let { id ->
+                val position = tasks.indexOfFirst { it.id == id }
+                if (position != -1) {
+                    recyclerView.scrollToPosition(position)
+                    taskAdapter.highlightItem(id)
+                }
+            }
+
+
         }
 
         if (!token.isNullOrEmpty() && workspaceId != -1) {
@@ -107,6 +129,7 @@ class TaskFragment : Fragment() {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }}
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun setupFilters() {
 
         filterAll.setOnClickListener { applyFilter("All") }
@@ -115,6 +138,7 @@ class TaskFragment : Fragment() {
         filterCompleted.setOnClickListener { applyFilter("Completed") }
         filterHighPriority.setOnClickListener { applyFilter("HighPriority") }
     }
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun applyFilter(type: String) {
 
         highlightSelected(type)
@@ -122,9 +146,15 @@ class TaskFragment : Fragment() {
         val filteredList = when (type) {
 
             "Today" -> {
-                val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-                originalList.filter { it.dueDate?.startsWith(today) == true }
+                val today = LocalDate.now()
+                originalList.filter { task ->
+                    task.dueAt?.let {
+                        val taskDate = ZonedDateTime.parse(it).toLocalDate()
+                        taskDate == today
+                    } ?: false
+                }
             }
+
 
             "Pending" -> originalList.filter { it.status.equals("Pending", true) }
 
@@ -147,4 +177,6 @@ class TaskFragment : Fragment() {
         filterCompleted.setBackgroundResource(if (type == "Completed") selectedBg else defaultBg)
         filterHighPriority.setBackgroundResource(if (type == "HighPriority") selectedBg else defaultBg)
     }
+
+
 }

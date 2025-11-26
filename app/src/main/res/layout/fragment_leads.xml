@@ -139,6 +139,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/txtCountLead"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
@@ -156,50 +157,55 @@
             android:padding="@dimen/_4sdp">
 
             <TextView
+                android:id="@+id/filterAll"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_4sdp"
-                android:background="@drawable/status_background"
-                android:text="My Leads"
-                android:padding="@dimen/_6sdp"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_10ssp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_4sdp"
-                android:background="@drawable/status_background"
+                android:background="@drawable/textview_bg"
                 android:text="All Leads"
                 android:padding="@dimen/_6sdp"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_10ssp" />
 
             <TextView
+                android:id="@+id/filterMyLead"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_4sdp"
-                android:background="@drawable/status_background"
+                android:background="@drawable/textview_bg"
+                android:text="My Leads"
+                android:padding="@dimen/_6sdp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_10ssp" />
+
+            <TextView
+                android:id="@+id/filterNew"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_4sdp"
+                android:background="@drawable/textview_bg"
                 android:text="New"
                 android:padding="@dimen/_6sdp"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_10ssp" />
 
             <TextView
+                android:id="@+id/filterDemo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_4sdp"
-                android:background="@drawable/status_background"
+                android:background="@drawable/textview_bg"
                 android:text="Demo"
                 android:padding="@dimen/_6sdp"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_10ssp" />
 
             <TextView
+                android:id="@+id/filterHigh"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/status_background"
-                android:text="Customer"
+                android:background="@drawable/textview_bg"
+                android:text="High"
                 android:padding="@dimen/_6sdp"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_10ssp" />
