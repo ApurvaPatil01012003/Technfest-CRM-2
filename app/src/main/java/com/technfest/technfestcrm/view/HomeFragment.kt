@@ -184,6 +184,21 @@ class HomeFragment : Fragment() {
             loadFragment(fragment)
         }
 
+        binding.addNewLead.setOnClickListener {
+            val prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
+            val token = prefs.getString("token", null)
+            val workspaceId = prefs.getInt("workspaceId", -1)
+
+            val fragment = AddNewLeadFragment()
+            fragment.arguments = Bundle().apply {
+                putString("token", token)
+                putInt("workspaceId", workspaceId)
+            }
+
+            loadFragment(fragment)
+        }
+
+
         binding.calls.setOnClickListener { loadFragment(CallsFragment()) }
         binding.report.setOnClickListener { loadFragment(ReportFragment()) }
         binding.userInitialCircle.setOnClickListener { loadFragment(ProfileFragment()) }
@@ -195,7 +210,7 @@ class HomeFragment : Fragment() {
             val bundle = Bundle().apply {
                 putString("token", token)
                 putInt("workspaceId", workspaceId)
-                putInt("highlightTaskId", task.id) // clicked task
+                putInt("highlightTaskId", task.id)
             }
             fragment.arguments = bundle
             loadFragment(fragment)
@@ -224,7 +239,12 @@ class HomeFragment : Fragment() {
                 }
             }
             homeTaskAdapter.updateList(todayTasks)
+            val pendingTodayCount = todayTasks.count {
+                it.status.equals("pending", ignoreCase = true)
+            }
 
+            Log.d("TODAY_PENDING_COUNT", pendingTodayCount.toString())
+            binding.txtTodayPendingTaskCount.text = pendingTodayCount.toString()
 
 
         }

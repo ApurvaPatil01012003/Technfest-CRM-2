@@ -183,6 +183,7 @@
                             android:padding="@dimen/_10sdp">
 
                             <TextView
+                                android:id="@+id/txtTodayPendingTaskCount"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Pending Follow-ups"

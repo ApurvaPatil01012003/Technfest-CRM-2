@@ -229,6 +229,7 @@ class AddNewLeadFragment : Fragment() {
         val priorityValue = selectedPriority?.name ?: ""
 
         val leadRequest = LeadRequest(
+
             assigned_to = binding.edtUserName.text.toString(),
             campaignId = selectedCampaignId,
             campaignName = campaignList.find { it.id == selectedCampaignId }?.name ?: "",
