@@ -47,7 +47,7 @@
                         android:textSize="@dimen/_13ssp" />
 
                     <TextView
-                        android:id="@+id/tvRescheduleCurrent"
+                        android:id="@+id/txtLeadName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Lead Name"
@@ -87,6 +87,7 @@
                         android:textSize="@dimen/_12ssp" />
 
                     <EditText
+                        android:id="@+id/edtTitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/edit_text_bg"
@@ -104,7 +105,7 @@
                         android:layout_marginTop="@dimen/_8sdp"/>
 
                     <EditText
-                        android:id="@+id/etNotes"
+                        android:id="@+id/edtDescription"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Details about what needs to be done..."
@@ -127,6 +128,7 @@
                         android:layout_marginTop="@dimen/_8sdp"/>
 
                     <EditText
+                        android:id="@+id/edtDueDate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="mm/dd/yyyy"
@@ -144,6 +146,7 @@
                         android:layout_marginTop="@dimen/_8sdp"/>
 
                     <EditText
+                        android:id="@+id/edtDueTime"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Select time"
@@ -152,7 +155,65 @@
                         android:padding="@dimen/_8sdp"
                         android:focusable="false"/>
 
-                    <!-- Priority -->
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Status"
+                        android:textColor="#9E9B9B"
+                        android:textSize="@dimen/_12ssp" />
+
+                    <EditText
+                        android:id="@+id/edtStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/edit_text_bg"
+                        android:padding="@dimen/_10sdp"
+                        android:hint="Status"
+                        android:textSize="@dimen/_12ssp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Required time for work"
+                        android:textColor="#9E9B9B"
+                        android:textSize="@dimen/_12ssp" />
+
+                    <EditText
+                        android:id="@+id/edtEstimateHours"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/edit_text_bg"
+                        android:padding="@dimen/_10sdp"
+                        android:hint="Estimate hours"
+                        android:textSize="@dimen/_12ssp" />
+
+
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Task Type"
+                        android:textColor="#9E9B9B"
+                        android:layout_marginTop="@dimen/_8sdp" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/spinner_background"
+                        android:padding="@dimen/_8sdp"
+                        android:layout_marginTop="@dimen/_4sdp">
+
+                        <Spinner
+                            android:id="@+id/spinnerTaskType"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:spinnerMode="dropdown"
+                            android:popupBackground="@color/white"
+                            android:gravity="center_vertical|start" />
+                    </RelativeLayout>
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -175,42 +236,71 @@
                             android:popupBackground="@color/white"
                             android:gravity="center_vertical|start" />
                     </RelativeLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Assign To"
+                        android:textColor="#9E9B9B"
+                        android:textSize="@dimen/_12ssp" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/spinner_background"
+                        android:padding="@dimen/_8sdp"
+                        android:layout_marginTop="@dimen/_4sdp">
+
+                        <Spinner
+                            android:id="@+id/spnAssignToUser"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:spinnerMode="dropdown"
+                            android:popupBackground="@color/white"
+                            android:gravity="center_vertical|start" />
+                    </RelativeLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnCreateTask"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Create Task"
+                            android:textAllCaps="false"
+                            android:textColor="@android:color/white"
+                            android:layout_marginEnd="@dimen/_4sdp"
+                            app:cornerRadius="12dp"
+                            app:backgroundTint="@null"
+                            android:background="@drawable/btn_gradient"/>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnCancel"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Cancel"
+                            android:textAllCaps="false"
+                            android:textColor="#6475D0"
+                            android:layout_marginStart="@dimen/_4sdp"
+                            app:cornerRadius="12dp"
+                            app:backgroundTint="@android:color/white"
+                            app:strokeWidth="2dp"
+                            app:strokeColor="#6475D0" />
+                    </LinearLayout>
+
                 </LinearLayout>
+
             </ScrollView>
 
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:gravity="center"
-                android:orientation="horizontal">
 
-                <com.google.android.material.button.MaterialButton
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Check Task"
-                    android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    android:layout_marginEnd="@dimen/_4sdp"
-                    app:cornerRadius="12dp"
-                    app:backgroundTint="@null"
-                    android:background="@drawable/btn_gradient"/>
-
-                <com.google.android.material.button.MaterialButton
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Cancel"
-                    android:textAllCaps="false"
-                    android:textColor="#6475D0"
-                    android:layout_marginStart="@dimen/_4sdp"
-                    app:cornerRadius="12dp"
-                    app:backgroundTint="@android:color/white"
-                    app:strokeWidth="2dp"
-                    app:strokeColor="#6475D0" />
-            </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </LinearLayout>

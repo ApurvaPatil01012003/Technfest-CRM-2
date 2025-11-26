@@ -1,75 +1,69 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:padding="@dimen/_8sdp"
-    android:background="@android:color/white">
+    android:orientation="vertical">
 
+    <!-- Top Row -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
+
         <TextView
             android:id="@+id/tvInitials"
-            android:layout_width="@dimen/_36sdp"
-            android:layout_height="@dimen/_36sdp"
-            android:layout_marginEnd="@dimen/_8sdp"
-            android:background="@drawable/circle_background"
+            android:layout_width="@dimen/_40sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:background="@drawable/gradient_circle"
             android:gravity="center"
             android:text="AS"
-            android:textColor="@color/white"
+            android:textColor="@android:color/white"
             android:textStyle="bold"
             android:textSize="@dimen/_12ssp" />
 
-        <!-- Middle Details -->
+        <!-- Middle Info -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:id="@+id/tvName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Amit Sharma"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_12ssp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
+                android:text="Amit Sharma"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_13ssp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="+91 98765 43210"
-                android:textColor="#555"
+                android:textColor="#666"
                 android:textSize="@dimen/_10ssp" />
 
             <TextView
                 android:id="@+id/tvCallType"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingVertical="@dimen/_2sdp"
                 android:text="Outgoing"
-                android:textColor="#0056D2"
-                android:textSize="@dimen/_10ssp" />
+                android:textColor="#3B77F2"
+                android:textSize="@dimen/_10ssp"
+                android:textStyle="bold"
+                android:paddingVertical="@dimen/_2sdp" />
 
-
+            <!-- Time & Duration -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/tvday"
                     android:layout_width="wrap_content"
@@ -77,10 +71,11 @@
                     android:text="Today"
                     android:textColor="#777"
                     android:textSize="@dimen/_10ssp" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/_2sdp"
+                    android:layout_marginHorizontal="4dp"
                     android:text="•"
                     android:textColor="#777"
                     android:textSize="@dimen/_10ssp" />
@@ -94,7 +89,6 @@
                     android:textSize="@dimen/_10ssp" />
 
                 <TextView
-                    android:id="@+id/tvDot"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="4dp"
@@ -111,61 +105,42 @@
                     android:textSize="@dimen/_10ssp" />
             </LinearLayout>
 
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/tvAssignUser"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="By Sagar "
-                    android:textColor="#777"
-                    android:textSize="@dimen/_10ssp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="4dp"
-                    android:text="•"
-                    android:textColor="#777"
-                    android:textSize="@dimen/_10ssp" />
-
-                <TextView
-                    android:id="@+id/tvAssignNumber"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="From +91 99999 00001"
-                    android:textColor="#777"
-                    android:textSize="@dimen/_10ssp" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center_vertical">
-
+            <!-- Assigned Info -->
             <TextView
-                android:id="@+id/tvLeadLinked"
+                android:id="@+id/tvAssignUser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/status_background"
-                android:paddingHorizontal="@dimen/_8sdp"
-                android:paddingVertical="@dimen/_3sdp"
-                android:text="Lead Linked"
-                android:textColor="@color/black"
-                android:textSize="11sp" />
+                android:text="By Sagar"
+                android:textColor="#999"
+                android:textSize="@dimen/_10ssp"
+                android:layout_marginTop="@dimen/_2sdp" />
+            <TextView
+                android:id="@+id/tvAssignNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" From +91 99999 00001"
+                android:textColor="#999"
+                android:textSize="@dimen/_10ssp"
+                android:layout_marginTop="@dimen/_2sdp" />
+
         </LinearLayout>
+
+        <!-- Right Tag -->
+        <TextView
+            android:id="@+id/tvLeadLinked"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/tag_bg_purple"
+            android:paddingHorizontal="@dimen/_8sdp"
+            android:paddingVertical="@dimen/_4sdp"
+            android:text="Lead Linked"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_10ssp" />
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_1sdp"
-        android:layout_marginTop="@dimen/_6sdp"
-        android:background="#E0E0E0" />
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:background="#E8E8E8" />
 </LinearLayout>

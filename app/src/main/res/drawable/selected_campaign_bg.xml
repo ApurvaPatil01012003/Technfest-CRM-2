@@ -3,8 +3,8 @@
 
     <!-- Background gradient -->
     <gradient
-        android:startColor="#1849DB"
-        android:endColor="#9CAFBF"
+        android:startColor="#A0ACED"
+        android:endColor="#DAA9E2"
         android:angle="0" />
 
     <!-- Rounded corners -->

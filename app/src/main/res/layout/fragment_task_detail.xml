@@ -71,6 +71,7 @@
                         android:paddingStart="@dimen/_10sdp"
                         android:textSize="@dimen/_12ssp" />
                     <TextView
+                        android:id="@+id/txtLeadName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Full Name"
@@ -87,6 +88,7 @@
                         android:paddingStart="@dimen/_10sdp"
                         android:textSize="@dimen/_12ssp" />
                     <TextView
+                        android:id="@+id/txtDue"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Today • 1:00 PM"
@@ -102,6 +104,7 @@
                         android:paddingStart="@dimen/_10sdp"
                         android:textSize="@dimen/_12ssp" />
                     <TextView
+                        android:id="@+id/txtAssignTo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Name of assign to"
@@ -119,7 +122,42 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Name of Team"
+                        android:text="Missing in API"
+                        android:paddingStart="@dimen/_10sdp"
+                        android:textSize="@dimen/_12ssp"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Task Type"
+                        android:paddingTop="@dimen/_10sdp"
+                        android:paddingStart="@dimen/_10sdp"
+                        android:textSize="@dimen/_12ssp" />
+                    <TextView
+                        android:id="@+id/txtTaskType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="type of task"
+                        android:paddingStart="@dimen/_10sdp"
+                        android:textSize="@dimen/_12ssp"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"/>
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Required hours"
+                        android:paddingTop="@dimen/_10sdp"
+                        android:paddingStart="@dimen/_10sdp"
+                        android:textSize="@dimen/_12ssp" />
+                    <TextView
+                        android:id="@+id/txtEstimateHours"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="0"
                         android:paddingStart="@dimen/_10sdp"
                         android:textSize="@dimen/_12ssp"
                         android:textColor="@color/black"
@@ -131,6 +169,7 @@
                         android:gravity="center_vertical">
 
                         <TextView
+                            android:id="@+id/txtStatus"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -140,9 +179,11 @@
                             android:textColor="@android:color/black"/>
 
                         <TextView
+                            android:id="@+id/txtPriority"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Priority : High"
+                            android:background="@drawable/bg_priority_tag"
                             android:padding="@dimen/_6sdp"
                             android:textSize="@dimen/_12ssp"
                             android:textColor="@android:color/black"/>
@@ -177,8 +218,10 @@
                         android:textStyle="bold"/>
 
                     <TextView
+                        android:id="@+id/txtDescription"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/textview_bg"
                         android:text="Call Amol Sir to recap yesterday's demo, clarify package (OneVastra + SMM), and confirm payment plan before 6 PM."
                        android:paddingTop="@dimen/_6sdp"
                         android:paddingStart="@dimen/_10sdp"
@@ -186,89 +229,6 @@
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-            <com.google.android.material.card.MaterialCardView
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/_6sdp"
-                app:cardCornerRadius="@dimen/_14sdp"
-                app:cardElevation="@dimen/_4sdp"
-                app:strokeColor="#DDDDDD"
-                app:strokeWidth="@dimen/_1sdp"
-                app:cardBackgroundColor="@android:color/white">
-
-                <!-- Main container inside Card -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="@dimen/_10sdp">
-
-                    <!-- Title -->
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Update / Internal Note"
-                        android:paddingStart="@dimen/_10sdp"
-                        android:textSize="@dimen/_12ssp"
-                        android:textColor="@color/black"
-                        android:textStyle="bold" />
-
-                    <!-- Notes Input -->
-                    <EditText
-                        android:id="@+id/etNotes"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Write what's happened in this call or update status..."
-                        android:background="@drawable/edit_text_bg"
-                        android:inputType="textMultiLine"
-                        android:gravity="top|start"
-                        android:scrollbars="vertical"
-                        android:padding="@dimen/_8sdp"
-                        android:minLines="3"
-                        android:scrollHorizontally="false"
-                        android:layout_marginTop="@dimen/_4sdp" />
-
-                    <!-- Buttons Row -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_10sdp"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnCheckTask"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Save Note"
-                            android:textAllCaps="false"
-                            android:textColor="@android:color/white"
-                            android:layout_marginEnd="@dimen/_4sdp"
-                            app:cornerRadius="12dp"
-                            app:backgroundTint="@null"
-                            android:background="@drawable/btn_gradient" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnCancel"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Mark Completed"
-                            android:textAllCaps="false"
-                            android:textColor="#6475D0"
-                            android:layout_marginStart="@dimen/_4sdp"
-                            app:cornerRadius="12dp"
-                            app:backgroundTint="@android:color/white"
-                            app:strokeWidth="2dp"
-                            app:strokeColor="#6475D0" />
-                    </LinearLayout>
-
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
 
 
 

@@ -1,0 +1,33 @@
+package com.technfest.technfestcrm.model
+
+data class TaskResponseItem(
+    val assignedEmployeeName: String,
+    val assignedToEmployeeId: Int,
+    val assignedToUserId: Int,
+    val assignedUserName: String,
+    val completedAt: Any,
+    val createdAt: String,
+    val createdByName: String,
+    val createdByUserId: Int,
+    val currentVersion: Int,
+    val departmentId: Any,
+    val departmentName: Any,
+    val description: String,
+    val dueAt: String,
+    val dueDate: String,
+    val estimatedHours: String,
+    val id: Int,
+    val isActive: Boolean,
+    val lastActivityAt: Any,
+    val leadId: Int,
+    val leadName: String,
+    val priority: String,
+    val projectId: Int,
+    val projectName: String,
+    val status: String,
+    val taskType: String,
+    val title: String,
+    val totalLoggedMinutes: Int,
+    val updatedAt: String,
+    val workspaceId: Int
+)

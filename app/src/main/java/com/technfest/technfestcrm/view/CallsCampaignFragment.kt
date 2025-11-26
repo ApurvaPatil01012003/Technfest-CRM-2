@@ -1,6 +1,8 @@
 package com.technfest.technfestcrm.view
 
+import com.technfest.technfestcrm.R
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,8 +11,11 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.technfest.technfestcrm.adapter.CampaignAdapter
 import com.technfest.technfestcrm.databinding.FragmentCallsCampaignBinding
-import com.technfest.technfestcrm.model.Campaign
-import androidx.core.graphics.toColorInt
+import androidx.lifecycle.ViewModelProvider
+import com.technfest.technfestcrm.model.CampaignResponseItem
+import com.technfest.technfestcrm.repository.CampaignRepository
+import com.technfest.technfestcrm.viewmodel.CampaignViewModelFactory
+import com.technfest.technfestcrm.viewmodel.CampaignsViewModel
 
 class CallsCampaignFragment : Fragment() {
 
@@ -18,7 +23,9 @@ class CallsCampaignFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var campaignAdapter: CampaignAdapter
-    private lateinit var allCampaigns: List<Campaign>
+    private lateinit var allCampaigns: List<CampaignResponseItem>
+
+    private lateinit var viewModel: CampaignsViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,72 +33,142 @@ class CallsCampaignFragment : Fragment() {
     ): View {
         _binding = FragmentCallsCampaignBinding.inflate(inflater, container, false)
 
-        // Spinner setup
-        val filters = listOf("Select filter", "Active", "Pause", "Completed", "High ROI", "Low CPL")
+        val token = arguments?.getString("token")
+        val workspaceId = arguments?.getInt("workspaceId", -1) ?: -1
+
+        Log.d("CAMPAIGN_FRAGMENT", "Received Token = $token")
+        Log.d("CAMPAIGN_FRAGMENT", "Received WorkspaceId = $workspaceId")
+
+        val filters = listOf("All", "Active", "Pause", "Completed", "High ROI", "Low CPL")
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, filters)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spnFilters.adapter = adapter
 
-        // All campaigns list
-        allCampaigns = listOf(
-            Campaign("AAA", "Call", "Active", "ROI : medium", "01 Nov 2025 → Ongoing", "Sagar", "₹8,000"," ₹3,100", "24 leads"," ₹129"),
-            Campaign("BBB", "WhatsApp", "Active", "ROI : medium", "01 Nov 2025 → Ongoing", "Sagar", "₹8,000","₹3,100", "30 leads"," ₹110"),
-            Campaign("CCC", "Call", "Pause", "ROI : low", "25 Oct 2025 → 30 Oct 2025", "Amit", "₹5,000","₹1,200", "10 leads"," ₹120")
-        )
+        binding.spnFilters.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: android.widget.AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val selected = parent?.getItemAtPosition(position).toString()
+                applyFilter(selected)
+            }
 
-        // RecyclerView setup
-        campaignAdapter = CampaignAdapter(allCampaigns)
-        binding.campaignsRecyclerview.layoutManager = LinearLayoutManager(requireContext())
-        binding.campaignsRecyclerview.adapter = campaignAdapter
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
+        }
 
-        setupFilterButtons()
+        setupViewModel()
+        setupRecyclerView()
+        observeData()
+        viewModel.fetchCategories(token.toString())
+
+        viewModel.fetchCampaigns(token.toString(), workspaceId)
 
         return binding.root
     }
 
-    private fun setupFilterButtons() {
-        binding.tvAll.setOnClickListener {
+    private fun setupViewModel() {
+
+        val repository = CampaignRepository()
+        val factory = CampaignViewModelFactory(repository)
+        viewModel = ViewModelProvider(this, factory).get(CampaignsViewModel::class.java)
+    }
+
+    private fun setupRecyclerView() {
+        campaignAdapter = CampaignAdapter(emptyList())
+        binding.campaignsRecyclerview.layoutManager = LinearLayoutManager(requireContext())
+        binding.campaignsRecyclerview.adapter = campaignAdapter
+    }
+
+    private fun observeData() {
+
+        viewModel.categoriesLiveData.observe(viewLifecycleOwner) { cats ->
+            Log.d("API_CATEGORIES", "Categories received: ${cats?.size}")
+        }
+
+        viewModel.campaignList.observe(viewLifecycleOwner) { campaigns ->
+
+            val categories = viewModel.categoriesLiveData.value ?: emptyList()
+
+            allCampaigns = campaigns.map { apiItem ->
+                val matchedCat =
+                    categories.find { it.id == apiItem.campaignCategoryId }?.name
+                        ?: apiItem.campaignCategoryName
+
+                apiItem.campaignCategoryName = matchedCat
+                apiItem
+            }
+
+
             campaignAdapter.updateData(allCampaigns)
-            highlightSelected("all")
         }
 
-        binding.tvCall.setOnClickListener {
-            val filtered = allCampaigns.filter { it.type.equals("Call", ignoreCase = true) }
-            campaignAdapter.updateData(filtered)
-            highlightSelected("call")
+        viewModel.error.observe(viewLifecycleOwner) { err ->
+            Log.e("API_ERROR", "Error: $err")
         }
-
-        binding.tvWhatsApp.setOnClickListener {
-            val filtered = allCampaigns.filter { it.type.equals("WhatsApp", ignoreCase = true) }
-            campaignAdapter.updateData(filtered)
-            highlightSelected("whatsapp")
-        }
-    }
-
-    private fun highlightSelected(selected: String) {
-        val activeColor = "#EDEBFF".toColorInt()
-        val defaultColor = requireContext().getColor(android.R.color.transparent)
-
-        binding.tvAll.setBackgroundColor(if (selected == "all") activeColor else defaultColor)
-        binding.tvCall.setBackgroundColor(if (selected == "call") activeColor else defaultColor)
-        binding.tvWhatsApp.setBackgroundColor(if (selected == "whatsapp") activeColor else defaultColor)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val toolbar =
+            view.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
         (activity as? androidx.appcompat.app.AppCompatActivity)?.apply {
-            setSupportActionBar(binding.toolbar)
+            setSupportActionBar(toolbar)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
             supportActionBar?.setDisplayShowHomeEnabled(true)
         }
 
-        binding.toolbar.setNavigationOnClickListener {
+        toolbar.setNavigationOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
+    }
+
+    private fun applyFilter(filter: String) {
+
+        if (!::allCampaigns.isInitialized) {
+            Log.w("FILTER", "Campaign list not loaded yet")
+            return
+        }
+
+        Log.d("FILTER", "Applying filter = $filter")
+
+        val filteredList = when (filter) {
+
+            "All" -> allCampaigns
+
+            "Active" -> allCampaigns.filter {
+                it.status.equals("Active", ignoreCase = true)
+            }
+
+            "Pause" -> allCampaigns.filter {
+                it.status.equals("Pause", ignoreCase = true)
+            }
+
+            "Completed" -> allCampaigns.filter {
+                it.status.equals("Completed", ignoreCase = true)
+            }
+
+//            "High ROI" -> allCampaigns.sortedByDescending {
+//                it.roi?.toDoubleOrNull() ?: 0.0
+//            }
+
+            "Low CPL" -> allCampaigns.sortedBy {
+                (it.cpl as? Number)?.toDouble() ?: Double.MAX_VALUE
+
+            }
+
+            else -> allCampaigns
+        }
+
+
+        campaignAdapter.updateData(filteredList)
+    }
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d("CAMPAIGN_FRAGMENT", "Fragment destroyed")
+        _binding = null
     }
 }

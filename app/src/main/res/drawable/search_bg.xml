@@ -1,51 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- When SearchView or its EditText is focused -->
+    <!-- Focused -->
     <item android:state_focused="true" android:state_pressed="false">
         <shape android:shape="rectangle">
             <solid android:color="@android:color/white" />
-            <corners android:radius="25dp" />
+
+            <!-- No curves -->
+            <corners android:radius="@dimen/_12sdp" />
+
             <stroke
-                android:width="2dp"
-                android:color="#6C63FF" /> <!-- violet border -->
+                android:width="@dimen/_2sdp"
+                android:color="#6C63FF" />
             <padding
-                android:left="10dp"
-                android:top="8dp"
-                android:right="10dp"
-                android:bottom="8dp" />
+                android:left="@dimen/_6sdp"
+                android:top="@dimen/_2sdp"
+                android:right="@dimen/_6sdp"
+                android:bottom="@dimen/_4sdp" />
         </shape>
     </item>
 
-    <!-- While pressed (same as focused for visual continuity) -->
+    <!-- Pressed -->
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
             <solid android:color="@android:color/white" />
-            <corners android:radius="25dp" />
+
+            <!-- No curves -->
+            <corners android:radius="@dimen/_12sdp" />
+
             <stroke
-                android:width="2dp"
+                android:width="@dimen/_2sdp"
                 android:color="#6C63FF" />
             <padding
-                android:left="10dp"
-                android:top="8dp"
-                android:right="10dp"
-                android:bottom="8dp" />
+                android:left="@dimen/_6sdp"
+                android:top="@dimen/_2sdp"
+                android:right="@dimen/_6sdp"
+                android:bottom="@dimen/_4sdp" />
         </shape>
     </item>
 
-    <!-- Default / Normal state -->
+    <!-- Default -->
     <item>
         <shape android:shape="rectangle">
             <solid android:color="@android:color/white" />
-            <corners android:radius="25dp" />
+
+            <!-- No curves -->
+            <corners android:radius="@dimen/_12sdp" />
+
             <stroke
                 android:width="1dp"
-                android:color="#DDDDDD" /> <!-- gray border -->
+                android:color="#DDDDDD" />
             <padding
-                android:left="10dp"
-                android:top="8dp"
-                android:right="10dp"
-                android:bottom="8dp" />
+                android:left="@dimen/_6sdp"
+                android:top="@dimen/_2sdp"
+                android:right="@dimen/_6sdp"
+                android:bottom="@dimen/_4sdp" />
         </shape>
     </item>
 

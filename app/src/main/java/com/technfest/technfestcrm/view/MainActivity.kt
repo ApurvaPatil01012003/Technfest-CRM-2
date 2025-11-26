@@ -45,7 +45,6 @@ class MainActivity : AppCompatActivity() {
         val token = prefs.getString("token", null)
 
         if (token.isNullOrEmpty()) {
-            // No token -> redirect to login
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
             return
@@ -118,6 +117,7 @@ class MainActivity : AppCompatActivity() {
             val token = prefs.getString("token", null)
             val fullName = prefs.getString("fullName", "User")
             val workspaceId = prefs.getInt("workspaceId", -1)
+            val workspaceName = prefs.getString("workspaceName", "Workspace")
 
             when (item.itemId) {
                 R.id.nav_home -> openHomeFragment(fullName, token, workspaceId)
@@ -127,11 +127,21 @@ class MainActivity : AppCompatActivity() {
                         putString("Token", token)
                         putInt("WorkspaceId", workspaceId)
                         putString("Name", fullName)
+                        putString("WorkspaceName", workspaceName)
                     }
                     leadsFragment.arguments = bundle
                     loadFragment(leadsFragment)
                 }
-                R.id.nav_task -> loadFragment(TaskFragment())
+                R.id.nav_task -> {
+                    val taskFragment = TaskFragment()
+                    val bundle = Bundle().apply {
+                        putString("token", token)
+                        putInt("workspaceId", workspaceId)
+                    }
+                    taskFragment.arguments = bundle
+                    loadFragment(taskFragment)
+                }
+
                 R.id.nav_settings -> loadFragment(SettingFragment())
             }
             true
@@ -166,4 +176,11 @@ class MainActivity : AppCompatActivity() {
             super.onBackPressed()
         }
     }
+    fun openLeadsFromHome() {
+        binding.bottomNavigationView.selectedItemId = R.id.nav_leads
+    }
+    fun openTasksFromHome() {
+        binding.bottomNavigationView.selectedItemId = R.id.nav_task
+    }
+
 }

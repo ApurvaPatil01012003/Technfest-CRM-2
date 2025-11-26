@@ -74,7 +74,7 @@ class ReportFragment : Fragment() {
                 LeadStatusData(105f, 56f, 15f, 67f, 200f),
                 CallCampaignStatusData(105f, 56f, 15f, 200f),
                 WhatsAppCampaignStatusData(105f, 56f, 161f),
-                TaskStatusData(105f, 56f, 161f)
+               TaskStatusData(105f, 56f, 161f)
             )
         }
 

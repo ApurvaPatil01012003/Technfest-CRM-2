@@ -1,714 +1,676 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".view.AddNewLeadFragment">
 
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/appBarLayout"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/toolbar_gradient"
+        android:elevation="@dimen/_2sdp"
+        app:liftOnScroll="true">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/transparent"
+            app:navigationIconTint="@color/white"
+            app:subtitle="Quick create lead &amp; first follow-up"
+            app:subtitleTextAppearance="@style/ToolbarSubtitleText"
+            app:subtitleTextColor="@color/white"
+            app:title="Add New Lead"
+            app:titleTextAppearance="@style/ToolbarTitleText"
+            app:titleTextColor="@color/white" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        tools:context=".view.AddNewLeadActivity">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/toolbar_gradient"
-            android:elevation="@dimen/_2sdp"
-            app:liftOnScroll="true">
+            android:orientation="vertical"
+            android:padding="@dimen/_10sdp">
 
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@android:color/transparent"
-                app:title="Add New Lead"
-                app:subtitle="Quick create lead &amp; first follow-up"
-                app:titleTextColor="@color/white"
-                app:subtitleTextColor="@color/white"
-                app:navigationIconTint="@color/white"
-                app:titleTextAppearance="@style/ToolbarTitleText"
-                app:subtitleTextAppearance="@style/ToolbarSubtitleText" />
 
-        </com.google.android.material.appbar.AppBarLayout>
-
-        <ScrollView
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true"
-            tools:context=".view.AddNewLeadActivity">
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/_10sdp">
+                android:layout_margin="@dimen/_6sdp"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="@dimen/_14sdp"
+                app:cardElevation="@dimen/_4sdp"
+                app:strokeColor="#DDDDDD"
+                app:strokeWidth="@dimen/_1sdp">
 
-
-                <com.google.android.material.card.MaterialCardView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/_6sdp"
-                    app:cardCornerRadius="@dimen/_14sdp"
-                    app:cardElevation="@dimen/_4sdp"
-                    app:strokeColor="#DDDDDD"
-                    app:strokeWidth="@dimen/_1sdp"
-                    app:cardBackgroundColor="@android:color/white">
+                    android:orientation="vertical"
+                    android:padding="@dimen/_10sdp">
 
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Basic Details"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_14ssp"
+                        android:textStyle="bold" />
+
+                    <!-- Full Name -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="@dimen/_10sdp"
+                        android:paddingTop="@dimen/_10sdp"
+                        android:text="Full Name"
+                        android:textSize="@dimen/_12ssp" />
+
+                    <EditText
+                        android:id="@+id/edtLeadName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_6sdp"
+                        android:background="@drawable/edit_text_bg"
+                        android:hint="e.g. Amit Sharma"
+                        android:inputType="textPersonName"
+                        android:padding="@dimen/_10sdp"
+                        android:textSize="@dimen/_10ssp" />
+
+                    <!-- Phone + Email Row -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="@dimen/_10sdp">
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Basic Details"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/_14ssp"
-                            android:textStyle="bold" />
-
-                        <!-- Full Name -->
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Full Name"
-                            android:paddingTop="@dimen/_10sdp"
-                            android:paddingStart="@dimen/_10sdp"
-                            android:textSize="@dimen/_12ssp" />
-
-                        <EditText
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="e.g. Amit Sharma"
-                            android:layout_marginTop="@dimen/_6sdp"
-                            android:textSize="@dimen/_10ssp"
-                            android:padding="@dimen/_10sdp"
-                            android:background="@drawable/edit_text_bg"
-                            android:inputType="textPersonName" />
-
-                        <!-- Phone + Email Row -->
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:weightSum="2"
-                            android:layout_marginTop="@dimen/_10sdp">
+                            android:layout_weight="1"
+                            android:orientation="vertical">
 
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="Phone"
-                                    android:paddingStart="@dimen/_10sdp"
-                                    android:textSize="@dimen/_12ssp" />
-
-                                <EditText
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="@dimen/_6sdp"
-                                    android:hint="+91 7777777777"
-                                    android:textSize="12sp"
-                                    android:padding="@dimen/_10sdp"
-                                    android:background="@drawable/edit_text_bg"
-                                    android:inputType="phone" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:layout_marginStart="@dimen/_8sdp">
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="Email"
-                                    android:paddingStart="@dimen/_10sdp"
-                                    android:textSize="@dimen/_12ssp" />
-
-                                <EditText
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="@dimen/_6sdp"
-                                    android:hint="abc123@gmail.com"
-                                    android:background="@drawable/edit_text_bg"
-                                    android:padding="@dimen/_10sdp"
-                                    android:textSize="12sp"
-                                    android:inputType="textEmailAddress" />
-                            </LinearLayout>
-                        </LinearLayout>
-
-                        <!-- City + Company Row -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:weightSum="2"
-                            android:layout_marginTop="@dimen/_10sdp">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="City/Location"
-                                    android:paddingStart="@dimen/_10sdp"
-                                    android:textSize="@dimen/_12ssp" />
-
-                                <EditText
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="@dimen/_6sdp"
-                                    android:hint="Delhi"
-                                    android:background="@drawable/edit_text_bg"
-                                    android:textSize="12sp"
-                                    android:padding="@dimen/_10sdp"
-                                    android:inputType="textCapWords" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:layout_marginStart="@dimen/_8sdp">
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="Company Name"
-                                    android:paddingStart="@dimen/_10sdp"
-                                    android:textSize="@dimen/_12ssp" />
-
-                                <EditText
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="@dimen/_6sdp"
-                                    android:hint="Tech Solution"
-                                    android:background="@drawable/edit_text_bg"
-                                    android:textSize="12sp"
-                                    android:padding="@dimen/_10sdp"
-                                    android:inputType="textCapWords" />
-                            </LinearLayout>
-                        </LinearLayout>
-
-                        <!-- Lead Message -->
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Lead Message / Requirement"
-                            android:paddingTop="@dimen/_10sdp"
-                            android:paddingStart="@dimen/_10sdp"
-                            android:textSize="@dimen/_12ssp" />
-
-                        <EditText
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_6sdp"
-                            android:hint="Customer requirement (e.g. Billing + WhatsApp Integration)"
-                            android:background="@drawable/edit_text_bg"
-                            android:textSize="12sp"
-                            android:padding="@dimen/_10sdp"
-                            android:inputType="textMultiLine"
-                            android:minLines="3" />
-
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-
-
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/_6sdp"
-                    app:cardCornerRadius="@dimen/_14sdp"
-                    app:cardElevation="@dimen/_4sdp"
-                    app:strokeColor="#DDDDDD"
-                    app:strokeWidth="@dimen/_1sdp"
-                    app:cardBackgroundColor="@android:color/white">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="@dimen/_10sdp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Source &amp; Status"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/_14ssp"
-                            android:textStyle="bold" />
-
-                        <!-- Phone + Email Row -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:weightSum="2"
-                            android:layout_marginTop="@dimen/_10sdp">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="Source"
-                                    android:paddingStart="@dimen/_10sdp"
-                                    android:textSize="@dimen/_12ssp" />
-
-                                <RelativeLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:background="@drawable/spinner_background"
-                                    android:padding="@dimen/_8sdp"
-                                    android:layout_marginTop="@dimen/_6sdp">
-
-                                    <Spinner
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:spinnerMode="dropdown"
-                                        android:popupBackground="@color/white"
-                                        android:paddingEnd="@dimen/_40sdp"
-                                        android:dropDownVerticalOffset="@dimen/_8sdp"
-                                        android:gravity="center_vertical|start" />
-
-
-                                </RelativeLayout>
-
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:layout_marginStart="@dimen/_8sdp">
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="UTM Source"
-                                    android:paddingStart="@dimen/_10sdp"
-                                    android:textSize="@dimen/_12ssp" />
-
-                                <EditText
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="@dimen/_6sdp"
-                                    android:hint="facebook/google/whatsApp"
-                                    android:background="@drawable/edit_text_bg"
-                                    android:textSize="@dimen/_10ssp"
-                                    android:padding="@dimen/_10sdp"
-                                    android:inputType="textEmailAddress" />
-                            </LinearLayout>
-                        </LinearLayout>
-
-                        <!-- City + Company Row -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:weightSum="2"
-                            android:layout_marginTop="@dimen/_10sdp">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="UTM Campaign"
-                                    android:paddingStart="@dimen/_10sdp"
-                                    android:textSize="@dimen/_12ssp" />
-
-                                <EditText
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="@dimen/_6sdp"
-                                    android:hint="e.g.fb_october_demo"
-                                    android:background="@drawable/edit_text_bg"
-                                    android:textSize="@dimen/_12ssp"
-                                    android:padding="@dimen/_10sdp"
-                                    android:inputType="textCapWords" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:layout_marginStart="@dimen/_8sdp">
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="Campaign Name"
-                                    android:paddingStart="@dimen/_10sdp"
-                                    android:textSize="@dimen/_12ssp" />
-
-                                <EditText
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="@dimen/_6sdp"
-                                    android:hint="FB Ad set/keyword"
-                                    android:background="@drawable/edit_text_bg"
-                                    android:textSize="@dimen/_12ssp"
-                                    android:padding="@dimen/_10sdp"
-                                    android:inputType="textCapWords" />
-                            </LinearLayout>
-                        </LinearLayout>
-
-
-
-                        <!-- Phone + Email Row -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:weightSum="2"
-                            android:layout_marginTop="@dimen/_10sdp">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="Lead Status"
-                                    android:paddingStart="@dimen/_10sdp"
-                                    android:textSize="@dimen/_12ssp" />
-
-                                <RelativeLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:background="@drawable/spinner_background"
-                                    android:padding="@dimen/_8sdp"
-                                    android:layout_marginTop="@dimen/_6sdp">
-
-                                    <Spinner
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:spinnerMode="dropdown"
-                                        android:popupBackground="@color/white"
-                                        android:paddingEnd="@dimen/_40sdp"
-                                        android:dropDownVerticalOffset="@dimen/_8sdp"
-                                        android:gravity="center_vertical|start" />
-
-
-                                </RelativeLayout>
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:layout_marginStart="@dimen/_8sdp">
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="Stage"
-                                    android:paddingStart="@dimen/_10sdp"
-                                    android:textSize="@dimen/_12ssp" />
-
-                                <RelativeLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:background="@drawable/spinner_background"
-                                    android:padding="@dimen/_8sdp"
-                                    android:layout_marginTop="@dimen/_6sdp">
-
-                                    <Spinner
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:spinnerMode="dropdown"
-                                        android:popupBackground="@color/white"
-                                        android:paddingEnd="@dimen/_40sdp"
-                                        android:dropDownVerticalOffset="@dimen/_8sdp"
-                                        android:gravity="center_vertical|start" />
-
-
-                                </RelativeLayout>
-                            </LinearLayout>
-                        </LinearLayout>
-
-                        <!-- Lead Message -->
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Priority"
-                            android:paddingTop="@dimen/_10sdp"
-                            android:paddingStart="@dimen/_10sdp"
-                            android:textSize="@dimen/_12ssp" />
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/spinner_background"
-                            android:padding="@dimen/_8sdp"
-                            android:layout_marginTop="@dimen/_6sdp">
-
-                            <Spinner
+                            <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:spinnerMode="dropdown"
-                                android:popupBackground="@color/white"
-                                android:paddingEnd="@dimen/_40sdp"
-                                android:dropDownVerticalOffset="@dimen/_8sdp"
-                                android:gravity="center_vertical|start" />
+                                android:paddingStart="@dimen/_10sdp"
+                                android:text="Phone"
+                                android:textSize="@dimen/_12ssp" />
 
-
-                        </RelativeLayout>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/_6sdp"
-                    app:cardCornerRadius="@dimen/_14sdp"
-                    app:cardElevation="@dimen/_4sdp"
-                    app:strokeColor="#DDDDDD"
-                    app:strokeWidth="@dimen/_1sdp"
-                    app:cardBackgroundColor="@android:color/white">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="@dimen/_10sdp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Assignment"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/_14ssp"
-                            android:textStyle="bold" />
-
-                        <!-- Phone + Email Row -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:weightSum="2"
-                            android:layout_marginTop="@dimen/_10sdp">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
+                            <EditText
+                                android:id="@+id/edtleadNumber"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="Assign To Team"
-                                    android:paddingStart="@dimen/_10sdp"
-                                    android:textSize="@dimen/_12ssp" />
-
-                                <RelativeLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:background="@drawable/spinner_background"
-                                    android:padding="@dimen/_8sdp"
-                                    android:layout_marginTop="@dimen/_6sdp">
-
-                                    <Spinner
-                                        android:id="@+id/spinnerLeadSource"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:spinnerMode="dropdown"
-                                        android:popupBackground="@color/white"
-                                        android:paddingEnd="@dimen/_40sdp"
-                                        android:dropDownVerticalOffset="@dimen/_8sdp"
-                                        android:gravity="center_vertical|start" />
-
-
-                                </RelativeLayout>
-
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:layout_marginStart="@dimen/_8sdp">
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="Assign Type"
-                                    android:paddingStart="@dimen/_10sdp"
-                                    android:textSize="@dimen/_12ssp" />
-
-                                <RelativeLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:background="@drawable/spinner_background"
-                                    android:padding="@dimen/_8sdp"
-                                    android:layout_marginTop="@dimen/_6sdp">
-
-                                    <Spinner
-
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:spinnerMode="dropdown"
-                                        android:popupBackground="@color/white"
-                                        android:paddingEnd="@dimen/_40sdp"
-                                        android:dropDownVerticalOffset="@dimen/_8sdp"
-                                        android:gravity="center_vertical|start" />
-
-
-                                </RelativeLayout>
-
-                            </LinearLayout>
+                                android:layout_marginTop="@dimen/_6sdp"
+                                android:background="@drawable/edit_text_bg"
+                                android:hint="+91 7777777777"
+                                android:inputType="phone"
+                                android:padding="@dimen/_10sdp"
+                                android:textSize="12sp" />
                         </LinearLayout>
 
-                        <TextView
-                            android:layout_width="match_parent"
+                        <LinearLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="Assign To User (optional)"
-                            android:paddingTop="@dimen/_10sdp"
-                            android:paddingStart="@dimen/_10sdp"
-                            android:textSize="@dimen/_12ssp" />
+                            android:layout_marginStart="@dimen/_8sdp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
 
-                        <EditText
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_6sdp"
-                            android:hint="Username"
-                            android:background="@drawable/edit_text_bg"
-                            android:textSize="12sp"
-                            android:padding="@dimen/_10sdp"
-                            android:inputType="phone" />
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingStart="@dimen/_10sdp"
+                                android:text="Email"
+                                android:textSize="@dimen/_12ssp" />
 
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="First Follow-up Date &amp; Time"
-                            android:paddingTop="@dimen/_10sdp"
-                            android:paddingStart="@dimen/_10sdp"
-                            android:textSize="@dimen/_12ssp" />
-
-                        <EditText
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_6sdp"
-                            android:hint="mm/dd/yy"
-                            android:background="@drawable/edit_text_bg"
-                            android:textSize="@dimen/_10ssp"
-                            android:padding="@dimen/_10sdp"
-                            android:inputType="phone" />
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="lead_id, created_at, assigned_date, rating etc. will be auto-generated/updated by backend."
-                            android:textColor="#A09D9D"
-                            android:textSize="@dimen/_10sdp"/>
+                            <EditText
+                                android:id="@+id/edtEmail"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_6sdp"
+                                android:background="@drawable/edit_text_bg"
+                                android:hint="abc123@gmail.com"
+                                android:inputType="textEmailAddress"
+                                android:padding="@dimen/_10sdp"
+                                android:textSize="12sp" />
+                        </LinearLayout>
                     </LinearLayout>
 
-                </com.google.android.material.card.MaterialCardView>
+                    <!-- City + Company Row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingStart="@dimen/_10sdp"
+                                android:text="City/Location"
+                                android:textSize="@dimen/_12ssp" />
+
+                            <EditText
+                                android:id="@+id/edtLocation"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_6sdp"
+                                android:background="@drawable/edit_text_bg"
+                                android:hint="Delhi"
+                                android:inputType="textCapWords"
+                                android:padding="@dimen/_10sdp"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_8sdp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingStart="@dimen/_10sdp"
+                                android:text="Company Name"
+                                android:textSize="@dimen/_12ssp" />
+
+                            <EditText
+                                android:id="@+id/edtCompanyname"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_6sdp"
+                                android:background="@drawable/edit_text_bg"
+                                android:hint="Tech Solution"
+                                android:inputType="textCapWords"
+                                android:padding="@dimen/_10sdp"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Lead Message -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="@dimen/_10sdp"
+                        android:paddingTop="@dimen/_10sdp"
+                        android:text="Lead Message / Requirement"
+                        android:textSize="@dimen/_12ssp" />
+
+                    <EditText
+                        android:id="@+id/edtLeadRequest"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_6sdp"
+                        android:background="@drawable/edit_text_bg"
+                        android:hint="Customer requirement (e.g. Billing + WhatsApp Integration)"
+                        android:inputType="textMultiLine"
+                        android:minLines="3"
+                        android:padding="@dimen/_10sdp"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
 
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_6sdp"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="@dimen/_14sdp"
+                app:cardElevation="@dimen/_4sdp"
+                app:strokeColor="#DDDDDD"
+                app:strokeWidth="@dimen/_1sdp">
 
-                <com.google.android.material.card.MaterialCardView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/_6sdp"
-                    app:cardCornerRadius="@dimen/_14sdp"
-                    app:cardElevation="@dimen/_4sdp"
-                    app:strokeColor="#DDDDDD"
-                    app:strokeWidth="@dimen/_1sdp"
-                    app:cardBackgroundColor="@android:color/white">
+                    android:orientation="vertical"
+                    android:padding="@dimen/_10sdp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Source &amp; Status"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_14ssp"
+                        android:textStyle="bold" />
+
+                    <!-- Phone + Email Row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingStart="@dimen/_10sdp"
+                                android:text="Source"
+                                android:textSize="@dimen/_12ssp" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_6sdp"
+                                android:background="@drawable/spinner_background"
+                                android:padding="@dimen/_8sdp">
+
+                                <Spinner
+                                    android:id="@+id/spnSource"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:dropDownVerticalOffset="@dimen/_8sdp"
+                                    android:gravity="center_vertical|start"
+                                    android:paddingEnd="@dimen/_40sdp"
+                                    android:popupBackground="@color/white"
+                                    android:spinnerMode="dropdown" />
+
+
+                            </RelativeLayout>
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_8sdp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingStart="@dimen/_10sdp"
+                                android:text="Campaign Name"
+                                android:textSize="@dimen/_12ssp" />
+
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_6sdp"
+                                android:background="@drawable/spinner_background"
+                                android:padding="@dimen/_8sdp">
+
+                                <Spinner
+                                    android:id="@+id/spnCampaignName"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:dropDownVerticalOffset="@dimen/_8sdp"
+                                    android:gravity="center_vertical|start"
+                                    android:paddingEnd="@dimen/_40sdp"
+                                    android:popupBackground="@color/white"
+                                    android:spinnerMode="dropdown" />
+
+
+                            </RelativeLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
+
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="@dimen/_10sdp">
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
 
-                        <TextView
-                            android:layout_width="match_parent"
+                        <LinearLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="Tags"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/_14ssp"
-                            android:textStyle="bold" />
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingStart="@dimen/_10sdp"
+                                android:text="Lead Status"
+                                android:textSize="@dimen/_12ssp" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_6sdp"
+                                android:background="@drawable/spinner_background"
+                                android:padding="@dimen/_8sdp">
+
+                                <Spinner
+                                    android:id="@+id/spnStatus"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:dropDownVerticalOffset="@dimen/_8sdp"
+                                    android:gravity="center_vertical|start"
+                                    android:paddingEnd="@dimen/_40sdp"
+                                    android:popupBackground="@color/white"
+                                    android:spinnerMode="dropdown" />
 
 
-                        <TextView
-                            android:layout_width="match_parent"
+                            </RelativeLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="Tags (comma separated)"
-                            android:paddingTop="@dimen/_10sdp"
-                            android:paddingStart="@dimen/_10sdp"
-                            android:textSize="@dimen/_12ssp" />
+                            android:layout_marginStart="@dimen/_8sdp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
 
-                        <EditText
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_6sdp"
-                            android:hint="facebook,demo,billing,erp"
-                            android:background="@drawable/edit_text_bg"
-                            android:textSize="@dimen/_10ssp"
-                            android:padding="@dimen/_10sdp" />
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnSaveLead"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Save Lead"
-                            android:textAllCaps="false"
-                            android:textColor="@android:color/white"
-                            android:layout_marginTop="@dimen/_12sdp"
-                            android:layout_marginBottom="@dimen/_6sdp"
-                            android:paddingVertical="@dimen/_10sdp"
-                            app:cornerRadius="12dp"
-                            app:iconGravity="textStart"
-                            app:iconPadding="8dp"
-                            app:backgroundTint="@null"
-                            android:background="@drawable/btn_gradient" />
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingStart="@dimen/_10sdp"
+                                android:text="Stage"
+                                android:textSize="@dimen/_12ssp" />
 
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_6sdp"
+                                android:background="@drawable/spinner_background"
+                                android:padding="@dimen/_8sdp">
+
+                                <Spinner
+                                    android:id="@+id/spnStages"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:dropDownVerticalOffset="@dimen/_8sdp"
+                                    android:gravity="center_vertical|start"
+                                    android:paddingEnd="@dimen/_40sdp"
+                                    android:popupBackground="@color/white"
+                                    android:spinnerMode="dropdown" />
+
+
+                            </RelativeLayout>
+                        </LinearLayout>
                     </LinearLayout>
 
+                    <!-- Lead Message -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="@dimen/_10sdp"
+                        android:paddingTop="@dimen/_10sdp"
+                        android:text="Priority"
+                        android:textSize="@dimen/_12ssp" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_6sdp"
+                        android:background="@drawable/spinner_background"
+                        android:padding="@dimen/_8sdp">
+
+                        <Spinner
+                            android:id="@+id/spnPriority"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:dropDownVerticalOffset="@dimen/_8sdp"
+                            android:gravity="center_vertical|start"
+                            android:paddingEnd="@dimen/_40sdp"
+                            android:popupBackground="@color/white"
+                            android:spinnerMode="dropdown" />
 
 
-                </com.google.android.material.card.MaterialCardView>
+                    </RelativeLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_6sdp"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="@dimen/_14sdp"
+                app:cardElevation="@dimen/_4sdp"
+                app:strokeColor="#DDDDDD"
+                app:strokeWidth="@dimen/_1sdp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_10sdp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Assignment"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_14ssp"
+                        android:textStyle="bold" />
+
+                    <!-- Phone + Email Row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingStart="@dimen/_10sdp"
+                                android:text="Assign To Team"
+                                android:textSize="@dimen/_12ssp" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_6sdp"
+                                android:background="@drawable/spinner_background"
+                                android:padding="@dimen/_8sdp">
+
+                                <Spinner
+
+                                    android:id="@+id/spnAssignToTeam"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:dropDownVerticalOffset="@dimen/_8sdp"
+                                    android:gravity="center_vertical|start"
+                                    android:paddingEnd="@dimen/_40sdp"
+                                    android:popupBackground="@color/white"
+                                    android:spinnerMode="dropdown" />
 
 
+                            </RelativeLayout>
 
-            </LinearLayout>
-        </ScrollView>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_8sdp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingStart="@dimen/_10sdp"
+                                android:text="Assign Type"
+                                android:textSize="@dimen/_12ssp" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_6sdp"
+                                android:background="@drawable/spinner_background"
+                                android:padding="@dimen/_8sdp">
+
+                                <Spinner
+                                    android:id="@+id/spnAssignType"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:dropDownVerticalOffset="@dimen/_8sdp"
+                                    android:gravity="center_vertical|start"
+                                    android:paddingEnd="@dimen/_40sdp"
+                                    android:popupBackground="@color/white"
+                                    android:spinnerMode="dropdown" />
+
+
+                            </RelativeLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="@dimen/_10sdp"
+                        android:paddingTop="@dimen/_10sdp"
+                        android:text="Assign To User (optional)"
+                        android:textSize="@dimen/_12ssp" />
+
+                    <EditText
+                        android:id="@+id/edtUserName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_6sdp"
+                        android:background="@drawable/edit_text_bg"
+                        android:hint="Username"
+                        android:padding="@dimen/_10sdp"
+                        android:textSize="12sp" />
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="@dimen/_10sdp"
+                        android:paddingTop="@dimen/_10sdp"
+                        android:text="Next Follow-up Date &amp; Time(optional)"
+                        android:textSize="@dimen/_12ssp" />
+
+                    <EditText
+                        android:id="@+id/edtFollowUpdate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_6sdp"
+                        android:background="@drawable/edit_text_bg"
+                        android:drawableEnd="@drawable/baseline_date_range_24"
+                        android:hint="mm/dd/yy"
+                        android:inputType="phone"
+                        android:padding="@dimen/_10sdp"
+                        android:textSize="@dimen/_10ssp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="lead_id, created_at, assigned_date, rating etc. will be auto-generated/updated by backend."
+                        android:textColor="#A09D9D"
+                        android:textSize="@dimen/_10sdp" />
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_6sdp"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="@dimen/_14sdp"
+                app:cardElevation="@dimen/_4sdp"
+                app:strokeColor="#DDDDDD"
+                app:strokeWidth="@dimen/_1sdp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_10sdp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Tags"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_14ssp"
+                        android:textStyle="bold" />
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="@dimen/_10sdp"
+                        android:paddingTop="@dimen/_10sdp"
+                        android:text="Tags (comma separated)"
+                        android:textSize="@dimen/_12ssp" />
+
+                    <EditText
+                        android:id="@+id/edtTags"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_6sdp"
+                        android:background="@drawable/edit_text_bg"
+                        android:hint="facebook,demo,billing,erp"
+                        android:padding="@dimen/_10sdp"
+                        android:textSize="@dimen/_10ssp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSaveLead"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_12sdp"
+                        android:layout_marginBottom="@dimen/_6sdp"
+                        android:background="@drawable/btn_gradient"
+                        android:paddingVertical="@dimen/_10sdp"
+                        android:text="Save Lead"
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white"
+                        app:backgroundTint="@null"
+                        app:cornerRadius="12dp"
+                        app:iconGravity="textStart"
+                        app:iconPadding="8dp" />
+
+                </LinearLayout>
+
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

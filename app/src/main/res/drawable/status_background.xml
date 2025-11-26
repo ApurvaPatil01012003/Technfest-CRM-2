@@ -1,6 +1,3 @@
-
-
-
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
 android:shape="rectangle">
 
@@ -10,3 +7,5 @@ android:shape="rectangle">
     android:angle="60" />
 <corners android:radius="@dimen/_4sdp" />
 </shape>
+
+

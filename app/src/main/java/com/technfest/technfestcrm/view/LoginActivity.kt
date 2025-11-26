@@ -53,6 +53,7 @@ class LoginActivity : AppCompatActivity() {
         viewModel.loginResponseLiveData.observe(this) { data ->
             if (data != null) {
                 Toast.makeText(this, "Login Successful!", Toast.LENGTH_SHORT).show()
+
                 saveUserData(data)
                 val intent = Intent(this, MainActivity::class.java)
                 intent.putExtra("FullName",data.fullName)
@@ -70,7 +71,6 @@ class LoginActivity : AppCompatActivity() {
 
 
         binding.edtPassword.setOnTouchListener { v, event ->
-            // react only on finger up to avoid double-triggering
             if (event.action != MotionEvent.ACTION_UP) return@setOnTouchListener false
 
             val editText = binding.edtPassword

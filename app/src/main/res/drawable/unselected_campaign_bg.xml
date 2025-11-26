@@ -3,8 +3,8 @@
 
     <!-- Background gradient -->
     <gradient
-        android:startColor="#8AE8F4"
-        android:endColor="#BEEDF4"
+        android:startColor="#F7F8FB"
+        android:endColor="#F7F8FB"
         android:angle="0" />
 
     <!-- Rounded corners -->
@@ -19,7 +19,7 @@
 
     <!-- Border / Stroke -->
     <stroke
-        android:width="@dimen/_1sdp"
-        android:color="#A29A9A" />  <!-- Change color as needed -->
+        android:width="1dp"
+        android:color="#CCCCCC" />  <!-- Change color as needed -->
 
 </shape>

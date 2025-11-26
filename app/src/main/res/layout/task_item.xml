@@ -57,6 +57,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="lead name"
+                        android:textStyle="bold"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_12ssp" />
 
@@ -72,18 +73,18 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="city"
+                        android:text="Task Type"
                         android:textColor="#625C5C"
                         android:textSize="@dimen/_12ssp" />
 
                     <TextView
-                        android:id="@+id/txtCity"
+                        android:id="@+id/txtTaskType"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="delhi"
+                        android:textStyle="bold"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_12ssp"
-                        android:textStyle="bold" />
+                         />
                 </LinearLayout>
             </LinearLayout>
 
@@ -94,7 +95,6 @@
                 android:layout_marginBottom="@dimen/_6sdp"
                 android:orientation="horizontal">
 
-                <!-- Lead Status Section -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -113,7 +113,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Today 11AM"
-                        android:padding="@dimen/_4sdp"
+                        android:textStyle="bold"
+                        android:padding="@dimen/_2sdp"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_12ssp" />
 
@@ -129,7 +130,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Status &amp; Priority"
+                        android:text="Status"
                         android:textColor="#625C5C"
                         android:textSize="@dimen/_12ssp" />
 
@@ -144,18 +145,10 @@
                             android:layout_height="wrap_content"
                             android:padding="@dimen/_4sdp"
                             android:text="open"
+                            android:textStyle="bold"
                             android:textColor="@color/black"
                             android:textSize="@dimen/_12ssp" />
 
-                        <TextView
-                            android:id="@+id/txtPriority"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/_8sdp"
-                            android:padding="@dimen/_4sdp"
-                            android:text="high"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/_12ssp" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -180,22 +173,22 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Channel "
+                        android:text="Priority "
                         android:textColor="#625C5C"
                         android:textSize="@dimen/_12ssp" />
 
                     <TextView
-                        android:id="@+id/txtChnnelName"
+                        android:id="@+id/txtPriority"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Call"
-                        android:textColor="@color/black"
+                        android:text="High"
                         android:textStyle="bold"
+                        android:textColor="@color/black"
                         android:textSize="@dimen/_12ssp" />
 
                 </LinearLayout>
 
-                <!-- Stage Section -->
+
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -214,9 +207,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="name of assign"
+                        android:textStyle="bold"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_12ssp"
-                        android:textStyle="bold" />
+                         />
                 </LinearLayout>
             </LinearLayout>
 
@@ -227,7 +221,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Summary"
+                    android:text="Description"
                     android:textColor="#625C5C"
                     android:textSize="@dimen/_12ssp"
                     android:textStyle="bold" />
@@ -237,6 +231,7 @@
                     android:layout_height="wrap_content"
                     android:text="Confirm time for today's billing + inventory software demo."
                     android:textColor="@color/black"
+                    android:textStyle="bold"
                     android:textSize="@dimen/_12ssp"
                     />
             </LinearLayout>

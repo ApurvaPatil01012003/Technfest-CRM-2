@@ -27,15 +27,37 @@
             android:textSize="@dimen/_15ssp"
             android:textStyle="bold" />
 
-        <!-- Type -->
-        <TextView
-            android:id="@+id/txtType"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/_8sdp"
-            android:text="Type : Call"
-            android:textColor="#444444"
-            android:textSize="@dimen/_13ssp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingBottom="@dimen/_8sdp">
+
+            <!-- Type -->
+            <TextView
+                android:id="@+id/txtType"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Type: Call"
+                android:textColor="#444444"
+                android:textSize="@dimen/_13ssp" />
+
+            <!-- Total Calls Circular Badge -->
+            <TextView
+                android:id="@+id/txtTotalCalls"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:gravity="center"
+                android:background="@drawable/circle_count_bg"
+                android:text="0"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:textSize="@dimen/_12ssp"/>
+        </LinearLayout>
+
+
 
         <!-- Date + Owner Row -->
         <LinearLayout
@@ -195,37 +217,123 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Status / ROI -->
+
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingBottom="@dimen/_8sdp">
 
-            <TextView
-                android:id="@+id/txtStatus"
+            <!-- Budget / Spend -->
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/textview_bg"
-                android:gravity="center"
-                android:layout_margin="@dimen/_2sdp"
-                android:padding="@dimen/_6sdp"
-                android:text="Status"
-                android:textSize="@dimen/_10ssp" />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/txtROI"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Status"
+                    android:textColor="#716E6E"
+                    android:textSize="@dimen/_11ssp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/txtStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Active"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/_12ssp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Leads / CPL -->
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_margin="@dimen/_2sdp"
-                android:background="@drawable/textview_bg"
-                android:gravity="center"
-                android:padding="@dimen/_6sdp"
-                android:text="ROI"
-                android:textSize="@dimen/_10ssp" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ROI"
+                    android:textColor="#716E6E"
+                    android:textSize="@dimen/_11ssp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingTop="@dimen/_2sdp">
+
+                    <TextView
+                        android:id="@+id/txtROI"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Missing in API"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/_12ssp"
+                        android:textStyle="bold" />
+
+
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/_4sdp"
+            android:text="Description"
+            android:textColor="#716E6E"
+            android:textSize="@dimen/_12ssp" />
+        <TextView
+            android:id="@+id/txtDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/_4sdp"
+            android:text="descrption"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="@dimen/_12ssp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/_8sdp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Created by :"
+            android:textColor="#716E6E"
+            android:textSize="@dimen/_11ssp" />
+        <TextView
+            android:id="@+id/txtCreatedBy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="name"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_11ssp" />
+
+    </LinearLayout>
+
+
+
+
+
 
         <!-- Tags Label -->
         <TextView
@@ -236,8 +344,13 @@
             android:textColor="#716E6E"
             android:textSize="@dimen/_12ssp" />
 
-        <!-- Tag Chips -->
+
+
+
+
+
         <LinearLayout
+            android:id="@+id/tagsContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -246,45 +359,41 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#E7CFEB"
-                android:padding="@dimen/_4sdp"
-                android:text="billing" />
+                android:background="@drawable/tag_chip_bg"
+                android:paddingLeft="@dimen/_8sdp"
+                android:paddingRight="@dimen/_8sdp"
+                android:paddingTop="@dimen/_4sdp"
+                android:paddingBottom="@dimen/_4sdp"
+                android:text="billing"
+                android:textColor="#3F51B5"
+                android:textSize="@dimen/_11ssp"
+                android:layout_marginEnd="@dimen/_4sdp"/>
 
-            <TextView
-                android:background="#E7CFEB"
-                android:padding="@dimen/_4sdp"
-                android:layout_marginStart="@dimen/_4sdp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="demo" />
-
-            <TextView
-                android:background="#E7CFEB"
-                android:padding="@dimen/_4sdp"
-                android:layout_marginStart="@dimen/_4sdp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="location" />
         </LinearLayout>
+
 
         <!-- Buttons Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/_8sdp">
 
+            <!-- Pause Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnStart"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_6sdp"
                 android:layout_weight="1"
-                android:background="@drawable/btn_gradient"
-                android:text="Pause campaign"
+                android:text="Pause Campaign"
                 android:textColor="@android:color/white"
+                android:textStyle="bold"
+                app:cornerRadius="@dimen/_12sdp"
                 app:backgroundTint="@null"
-                app:cornerRadius="@dimen/_10sdp" />
+                android:background="@drawable/btn_gradient"
+                android:layout_marginEnd="@dimen/_8sdp"/>
 
+            <!-- Edit Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnEdit"
                 android:layout_width="0dp"
@@ -292,13 +401,11 @@
                 android:layout_weight="1"
                 android:text="Edit"
                 android:textColor="#6475D0"
+                android:textStyle="bold"
+                app:cornerRadius="@dimen/_12sdp"
                 app:backgroundTint="@android:color/white"
-                app:cornerRadius="@dimen/_10sdp"
                 app:strokeColor="#6475D0"
-                app:strokeWidth="@dimen/_1sdp" />
-
+                app:strokeWidth="2dp"/>
         </LinearLayout>
-
     </LinearLayout>
-
 </com.google.android.material.card.MaterialCardView>

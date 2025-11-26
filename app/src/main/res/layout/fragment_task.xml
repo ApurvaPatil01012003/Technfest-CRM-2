@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".view.TaskFragment">
+
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
@@ -19,132 +20,133 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@android:color/transparent"
-            app:title="Tasks"
-            app:subtitle="All pending &amp; history follow-ups"
-            app:titleTextColor="@color/white"
-            app:subtitleTextColor="@color/white"
             app:navigationIconTint="@color/white"
+            app:subtitle="All pending &amp; history follow-ups"
+            app:subtitleTextAppearance="@style/ToolbarSubtitleText"
+            app:subtitleTextColor="@color/white"
+            app:title="Tasks"
             app:titleTextAppearance="@style/ToolbarTitleText"
-            app:subtitleTextAppearance="@style/ToolbarSubtitleText" />
+            app:titleTextColor="@color/white" />
 
     </com.google.android.material.appbar.AppBarLayout>
-    <LinearLayout
+
+
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/_10sdp">
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="none"
-        android:overScrollMode="never"
-        android:layout_margin="@dimen/_4sdp"
-        android:padding="@dimen/_4sdp">
+        android:background="@color/white"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:padding="@dimen/_10sdp"
+        app:cardElevation="@dimen/_6sdp">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:padding="@dimen/_10sdp">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <HorizontalScrollView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_6sdp"
-                android:paddingHorizontal="@dimen/_10sdp"
-                android:paddingVertical="@dimen/_4sdp"
-                android:padding="@dimen/_8sdp"
-                android:background="@drawable/status_background"
-                android:text="All"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                android:textSize="@dimen/_9ssp"
-                android:gravity="center"
-                android:elevation="2dp" />
+                android:overScrollMode="never"
+                android:scrollbars="none">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_6sdp"
-                android:paddingHorizontal="@dimen/_10sdp"
-                android:paddingVertical="@dimen/_4sdp"
-                android:padding="@dimen/_8sdp"
-                android:background="@drawable/status_background"
-                android:text="Today"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                android:textSize="@dimen/_9ssp"
-                android:gravity="center"
-                android:elevation="2dp" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_6sdp"
-                android:paddingHorizontal="@dimen/_10sdp"
-                android:paddingVertical="@dimen/_4sdp"
-                android:padding="@dimen/_8sdp"
-                android:background="@drawable/status_background"
-                android:text="Overdue"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                android:textSize="@dimen/_9ssp"
-                android:gravity="center"
-                android:elevation="2dp" />
+                    <TextView
+                        android:id="@+id/filterAll"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/_6sdp"
+                        android:background="@drawable/status_background"
+                        android:elevation="2dp"
+                        android:gravity="center"
+                        android:padding="@dimen/_8sdp"
+                        android:paddingHorizontal="@dimen/_10sdp"
+                        android:paddingVertical="@dimen/_4sdp"
+                        android:text="All"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_6sdp"
-                android:paddingHorizontal="@dimen/_10sdp"
-                android:paddingVertical="@dimen/_4sdp"
-                android:padding="@dimen/_8sdp"
-                android:background="@drawable/status_background"
-                android:text="Completed"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                android:textSize="@dimen/_9ssp"
-                android:gravity="center"
-                android:elevation="2dp" />
+                    <TextView
+                        android:id="@+id/filterToday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/_6sdp"
+                        android:background="@drawable/status_background"
+                        android:elevation="2dp"
+                        android:gravity="center"
+                        android:padding="@dimen/_8sdp"
+                        android:paddingHorizontal="@dimen/_10sdp"
+                        android:paddingVertical="@dimen/_4sdp"
+                        android:text="Today"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_6sdp"
-                android:paddingHorizontal="@dimen/_10sdp"
-                android:paddingVertical="@dimen/_4sdp"
-                android:padding="@dimen/_8sdp"
-                android:background="@drawable/status_background"
-                android:text="High priority"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                android:textSize="@dimen/_9ssp"
-                android:gravity="center"
-                android:elevation="2dp" />
+                    <TextView
+                        android:id="@+id/filterPending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/_6sdp"
+                        android:background="@drawable/status_background"
+                        android:elevation="2dp"
+                        android:gravity="center"
+                        android:padding="@dimen/_8sdp"
+                        android:paddingHorizontal="@dimen/_10sdp"
+                        android:paddingVertical="@dimen/_4sdp"
+                        android:text="Pending"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="@dimen/_10sdp"
-                android:paddingVertical="@dimen/_4sdp"
-                android:padding="@dimen/_8sdp"
-                android:background="@drawable/status_background"
-                android:text="History"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                android:textSize="@dimen/_9ssp"
-                android:gravity="center"
-                android:elevation="2dp" />
+                    <TextView
+                        android:id="@+id/filterCompleted"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/_6sdp"
+                        android:background="@drawable/status_background"
+                        android:elevation="2dp"
+                        android:gravity="center"
+                        android:padding="@dimen/_8sdp"
+                        android:paddingHorizontal="@dimen/_10sdp"
+                        android:paddingVertical="@dimen/_4sdp"
+                        android:text="Completed"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        android:textStyle="bold" />
 
+                    <TextView
+                        android:id="@+id/filterHighPriority"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/_6sdp"
+                        android:background="@drawable/status_background"
+                        android:elevation="2dp"
+                        android:gravity="center"
+                        android:padding="@dimen/_8sdp"
+                        android:paddingHorizontal="@dimen/_10sdp"
+                        android:paddingVertical="@dimen/_4sdp"
+                        android:text="High priority"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        android:textStyle="bold" />
+
+
+                </LinearLayout>
+            </HorizontalScrollView>
         </LinearLayout>
-    </HorizontalScrollView>
-    </LinearLayout>
-
+    </androidx.cardview.widget.CardView>
 
 
     <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/taskRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+        android:id="@+id/taskRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 
 </LinearLayout>
