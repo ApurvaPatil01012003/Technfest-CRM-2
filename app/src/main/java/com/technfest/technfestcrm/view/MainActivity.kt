@@ -142,7 +142,16 @@ class MainActivity : AppCompatActivity() {
                     loadFragment(taskFragment)
                 }
 
-                R.id.nav_settings -> loadFragment(SettingFragment())
+                R.id.nav_settings -> {
+                    val settingFragment = SettingFragment()
+                    val bundle = Bundle().apply {
+                        putString("token", token)
+                        putInt("workspaceId", workspaceId)
+                    }
+                    settingFragment.arguments = bundle
+                    loadFragment(settingFragment)
+                }
+
             }
             true
         }

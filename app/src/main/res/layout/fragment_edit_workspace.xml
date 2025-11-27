@@ -55,20 +55,44 @@
                     android:textSize="@dimen/_14ssp"
                     android:textStyle="bold" />
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Workspace Name"
+                    android:paddingTop="@dimen/_10sdp"
+                    android:textColor="@color/black"
+                    android:paddingStart="@dimen/_10sdp"
+                    android:textSize="@dimen/_12ssp" />
+
+                <EditText
+                    android:id="@+id/edtWorkspaceName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Workspace Code"
+                    android:textStyle="bold"
+                    android:layout_marginTop="@dimen/_6sdp"
+                    android:textSize="@dimen/_10ssp"
+                    android:padding="@dimen/_10sdp"
+                    android:background="@drawable/edit_text_bg"
+                    android:inputType="textPersonName" />
+
                 <!-- Full Name -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Workspace Code"
+
+                    android:textColor="@color/black"
                     android:paddingTop="@dimen/_10sdp"
                     android:paddingStart="@dimen/_10sdp"
                     android:textSize="@dimen/_12ssp" />
 
                 <EditText
-                    android:id="@+id/edtName"
+                    android:id="@+id/edtCode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Workspace Code"
+                    android:textStyle="bold"
                     android:layout_marginTop="@dimen/_6sdp"
                     android:textSize="@dimen/_10ssp"
                     android:padding="@dimen/_10sdp"
@@ -81,15 +105,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Type"
+                    android:textColor="@color/black"
                     android:paddingTop="@dimen/_10sdp"
                     android:paddingStart="@dimen/_10sdp"
                     android:textSize="@dimen/_12ssp" />
 
                 <EditText
-                    android:id="@+id/edtEmail"
+                    android:id="@+id/edtType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Type"
+                    android:textStyle="bold"
                     android:layout_marginTop="@dimen/_6sdp"
                     android:textSize="@dimen/_10ssp"
                     android:padding="@dimen/_10sdp"
@@ -103,17 +129,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Timezone"
+                    android:textColor="@color/black"
                     android:paddingTop="@dimen/_10sdp"
                     android:paddingStart="@dimen/_10sdp"
                     android:textSize="@dimen/_12ssp" />
 
                 <EditText
-                    android:id="@+id/edtMobile"
+                    android:id="@+id/edtTimeZone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Timezone"
                     android:layout_marginTop="@dimen/_6sdp"
                     android:textSize="@dimen/_10ssp"
+                    android:textStyle="bold"
                     android:padding="@dimen/_10sdp"
                     android:background="@drawable/edit_text_bg"
                     android:inputType="textPersonName" />
@@ -135,15 +163,17 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Working hours"
+                            android:textColor="@color/black"
                             android:paddingStart="@dimen/_10sdp"
                             android:textSize="@dimen/_12ssp" />
 
                         <EditText
-                            android:id="@+id/edtTeam"
+                            android:id="@+id/edtWorkingHours"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/_6sdp"
                             android:hint="Working hours"
+                            android:textStyle="bold"
                             android:textSize="12sp"
                             android:padding="@dimen/_10sdp"
                             android:background="@drawable/edit_text_bg"
@@ -161,15 +191,17 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Weekends"
+                            android:textColor="@color/black"
                             android:paddingStart="@dimen/_10sdp"
                             android:textSize="@dimen/_12ssp" />
 
                         <EditText
-                            android:id="@+id/edtRole"
+                            android:id="@+id/edtWeekend"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/_6sdp"
                             android:hint="Weekends"
+                            android:textStyle="bold"
                             android:background="@drawable/edit_text_bg"
                             android:padding="@dimen/_10sdp"
                             android:textSize="12sp"
@@ -184,6 +216,7 @@
                     android:orientation="horizontal">
 
                     <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSave"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"

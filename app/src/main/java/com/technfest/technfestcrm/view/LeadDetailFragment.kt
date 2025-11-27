@@ -74,7 +74,11 @@ class LeadDetailFragment : Fragment() {
         val btnReschedule: MaterialButton = view.findViewById(R.id.btnReschedule)
         val btnAddNote: MaterialButton = view.findViewById(R.id.btnAddNote)
         val btnCreateTask: MaterialButton = view.findViewById(R.id.btnCreateTask)
+        val btnCall : MaterialButton = view.findViewById(R.id.btnCall)
 
+        btnCall.setOnClickListener {
+
+        }
         btnReschedule.setOnClickListener {
             val dialogView = layoutInflater.inflate(R.layout.alert_lead_reschedule, null)
             val dialog = AlertDialog.Builder(requireContext())
@@ -147,7 +151,6 @@ class LeadDetailFragment : Fragment() {
             }
 
 
-            // Assign User Spinner
             val assignUserList = listOf("Developer Pratik")
             val assignAdapter =
                 ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, assignUserList)

@@ -6,14 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.technfest.technfestcrm.R
+import com.technfest.technfestcrm.databinding.FragmentEditWorkspaceBinding
+import kotlinx.coroutines.flow.combine
 
 class EditWorkspaceFragment : Fragment() {
-
+    private var _binding: FragmentEditWorkspaceBinding? = null
+    private val binding get() = _binding!!
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_edit_workspace, container, false)
+        _binding = FragmentEditWorkspaceBinding.inflate(inflater, container, false)
+
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -29,5 +34,20 @@ class EditWorkspaceFragment : Fragment() {
         toolbar.setNavigationOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
+
+        val Name = arguments?.getString("WorkspaceName")
+        val Code = arguments?.getString("WorkspaceCode")
+        val Type = arguments?.getString("WorkspaceType")
+        val timeZone = arguments?.getString("TimeZone")
+        val workingHours = arguments?.getString("WorkingHours")
+        val holiday = arguments?.getString("Holiday")
+        binding.edtWorkspaceName.setText(Name)
+        binding.edtCode.setText(Code)
+        binding.edtType.setText(Type)
+        binding.edtTimeZone.setText(timeZone)
+        binding.edtWorkingHours.setText(workingHours)
+        binding.edtWeekend.setText(holiday)
+
+
     }
 }

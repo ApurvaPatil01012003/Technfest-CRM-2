@@ -1,152 +1,317 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/_6sdp"
-    android:orientation="vertical"
-    app:cardBackgroundColor="@android:color/white"
-    app:cardCornerRadius="@dimen/_14sdp"
-    app:cardElevation="@dimen/_4sdp"
-    app:strokeColor="#DDDDDD"
-    app:strokeWidth="@dimen/_1sdp">
+    android:fillViewport="true">
 
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/_10sdp">
+        android:layout_margin="@dimen/_6sdp"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="@dimen/_14sdp"
+        app:cardElevation="@dimen/_4sdp"
+        app:strokeColor="#DDDDDD"
+        app:strokeWidth="@dimen/_1sdp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/_10sdp">
+
+
+        <!-- Title -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/_4sdp"
             android:text="Edit Campaign"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginBottom="@dimen/_4sdp"/>
 
         <!-- Subtitle -->
         <TextView
             android:id="@+id/txtCampaignName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/_12sdp"
             android:text="FB - Billing Software Demo (Delhi)"
             android:textColor="@color/black"
-            android:textSize="@dimen/_12ssp" />
+            android:textSize="@dimen/_12ssp"
+            android:textStyle="bold"
+            android:layout_marginBottom="@dimen/_12sdp"/>
 
         <!-- Campaign Name -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Campaign Name"
+            android:textStyle="bold"
             android:textColor="@color/black"
-            android:textSize="@dimen/_11ssp" />
+            android:textSize="@dimen/_11ssp"/>
 
         <EditText
-            android:id="@+id/etCampaignName"
+            android:id="@+id/edtCampaignName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/_8sdp"
             android:background="@drawable/edit_text_bg"
-            android:hint="Enter Campaign Name"
             android:padding="@dimen/_10sdp"
-            android:text="FB - Billing Software Demo (Delhi)" />
+            android:hint="Enter Campaign Name"
+            android:layout_marginBottom="@dimen/_8sdp"/>
 
-        <!-- Status -->
+        <!-- Campaign Type -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Status"
+            android:text="Campaign Type"
+            android:textStyle="bold"
             android:textColor="@color/black"
-            android:textSize="@dimen/_11ssp" />
+            android:textSize="@dimen/_11ssp"/>
 
+        <EditText
+            android:id="@+id/etCampaignType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_bg"
+            android:padding="@dimen/_10sdp"
+            android:hint="Enter Campaign Type"
+            android:layout_marginBottom="@dimen/_8sdp"/>
+
+        <!-- START - END DATE -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/spinner_background"
-            android:orientation="vertical"
-            android:padding="@dimen/_2sdp"
-           >
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:padding="@dimen/_8sdp">
 
-            <androidx.appcompat.widget.AppCompatSpinner
-                android:id="@+id/spinnerStatus"
-                android:layout_width="match_parent"
+            <!-- Start Date -->
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:spinnerMode="dropdown" />
+                android:layout_weight="1"
+                android:orientation="vertical">
 
+                <TextView
+                    android:text="Start Date"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <EditText
+                    android:id="@+id/etStartDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Start Date"
+                    android:focusable="false"
+                    android:drawableEnd="@drawable/baseline_date_range_24"
+                    android:background="@drawable/edit_text_bg"
+                    android:padding="@dimen/_10sdp"/>
+            </LinearLayout>
+
+            <!-- End Date -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="@dimen/_12sdp">
+
+                <TextView
+                    android:text="End Date"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <EditText
+                    android:id="@+id/etEndDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="End Date"
+                    android:focusable="false"
+                    android:drawableEnd="@drawable/baseline_date_range_24"
+                    android:background="@drawable/edit_text_bg"
+                    android:padding="@dimen/_10sdp"/>
+            </LinearLayout>
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Budget (₹)"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_11ssp" />
-
-        <EditText
-            android:id="@+id/etBudget"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/_8sdp"
-            android:background="@drawable/edit_text_bg"
-            android:inputType="number"
-            android:padding="@dimen/_10sdp"
-            android:text="8000" />
-
-        <!-- Spend -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Spend (₹)"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_11ssp" />
-
-        <EditText
-            android:id="@+id/etSpend"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/_12sdp"
-            android:background="@drawable/edit_text_bg"
-            android:inputType="number"
-            android:padding="@dimen/_10sdp"
-            android:text="3100" />
-
+        <!-- BUDGET - SPEND -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:padding="@dimen/_8sdp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:text="Budget"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <EditText
+                    android:id="@+id/etBudget"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edit_text_bg"
+                    android:padding="@dimen/_10sdp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="@dimen/_12sdp">
+
+                <TextView
+                    android:text="Spend"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <EditText
+                    android:id="@+id/etSpend"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edit_text_bg"
+                    android:padding="@dimen/_10sdp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- LEADS & CPL -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:padding="@dimen/_8sdp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Leads"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"/>
+
+                <EditText
+                    android:id="@+id/etLeadCount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edit_text_bg"
+                    android:padding="@dimen/_10sdp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="@dimen/_12sdp">
+
+                <TextView
+                    android:text="CPL"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <EditText
+                    android:id="@+id/etCpl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edit_text_bg"
+                    android:padding="@dimen/_10sdp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <!-- Description -->
+        <TextView
+            android:text="Description"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:id="@+id/etDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_bg"
+            android:padding="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_8sdp"/>
+
+        <!-- Tags -->
+        <TextView
+            android:textStyle="bold"
+            android:text="Tags"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:id="@+id/etTags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_bg"
+            android:padding="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_8sdp"/>
+
+        <!-- Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/_10sdp">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSave"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_4sdp"
                 android:layout_weight="1"
-                android:background="@drawable/btn_gradient"
+                android:layout_height="wrap_content"
                 android:text="Save Changes"
-                android:textAllCaps="false"
                 android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                android:background="@drawable/btn_gradient"
                 app:backgroundTint="@null"
-                app:cornerRadius="12dp" />
+                app:cornerRadius="12dp"
+                android:layout_marginEnd="@dimen/_4sdp"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCancel"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_4sdp"
                 android:layout_weight="1"
+                android:layout_height="wrap_content"
                 android:text="Cancel"
-                android:textAllCaps="false"
                 android:textColor="#6475D0"
+                android:textAllCaps="false"
                 app:backgroundTint="@android:color/white"
-                app:cornerRadius="12dp"
                 app:strokeColor="#6475D0"
-                app:strokeWidth="2dp" />
+                app:strokeWidth="2dp"
+                app:cornerRadius="12dp"
+                android:layout_marginStart="@dimen/_4sdp"/>
         </LinearLayout>
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
+</ScrollView>

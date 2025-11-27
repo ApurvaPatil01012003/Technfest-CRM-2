@@ -10,11 +10,13 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.telephony.SubscriptionManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
@@ -24,11 +26,19 @@ import com.technfest.technfestcrm.R
 import com.technfest.technfestcrm.databinding.FragmentSettingBinding
 import androidx.core.content.edit
 import androidx.core.net.toUri
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelStore
+import com.technfest.technfestcrm.repository.WorkspaceRepository
+import com.technfest.technfestcrm.viewmodel.WorkspaceViewModel
+import com.technfest.technfestcrm.viewmodel.WorkspaceViewModelFactory
 
 class SettingFragment : Fragment() {
 
     private var _binding: FragmentSettingBinding? = null
     private val binding get() = _binding!!
+    val workspaceViewmodel : WorkspaceViewModel by viewModels() {
+        WorkspaceViewModelFactory(WorkspaceRepository())
+    }
 
     private var isExpanded = false
     private var isSimExpanded = false
@@ -36,6 +46,16 @@ class SettingFragment : Fragment() {
     private var isWorkspaceExpanded = false
     private var ignoreListenerUpdates = false
     private var isCallExpanded = false
+    private var token: String? = null
+    private var workspaceId: Int = -1
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            token = it.getString("token")
+            workspaceId = it.getInt("workspaceId", -1)
+        }
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
@@ -44,6 +64,7 @@ class SettingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSettingBinding.inflate(inflater, container, false)
+
 
         binding.headerLayout.setOnClickListener {
             isExpanded = !isExpanded
@@ -101,12 +122,31 @@ class SettingFragment : Fragment() {
         }
 
         binding.btnEditWorkspace.setOnClickListener {
-            val editWorkspaceFragment = EditWorkspaceFragment()
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, editWorkspaceFragment)
-                .addToBackStack(null)
-                .commit()
+
+            val currentWorkspace = workspaceViewmodel.workspaceResult.value
+
+            if (currentWorkspace != null) {
+
+                val editWorkspaceFragment = EditWorkspaceFragment()
+
+                val bundle = Bundle().apply {
+                    putString("WorkspaceName", currentWorkspace.name)
+                    putString("WorkspaceType", currentWorkspace.type)
+                    putString("TimeZone", currentWorkspace.timezone)
+                    putString("WorkspaceCode", currentWorkspace.workspaceCode)
+                    putString("WorkingHours", "${currentWorkspace.workingHoursStart} - ${currentWorkspace.workingHoursEnd}")
+                    putString("Holiday", currentWorkspace.weekends)
+                }
+
+                editWorkspaceFragment.arguments = bundle
+
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, editWorkspaceFragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
         }
+
 
         binding.headerWorkspaceLayout.setOnClickListener {
             isWorkspaceExpanded = !isWorkspaceExpanded
@@ -289,6 +329,21 @@ class SettingFragment : Fragment() {
         }
 
         refreshAllSwitchStates()
+
+        if (token != null && workspaceId != -1) {
+            workspaceViewmodel.getWorkspaceDetails(token!!,workspaceId)
+        }
+
+        workspaceViewmodel.workspaceResult.observe(viewLifecycleOwner) {ws ->
+            if (ws !=null) {
+                binding.txtWorkspaceName.text = ws.name
+                binding.txtWorkspaceCode.text = ws.workspaceCode
+                binding.txtWorkspaceType.text = ws.type
+                binding.txtWorkspaceTimeZone.text = ws.timezone
+                binding.txtWorkspaceHours.text = "${ws.workingHoursStart} - ${ws.workingHoursEnd}"
+                binding.txtWorkspaceDay.text = ws.weekends
+            }
+        }
     }
 
     override fun onResume() {

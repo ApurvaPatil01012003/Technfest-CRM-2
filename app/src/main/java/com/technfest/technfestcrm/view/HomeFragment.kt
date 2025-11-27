@@ -242,8 +242,14 @@ class HomeFragment : Fragment() {
             val pendingTodayCount = todayTasks.count {
                 it.status.equals("pending", ignoreCase = true)
             }
+            if (todayTasks.isEmpty()) {
+                binding.txtTaskNotAssign.visibility = View.VISIBLE
+                binding.taskRecyclerView.visibility = View.GONE
+            } else {
+                binding.txtTaskNotAssign.visibility = View.GONE
+                binding.taskRecyclerView.visibility = View.VISIBLE
+            }
 
-            Log.d("TODAY_PENDING_COUNT", pendingTodayCount.toString())
             binding.txtTodayPendingTaskCount.text = pendingTodayCount.toString()
 
 

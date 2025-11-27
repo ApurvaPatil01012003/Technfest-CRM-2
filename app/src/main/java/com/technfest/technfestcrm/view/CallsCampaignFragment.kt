@@ -59,7 +59,7 @@ class CallsCampaignFragment : Fragment() {
         }
 
         setupViewModel()
-        setupRecyclerView()
+        setupRecyclerView(token.toString())
         observeData()
         viewModel.fetchCategories(token.toString())
 
@@ -75,11 +75,26 @@ class CallsCampaignFragment : Fragment() {
         viewModel = ViewModelProvider(this, factory).get(CampaignsViewModel::class.java)
     }
 
-    private fun setupRecyclerView() {
-        campaignAdapter = CampaignAdapter(emptyList())
+//    private fun setupRecyclerView() {
+//
+//        campaignAdapter = CampaignAdapter(emptyList())
+//        binding.campaignsRecyclerview.layoutManager = LinearLayoutManager(requireContext())
+//        binding.campaignsRecyclerview.adapter = campaignAdapter
+//    }
+
+    private fun setupRecyclerView(token: String) {
+        val repository = CampaignRepository()
+
+        campaignAdapter = CampaignAdapter(
+            campaignList = emptyList(),
+            repository = repository,
+            token = token
+        )
+
         binding.campaignsRecyclerview.layoutManager = LinearLayoutManager(requireContext())
         binding.campaignsRecyclerview.adapter = campaignAdapter
     }
+
 
     private fun observeData() {
 

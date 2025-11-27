@@ -63,4 +63,6 @@ class CampaignsViewModel(private val repository: CampaignRepository) : ViewModel
             }
         }
     }
+
+
 }

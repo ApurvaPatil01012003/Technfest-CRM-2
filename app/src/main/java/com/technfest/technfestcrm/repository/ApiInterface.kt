@@ -3,8 +3,10 @@ package com.technfest.technfestcrm.repository
 import com.technfest.technfestcrm.model.AuthMeResponseClass
 import com.technfest.technfestcrm.model.CampaignCategory
 import com.technfest.technfestcrm.model.CampaignResponse
+import com.technfest.technfestcrm.model.CampaignResponseItem
 import com.technfest.technfestcrm.model.CreateTaskResponse
 import com.technfest.technfestcrm.model.CreatesLeadResponse
+import com.technfest.technfestcrm.model.EditCampaignRequest
 import com.technfest.technfestcrm.model.GetWorkspacesClass
 import com.technfest.technfestcrm.model.LeadMetaItem
 import com.technfest.technfestcrm.model.LeadRequest
@@ -13,12 +15,15 @@ import com.technfest.technfestcrm.model.LoginRequest
 import com.technfest.technfestcrm.model.LoginResponse
 import com.technfest.technfestcrm.model.TaskRequest
 import com.technfest.technfestcrm.model.TaskResponse
+import com.technfest.technfestcrm.model.WorkspaceResponse
 import com.technfest.technfestcrm.network.RetrofitInstance
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiInterface {
@@ -57,9 +62,6 @@ interface ApiInterface {
         @Query("category") category: String
     ): Response<List<LeadMetaItem>>
 
-
-
-
     @GET("api/campaigns")
     suspend fun getCampaigns(
         @Header("Authorization") token: String,
@@ -85,5 +87,15 @@ interface ApiInterface {
     ): Response<CreateTaskResponse>
 
 
+    @GET("api/workspaces")
+    suspend fun getWorkspace(
+        @Header("Authorization") token: String
+    ): Response<WorkspaceResponse>
 
+    @PATCH("api/campaigns/{id}")
+    suspend fun editCampaign(
+        @Header("Authorization") token: String,
+        @Path("id") campaignId: Int,
+        @Body request: EditCampaignRequest
+    ): Response<CampaignResponseItem>
 }

@@ -548,6 +548,37 @@
                 android:padding="@dimen/_12sdp"
                 android:visibility="gone">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="@dimen/_4sdp"
+                    android:weightSum="2">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Workspace Name"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp" />
+
+                    <TextView
+                        android:id="@+id/txtWorkspaceName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:text="name"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_1sdp"
+                    android:layout_marginVertical="@dimen/_4sdp"
+                    android:background="#DDDDDD" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -565,6 +596,7 @@
                         android:textSize="@dimen/_12ssp" />
 
                     <TextView
+                        android:id="@+id/txtWorkspaceCode"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -597,6 +629,7 @@
                         android:textSize="@dimen/_12ssp" />
 
                     <TextView
+                        android:id="@+id/txtWorkspaceType"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -629,6 +662,7 @@
                         android:textSize="@dimen/_12ssp" />
 
                     <TextView
+                        android:id="@+id/txtWorkspaceTimeZone"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -661,6 +695,7 @@
                         android:textSize="@dimen/_12ssp" />
 
                     <TextView
+                        android:id="@+id/txtWorkspaceHours"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -693,6 +728,7 @@
                         android:textSize="@dimen/_12ssp" />
 
                     <TextView
+                        android:id="@+id/txtWorkspaceDay"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
