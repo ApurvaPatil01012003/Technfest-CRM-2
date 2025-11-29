@@ -1,6 +1,8 @@
 package com.technfest.technfestcrm.repository
 
 import com.technfest.technfestcrm.model.AuthMeResponseClass
+import com.technfest.technfestcrm.model.CallLogRequest
+import com.technfest.technfestcrm.model.CallLogResponse
 import com.technfest.technfestcrm.model.CampaignCategory
 import com.technfest.technfestcrm.model.CampaignResponse
 import com.technfest.technfestcrm.model.CampaignResponseItem
@@ -13,8 +15,13 @@ import com.technfest.technfestcrm.model.LeadRequest
 import com.technfest.technfestcrm.model.LeadResponse
 import com.technfest.technfestcrm.model.LoginRequest
 import com.technfest.technfestcrm.model.LoginResponse
+import com.technfest.technfestcrm.model.RecordingResponse
+import com.technfest.technfestcrm.model.RecordingUploadRequest
+import com.technfest.technfestcrm.model.RecordingUrlUpdateRequest
 import com.technfest.technfestcrm.model.TaskRequest
 import com.technfest.technfestcrm.model.TaskResponse
+import com.technfest.technfestcrm.model.TaskTypeResponse
+import com.technfest.technfestcrm.model.UsersResponse
 import com.technfest.technfestcrm.model.WorkspaceResponse
 import com.technfest.technfestcrm.network.RetrofitInstance
 import retrofit2.Response
@@ -86,6 +93,17 @@ interface ApiInterface {
         @Body taskRequest: TaskRequest
     ): Response<CreateTaskResponse>
 
+    @GET("api/tasks/types")
+    suspend fun getTaskType(
+        @Header("Authorization") token: String,
+        @Query("workspaceId") workspaceId: Int
+    ): Response<TaskTypeResponse>
+
+
+    @GET("api/users")
+    suspend fun getUsers(
+        @Header("Authorization") token: String,
+    ): Response<UsersResponse>
 
     @GET("api/workspaces")
     suspend fun getWorkspace(
@@ -98,4 +116,26 @@ interface ApiInterface {
         @Path("id") campaignId: Int,
         @Body request: EditCampaignRequest
     ): Response<CampaignResponseItem>
+
+    @POST("api/webhooks/call-log")
+    suspend fun sendCallLog(
+        @Header("X-API-KEY") apiKey: String,
+        @Body request: CallLogRequest
+    ):Response<CallLogResponse>
+
+
+    @POST("api/call-logs/{id}/recording")
+    suspend fun uploadRecording(
+        @Header("Authorization") token: String,
+        @Path("id") callLogId: Int,
+        @Body request: RecordingUploadRequest
+    ): Response<RecordingResponse>
+
+    @PATCH("api/call-logs/{id}/recording-url")
+    suspend fun updateRecordingUrl(
+        @Header("Authorization") token: String,
+        @Path("id") callLogId: Int,
+        @Body body: RecordingUrlUpdateRequest
+    ): Response<RecordingResponse>
+
 }

@@ -7,6 +7,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.technfest.technfestcrm.R
 import com.technfest.technfestcrm.model.LeadResponseItem
+import com.google.i18n.phonenumbers.PhoneNumberUtil
+import com.google.i18n.phonenumbers.NumberParseException
+import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat
 
 class LeadAdapter(
     private var leadList: List<LeadResponseItem>,
@@ -41,7 +44,8 @@ class LeadAdapter(
         val lead = leadList[position]
 
         holder.leadName.text = lead.fullName
-        holder.leadNumber.text = "+91 ${lead.mobile}"
+//        holder.leadNumber.text = "+91 ${lead.mobile}"
+        holder.leadNumber.text = formatInternationalNumber(lead.mobile)
         holder.location.text = "Location : ${lead.location?.toString() ?: "Not availble"}"
         holder.priority.text = "Priority : ${lead.priority}"
         holder.source.text ="Source : ${lead.source?.toString() ?: "Not availble" }"
@@ -93,4 +97,19 @@ class LeadAdapter(
         notifyDataSetChanged()
     }
 
+
+
+    fun formatInternationalNumber(rawNumber: String): String {
+        return try {
+            val phoneUtil = PhoneNumberUtil.getInstance()
+
+            // Parse using UNKNOWN region so it auto-detects country code
+            val numberProto = phoneUtil.parse(rawNumber, null)
+
+            // Format in correct international style: +XX XXXXXXX
+            phoneUtil.format(numberProto, PhoneNumberFormat.INTERNATIONAL)
+        } catch (e: Exception) {
+            rawNumber  // fallback if parsing fails
+        }
+    }
 }

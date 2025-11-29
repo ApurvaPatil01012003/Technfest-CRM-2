@@ -17,6 +17,14 @@ import androidx.core.content.edit
 class CallRecordingFragment : Fragment() {
     private var _binding: FragmentCallRecordingBinding? = null
     private val binding get() = _binding!!
+    private var token: String? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        token = arguments?.getString("Token")
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,12 +53,17 @@ class CallRecordingFragment : Fragment() {
             binding.btnRemoveFolder.visibility = View.GONE
         }
         binding.tvRecordingUploads.setOnClickListener {
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.fragmentContainer, AllRecordingsFragment())
+            val fragment = AllRecordingsFragment()
+            val bundle = Bundle()
+            bundle.putString("Token", token)
+            fragment.arguments = bundle
+
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, fragment)
                 .addToBackStack(null)
                 .commit()
         }
+
     }
 
 

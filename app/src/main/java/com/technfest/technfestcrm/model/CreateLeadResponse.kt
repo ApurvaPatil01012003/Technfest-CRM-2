@@ -6,8 +6,7 @@ data class CreatesLeadResponse(
     val id: Int,
     @SerializedName("full_name")
     val fullName: String,
-    val mobile: String?,                   // optional
-    val email: String?,                    // optional
-    val company: String?                   // optional
-    // add more fields if your API returns them
+    val mobile: String?,
+    val email: String?,
+    val company: String?
 )

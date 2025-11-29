@@ -75,7 +75,6 @@ class AddNewLeadFragment : Fragment() {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
-        // ViewModel setup
         repository = LeadRepository()
         viewModel = ViewModelProvider(this, LeadViewModelFactory(repository))[LeadViewModel::class.java]
 

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.technfest.technfestcrm.model.TaskResponseItem
+import com.technfest.technfestcrm.model.TaskTypeResponse
 import com.technfest.technfestcrm.repository.TaskRepository
 import kotlinx.coroutines.launch
 class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
@@ -31,5 +32,25 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
             loading.value = false
         }
     }
+
+    val taskTypeResult = MutableLiveData<List<String>>()
+
+    fun fetchTaskType(token: String,workspaceId: Int)
+    {
+     viewModelScope.launch {
+         try {
+
+             val response = repository.getTaskType(token,workspaceId)
+             if(response.isSuccessful)
+             {
+                 taskTypeResult.postValue(response.body())
+             }
+         }catch (e: Exception)
+         {
+
+         }
+     }
+    }
+
 }
 

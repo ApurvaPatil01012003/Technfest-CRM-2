@@ -18,7 +18,7 @@ data class LeadResponseItem(
     val nextFollowupAt: Any,
     val notes: String,
     val ownerName: Any,
-    val ownerUserId: Any,
+    val ownerUserId: Int,
     val priority: String,
     val rescheduledAt: Any,
     val source: Any,

@@ -17,6 +17,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.SeekBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
@@ -29,6 +30,12 @@ import com.technfest.technfestcrm.databinding.FragmentAllRecordingsBinding
 import java.io.File
 import java.io.FileOutputStream
 import androidx.core.net.toUri
+import androidx.lifecycle.lifecycleScope
+import com.technfest.technfestcrm.model.RecordingUploadRequest
+import com.technfest.technfestcrm.repository.RecordingsRepository
+import com.technfest.technfestcrm.viewmodel.RecordingViewModel
+import com.technfest.technfestcrm.viewmodel.RecordingViewModelFactory
+import kotlinx.coroutines.launch
 
 class AllRecordingsFragment : Fragment() {
 
@@ -37,22 +44,13 @@ class AllRecordingsFragment : Fragment() {
 
     private var mediaPlayer: MediaPlayer? = null
     private var isPlaying = false
+    private lateinit var recordingViewModel: RecordingViewModel
+    private var token: String? = null
 
-//    @RequiresApi(Build.VERSION_CODES.Q)
-//    private val folderPicker =
-//        registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
-//            if (uri != null) {
-//                requireContext().contentResolver.takePersistableUriPermission(
-//                    uri,
-//                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-//                )
-//
-//                val prefs = requireContext().getSharedPreferences("recordings_prefs", Context.MODE_PRIVATE)
-//                prefs.edit { putString("tree_uri", uri.toString()) }
-//
-//                refreshList()
-//            }
-//        }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        token = arguments?.getString("Token")
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentAllRecordingsBinding.inflate(inflater, container, false)
@@ -65,20 +63,19 @@ class AllRecordingsFragment : Fragment() {
 
         refreshList()
 
-//        binding.btnMoveRecordings.setOnClickListener {
-//            moveAllRecordings()
-//        }
+        val repo = RecordingsRepository()
+        val factory = RecordingViewModelFactory(repo)
+        recordingViewModel = factory.create(RecordingViewModel::class.java)
 
-//        binding.btnSelectFolder.setOnClickListener {
-//            folderPicker.launch(null)
-//        }
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun refreshList() {
         val list = readRecordings()
         binding.recyclerCallRecordings.adapter = UniversalRecordingsAdapter(list) { file ->
-            showPlayDialog(file)
+          //  showPlayDialog(file)
+            showOptionsDialog(file)
+
         }
     }
 
@@ -86,7 +83,7 @@ class AllRecordingsFragment : Fragment() {
         val prefs = requireContext().getSharedPreferences("recordings_prefs", Context.MODE_PRIVATE)
         val treeUri = prefs.getString("folder_path", null) ?: return emptyList()
 
-        val root = DocumentFile.fromTreeUri(requireContext(), Uri.parse(treeUri)) ?: return emptyList()
+        val root = DocumentFile.fromTreeUri(requireContext(), treeUri.toUri()) ?: return emptyList()
 
         return root.listFiles().filter {
             val n = it.name?.lowercase() ?: ""
@@ -118,6 +115,24 @@ class AllRecordingsFragment : Fragment() {
 
         playRecording(file.uri, seekBar, btnPlay)
     }
+
+
+
+
+    private fun showOptionsDialog(file: DocumentFile) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Recording Options")
+            .setMessage("Choose an action for: ${file.name}")
+            .setPositiveButton("Play") { _, _ ->
+                showPlayDialog(file)
+            }
+            .setNegativeButton("Upload") { _, _ ->
+                uploadRecordingToServer(file)
+            }
+            .setNeutralButton("Cancel", null)
+            .show()
+    }
+
 
     private fun playRecording(uri: Uri, seekBar: SeekBar, play: ImageButton) {
         mediaPlayer?.release()
@@ -274,6 +289,75 @@ class AllRecordingsFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.Q)
     fun autoMoveRecordings() {
         moveAllRecordings()
+    }
+    private fun fileToBase64(uri: Uri, mimeType: String): String {
+        val inputStream = requireContext().contentResolver.openInputStream(uri)
+        val bytes = inputStream?.readBytes() ?: return ""
+        val base64 = android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP)
+        return "data:$mimeType;base64,$base64"
+    }
+
+
+    private fun uploadRecordingToServer(file: DocumentFile) {
+        val uri = file.uri
+        val fileName = file.name ?: "recording.wav"
+        val mimeType = requireContext().contentResolver.getType(uri) ?: "audio/wav"
+
+        val base64String = fileToBase64(uri, mimeType)
+        if (base64String.isEmpty()) {
+            Toast.makeText(requireContext(), "Failed to encode file", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val passedToken = token ?: ""
+        val callLogId = getCallLogId()
+
+        val request = RecordingUploadRequest(
+            fileBase64 = base64String,
+            filename = fileName
+        )
+
+        lifecycleScope.launch {
+            try {
+                val response = recordingViewModel.uploadRecording(
+                    passedToken,
+                    callLogId,
+                    request
+                )
+
+                if (!isAdded) return@launch
+
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    val url = body?.recordingUrl
+
+                    if (!url.isNullOrEmpty()) {
+                        saveLastRecordingUrl(url)
+                    }
+
+                    Toast.makeText(requireActivity(), "Uploaded: ${body?.recordingUrl}", Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(requireActivity(), "Upload Failed: ${response.code()}", Toast.LENGTH_LONG).show()
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                if (isAdded) {
+                    Toast.makeText(requireActivity(), "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun getCallLogId(): Int {
+        val prefs = requireContext().getSharedPreferences("CallLogPrefs", Context.MODE_PRIVATE)
+        return prefs.getInt("lastCallLogId", 0)
+    }
+    private fun saveLastRecordingUrl(url: String) {
+        val prefs = requireContext().getSharedPreferences("CallLogPrefs", Context.MODE_PRIVATE)
+        prefs.edit() {
+            putString("lastRecordingUrl", url)
+        }
     }
 
 

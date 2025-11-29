@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="@dimen/_10sdp"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mark Completed"
+        android:textStyle="bold"
+        android:textSize="@dimen/_14sdp"
+        android:textColor="@color/black"
+        android:layout_marginTop="@dimen/_4sdp"/>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Status"
+        android:textStyle="bold"
+        android:textSize="@dimen/_12sdp"
+        android:textColor="@color/black"
+        android:layout_marginTop="@dimen/_4sdp"/>
+
+    <EditText
+        android:id="@+id/etStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="converted"
+        android:background="@drawable/edit_text_bg"
+        android:padding="@dimen/_8sdp"
+        android:inputType="text" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Note"
+        android:textSize="@dimen/_12sdp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginTop="@dimen/_4sdp"/>
+
+    <EditText
+        android:id="@+id/etNote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Closed successfully"
+        android:background="@drawable/edit_text_bg"
+        android:padding="@dimen/_8sdp"
+        android:inputType="textMultiLine"
+        android:maxLines="5" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSave"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Save"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:layout_marginEnd="@dimen/_4sdp"
+            app:cornerRadius="12dp"
+            app:backgroundTint="@null"
+            android:background="@drawable/btn_gradient"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Cancel"
+            android:textAllCaps="false"
+            android:textColor="#6475D0"
+            android:layout_marginStart="@dimen/_4sdp"
+            app:cornerRadius="12dp"
+            app:backgroundTint="@android:color/white"
+            app:strokeWidth="2dp"
+            app:strokeColor="#6475D0" />
+    </LinearLayout>
+
+
+</LinearLayout>

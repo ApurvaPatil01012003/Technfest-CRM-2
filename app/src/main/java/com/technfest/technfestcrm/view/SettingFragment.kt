@@ -176,11 +176,17 @@ class SettingFragment : Fragment() {
             }
             binding.callRecordings.setOnClickListener {
                 val callRecordingFragment = CallRecordingFragment()
+                val bundle = Bundle()
+
+                bundle.putString("Token", token)
+                callRecordingFragment.arguments = bundle
+
                 parentFragmentManager.beginTransaction()
                     .replace(R.id.fragmentContainer, callRecordingFragment)
                     .addToBackStack(null)
                     .commit()
             }
+
 
         }
 

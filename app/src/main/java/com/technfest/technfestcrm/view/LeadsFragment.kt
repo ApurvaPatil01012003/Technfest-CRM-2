@@ -3,6 +3,7 @@ package com.technfest.technfestcrm.view
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +11,6 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.technfest.technfestcrm.R
@@ -95,9 +95,16 @@ class LeadsFragment : Fragment() {
 
             val tokenStr = token ?: ""
             val wsId = workspaceId ?: 0
+            val ownerUserId = selectedLead.ownerUserId ?: 0
+            val campaignId = selectedLead.campaignId ?:0
 
             val detailFragment =
-                LeadDetailFragment.newInstance(selectedLead, tokenStr, wsId)
+                LeadDetailFragment.newInstance( selectedLead,
+                    tokenStr,
+                    wsId,
+                    selectedLead.campaignCategoryId ?: 0,
+                    ownerUserId ,
+                   campaignId)
 
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainer, detailFragment)
@@ -125,6 +132,13 @@ class LeadsFragment : Fragment() {
             leadList.clear()
             leadList.addAll(data)
             updateFilteredList(fullLeadList)
+            //ownerUserId
+            //campaignId
+            //campaincodeN-> campaignCategoryId
+
+
+            Log.d("LeadData", data.toString())
+
 
             binding.txtCountLead.text = "Leads Count: ${data.size}"
 
@@ -146,11 +160,13 @@ class LeadsFragment : Fragment() {
             val prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
             val token = prefs.getString("token", null)
             val workspaceId = prefs.getInt("workspaceId", -1)
+            val userId = prefs.getInt("userId", 0)
 
             val fragment = AddNewLeadFragment()
             fragment.arguments = Bundle().apply {
                 putString("token", token)
                 putInt("workspaceId", workspaceId)
+
             }
 
             parentFragmentManager.beginTransaction()

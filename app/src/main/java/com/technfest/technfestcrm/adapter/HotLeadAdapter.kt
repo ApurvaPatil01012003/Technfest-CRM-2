@@ -5,8 +5,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.technfest.technfestcrm.R
-
-import com.technfest.technfestcrm.model.HotLead
 import com.technfest.technfestcrm.model.LeadResponseItem
 
 class HotLeadAdapter(private val leadList: List<LeadResponseItem>,
