@@ -5,16 +5,20 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.telephony.PhoneStateListener
+import android.provider.Settings
 import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.RadioButton
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -28,7 +32,6 @@ import com.google.android.material.button.MaterialButton
 import com.technfest.technfestcrm.R
 import com.technfest.technfestcrm.model.LeadResponseItem
 import com.technfest.technfestcrm.model.TaskRequest
-import com.technfest.technfestcrm.utils.MyCallListener
 import com.technfest.technfestcrm.repository.LeadRepository
 import com.technfest.technfestcrm.repository.TaskRepository
 import kotlinx.coroutines.launch
@@ -36,20 +39,18 @@ import java.util.Calendar
 import com.technfest.technfestcrm.databinding.FragmentLeadDetailBinding
 import com.technfest.technfestcrm.repository.CampaignRepository
 import com.technfest.technfestcrm.repository.UsersRepository
-import com.technfest.technfestcrm.viewmodel.CallLogViewModel
 import com.technfest.technfestcrm.viewmodel.CampaignViewModelFactory
 import com.technfest.technfestcrm.viewmodel.CampaignsViewModel
 import com.technfest.technfestcrm.viewmodel.TaskViewModel
 import com.technfest.technfestcrm.viewmodel.TaskViewModelFactory
 import com.technfest.technfestcrm.viewmodel.UserViewModelFactory
 import com.technfest.technfestcrm.viewmodel.UsersViewModel
+import androidx.core.content.edit
+import androidx.core.net.toUri
 
 class LeadDetailFragment : Fragment() {
     private lateinit var binding: FragmentLeadDetailBinding
     private lateinit var telephonyManager: TelephonyManager
-    private var callListener: MyCallListener? = null
-
-
     private var workspaceId = 0
     private var token = ""
     private var leadNumber: String = ""
@@ -63,17 +64,8 @@ class LeadDetailFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentLeadDetailBinding.inflate(inflater, container, false)
-        val toolbar =
-            view?.findViewById<MaterialToolbar>(R.id.toolbar)
-        (activity as? AppCompatActivity)?.apply {
-            setSupportActionBar(toolbar)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setDisplayShowHomeEnabled(true)
-        }
-
-
+    ): LinearLayout {
+       binding = FragmentLeadDetailBinding.inflate(inflater, container, false)
         token = arguments?.getString("token") ?: ""
         workspaceId = arguments?.getInt("workspaceId") ?: 0
         leadNumber = arguments?.getString("mobile") ?: ""
@@ -83,16 +75,28 @@ class LeadDetailFragment : Fragment() {
         campaignId = arguments?.getInt("campaignId") ?: 0
 
 
-        toolbar?.setNavigationOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
         telephonyManager =
             requireContext().getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
 
         fetchCategories()
         binding.btnCall.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                !Settings.canDrawOverlays(requireContext())
+            ) {
+                val intent = Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:${requireContext().packageName}")
+                )
+                startActivity(intent)
+
+                Toast.makeText(
+                    requireContext(),
+                    "Allow overlay permission to show call popup",
+                    Toast.LENGTH_LONG
+                ).show()
+                return@setOnClickListener
+            }
             prepareLeadMetaForService()
-            registerCallListener()
             makeCall()
         }
 
@@ -105,7 +109,49 @@ class LeadDetailFragment : Fragment() {
             dialog.show()
 
         }
+        binding.btnCreateQuotation.setOnClickListener {
 
+            val dialogView = layoutInflater.inflate(R.layout.alert_create_quotation, null)
+
+            val dialog = AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .setCancelable(true)
+                .create()
+
+            dialog.show()
+
+            val radioOnline = dialogView.findViewById<RadioButton>(R.id.radioOnline)
+            val radioManually = dialogView.findViewById<RadioButton>(R.id.radioManually)
+            val layoutOnlinePay = dialogView.findViewById<LinearLayout>(R.id.layoutOnlinePay)
+            val layoutManual = dialogView.findViewById<LinearLayout>(R.id.layoutManual)
+            val btnSend = dialogView.findViewById<Button>(R.id.btnSend)
+            val btnClose = dialogView.findViewById<ImageView>(R.id.btnClose)
+            btnClose.setOnClickListener { dialog.dismiss() }
+
+            layoutOnlinePay.visibility = View.GONE
+            btnSend.visibility = View.GONE
+            layoutManual.visibility = View.GONE
+
+
+            radioOnline.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    layoutOnlinePay.visibility = View.VISIBLE
+                    btnSend.visibility = View.VISIBLE
+                } else {
+                    layoutOnlinePay.visibility = View.GONE
+                    btnSend.visibility = View.GONE
+                }
+            }
+            radioManually.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    layoutManual.visibility = View.VISIBLE
+
+                } else {
+                    layoutManual.visibility = View.GONE
+                }
+            }
+
+        }
 
         binding.btnReschedule.setOnClickListener {
             val dialogView = layoutInflater.inflate(R.layout.alert_lead_reschedule, null)
@@ -307,7 +353,7 @@ class LeadDetailFragment : Fragment() {
                 lifecycleScope.launch {
                     try {
                         val passedToken = token
-                        Log.d("Toekns", passedToken)
+                        Log.d("Tokens", passedToken)
                         val passedWorkspaceId = workspaceId
 
                         val repo = TaskRepository()
@@ -364,27 +410,28 @@ class LeadDetailFragment : Fragment() {
         binding.txtOwnerName.text = args?.getString("ownerName")
         binding.txtTeam.text = args?.getString("teamName")
         binding.txtNote.text = args?.getString("note")
-        binding.toolbarTitle.text = args?.getString("name") ?: "N/A"
-        binding.toolbarSubtitle.text = args?.getString("location") ?: "N/A"
         val leadName = args?.getString("name") ?: "N/A"
-        binding.userInitialCircle.text = getInitials(leadName)
+        binding.btnZoom.setOnClickListener {
+            val dialogView = layoutInflater.inflate(R.layout.alert_zoom_task, null)
+            AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .setCancelable(true)
+                .create()
+                .show()
+        }
 
+        binding.tvTitle.setOnClickListener {
+            val dialogView = layoutInflater.inflate(R.layout.alert_feedback_form, null)
+            AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .setCancelable(true)
+                .create()
+                .show()
+        }
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
-        val toolbar = binding.toolbar
-        (activity as? androidx.appcompat.app.AppCompatActivity)?.apply {
-            setSupportActionBar(toolbar)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setDisplayShowHomeEnabled(true)
-        }
-        toolbar.setNavigationOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
-    }
 
     companion object {
         fun newInstance(
@@ -430,83 +477,25 @@ class LeadDetailFragment : Fragment() {
             return fragment
         }
 
-    }
-
-    private fun getInitials(fullName: String): String {
-        if (fullName.isBlank()) return "U"
-        return fullName.trim()
-            .split("\\s+".toRegex())
-            .filter { it.isNotEmpty() }
-            .map { it.first().uppercaseChar() }
-            .joinToString("")
-    }
-
-    //    private fun handleCallFinished(number: String) {
-//        Log.d("CALL_FINISHED", "Call ended with $number")
-//        sendCallLogToAPI(number)
-//    }
-//
-//    private fun sendCallLogToAPI(number: String) {
-//        lifecycleScope.launch {
-//            try {
-//                val request = CallLogRequest(
-//                    callStatus = "completed",
-//                    campaignCode = "",
-//                    campaignId = 0,
-//                    customerName = arguments?.getString("name") ?: "",
-//                    customerNumber = number,
-//                    direction = "outgoing",
-//                    durationSeconds = 0,
-//                    endTime = "",
-//                    externalEventId = "",
-//                    leadId = arguments?.getInt("leadId") ?: 0,
-//                    notes = "",
-//                    recordingUrl = "",
-//                    source = "mobile",
-//                    startTime = "",
-//                    userId = 0,
-//                    workspaceId = arguments?.getInt("workspaceId") ?: 0
-//                )
-//
-//                val token = arguments?.getString("token") ?: ""
-//
-//                val response = RetrofitInstance.apiInterface.sendCallLog(
-//                    "Bearer $token",
-//                    request
-//                )
-//
-//                if (response.isSuccessful) {
-//                    val b = response.body()
-//                    Log.d("CALL_LOG", "Uploaded Successfully : $b")
-//                } else {
-//                    Log.e("CALL_LOG", response.errorBody()?.string() ?: "Error")
-//                }
-//
-//            } catch (e: Exception) {
-//                Log.e("CALL_LOG", "Exception: ${e.message}")
-//            }
-//        }
-//    }
-    private fun registerCallListener() {
-        if (callListener == null) {
-            callListener = MyCallListener(
-                requireContext(),
-                leadNumber
-            ) { number, duration, direction, callStatus, startTime, endTime ->
-                // handleCallFinished(number, duration, direction, callStatus, startTime, endTime)
+        fun newInstanceById(
+            leadId: Int,
+            token: String,
+            workspaceId: Int
+        ): LeadDetailFragment {
+            return LeadDetailFragment().apply {
+                arguments = Bundle().apply {
+                    putInt("leadId", leadId)
+                    putString("token", token)
+                    putInt("workspaceId", workspaceId)
+                }
             }
-
-            telephonyManager.listen(
-                callListener,
-                PhoneStateListener.LISTEN_CALL_STATE
-            )
         }
-    }
 
+    }
 
     private fun makeCall() {
         val intent = Intent(Intent.ACTION_CALL)
-        intent.data = Uri.parse("tel:$leadNumber")
+        intent.data = "tel:$leadNumber".toUri()
         startActivity(intent)
     }
 
@@ -525,77 +514,55 @@ class LeadDetailFragment : Fragment() {
         }
     }
 
-
-//    private fun handleCallFinished(
-//        number: String,
-//        durationSeconds: Long,
-//        direction: String,
-//        callStatus: String,
-//        startTime: String,
-//        endTime: String
-//    ) {
-//        val campaignCategoryId = arguments?.getInt("campaignCategoryId") ?: 0
-//        val campaignCode = categoryMap[campaignCategoryId] ?: ""
-//
-//        val callRequest = CallLogRequest(
-//            workspaceId = workspaceId,
-//            userId = userId,
-//            leadId = leadId.takeIf { it > 0 },
-//            campaignId = campaignId,
-//            campaignCode = campaignCode,
-//            customerNumber = number,
-//            customerName = leadName,
-//            direction = direction,
-//            callStatus = callStatus,
-//            startTime = startTime,
-//            endTime = endTime,
-//            durationSeconds = durationSeconds.toInt(),
-//            recordingUrl = "",
-//            source = "mobile",
-//            notes = "",
-//            externalEventId = ""
-//        )
-//
-//        val callLogRepo = CallLogRepository()
-//        lifecycleScope.launch {
-//            try {
-//                val webhookSecret = "super-secret-webhook-key"
-//                val response = callLogRepo.sendCallLog(webhookSecret, callRequest)
-//
-//                if (response.isSuccessful) {
-//                    val callLogResponse = response.body()!!
-//                    val callLogId = callLogResponse.id
-//                    Log.d("CALL_LOG", "Uploaded successfully $callLogId")
-//                    saveCallLogId(callLogId)
-//                } else {
-//                    Log.e("CALL_LOG", response.errorBody()?.string() ?: "Unknown error")
-//                }
-//            } catch (e: Exception) {
-//                Log.e("CALL_LOG", "Exception: ${e.message}")
-//            }
+//    private fun prepareLeadMetaForService() {
+//        val prefs =
+//            requireContext().getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
+//        prefs.edit() {
+//            putInt("leadId", leadId)
+//                .putString("leadName", leadName)
+//                .putInt("campaignId", campaignId)
+//                .putInt("campaignCategoryId", arguments?.getInt("campaignCategoryId") ?: 0)
+//                .putString("customerNumber", leadNumber)
 //        }
 //    }
 
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        callListener?.let {
-            telephonyManager.listen(it, PhoneStateListener.LISTEN_NONE)
-        }
-        callListener = null
-    }
-
     private fun prepareLeadMetaForService() {
-        val prefs =
-            requireContext().getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
+        val prefs = requireContext().getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
+
+        val e164 = normalizeToE164(requireContext(), leadNumber)
+
         prefs.edit()
             .putInt("leadId", leadId)
             .putString("leadName", leadName)
             .putInt("campaignId", campaignId)
             .putInt("campaignCategoryId", arguments?.getInt("campaignCategoryId") ?: 0)
-            .putString("customerNumber", leadNumber)
+            .putString("customerNumber", leadNumber)          // keep original
+            .putString("customerNumberE164", e164)            // ✅ for matching
             .apply()
+    }
+    private fun normalizeToE164(context: Context, raw: String): String {
+        if (raw.isBlank()) return ""
+        return try {
+            val cleaned = raw.replace("[^0-9+]".toRegex(), "")
+
+            val phoneUtil = com.google.i18n.phonenumbers.PhoneNumberUtil.getInstance()
+
+            // region from SIM/network for numbers WITHOUT +
+            val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+            val region = (tm.networkCountryIso ?: tm.simCountryIso ?: "")
+                .uppercase()
+                .takeIf { it.isNotBlank() }
+
+            val proto = if (cleaned.startsWith("+")) {
+                phoneUtil.parse(cleaned, null)
+            } else {
+                phoneUtil.parse(cleaned, region ?: "US") // fallback if region not available
+            }
+
+            phoneUtil.format(proto, com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat.E164)
+        } catch (e: Exception) {
+            ""
+        }
     }
 
 

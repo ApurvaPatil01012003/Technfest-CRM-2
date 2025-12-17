@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.TechnfestCRM" parent="Theme.Material3.DayNight.NoActionBar">
-    
+
     </style>
 
     <style name="ToolbarTitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
@@ -11,6 +11,11 @@
 
     <style name="ToolbarSubtitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
         <item name="android:textSize">12sp</item> <!-- Change subtitle size -->
+    </style>
+    <!-- Base application theme. -->
+    <style name="Base.Base.Theme.TechnfestCRM" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
 
 </resources>

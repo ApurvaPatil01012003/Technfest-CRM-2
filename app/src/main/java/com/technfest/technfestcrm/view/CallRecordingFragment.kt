@@ -177,24 +177,24 @@ class CallRecordingFragment : Fragment() {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.Q)
-    override fun onResume() {
-        super.onResume()
-
-        try {
-            val fragment = parentFragmentManager.findFragmentByTag("AllRecordingsAuto")
-            if (fragment == null) {
-                val autoFragment = AllRecordingsFragment()
-                parentFragmentManager.beginTransaction()
-                    .add(autoFragment, "AllRecordingsAuto")
-                    .commitNowAllowingStateLoss()
-
-                autoFragment.autoMoveRecordings()
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
+//    @RequiresApi(Build.VERSION_CODES.Q)
+//    override fun onResume() {
+//        super.onResume()
+//
+//        try {
+//            val fragment = parentFragmentManager.findFragmentByTag("AllRecordingsAuto")
+//            if (fragment == null) {
+//                val autoFragment = AllRecordingsFragment()
+//                parentFragmentManager.beginTransaction()
+//                    .add(autoFragment, "AllRecordingsAuto")
+//                    .commitNowAllowingStateLoss()
+//
+//                autoFragment.autoMoveRecordings()
+//            }
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+//    }
 
 
 

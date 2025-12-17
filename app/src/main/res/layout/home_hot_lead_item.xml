@@ -1,86 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:paddingVertical="@dimen/_8sdp">
+    android:background="@android:color/white"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="8dp">
 
-
+    <!-- Main Row: Avatar + Lead Info + Stage -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <!-- Avatar Circle -->
+        <TextView
+            android:id="@+id/leadAvatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:text="A"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:background="@drawable/gradient_circle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- Lead Name -->
         <TextView
             android:id="@+id/leadName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Amit Sharma"
             android:textStyle="bold"
-            android:textColor="@android:color/black"
-            android:textSize="15sp"
-            app:layout_constraintStart_toStartOf="parent"
+            android:textColor="@color/tc_primary_text"
+            android:textSize="14sp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            app:layout_constraintStart_toEndOf="@id/leadAvatar"
             app:layout_constraintEnd_toStartOf="@id/leadStage"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp" />
 
-        <!-- Status Tag -->
+        <!-- Stage Tag -->
         <TextView
             android:id="@+id/leadStage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="demo_scheduled"
-            android:textColor="#000000"
-            android:background="@drawable/bg_text"
+            android:text="Demo Scheduled"
+            android:textColor="#051FB1"
+            android:background="@drawable/bg_stage_tag"
             android:paddingHorizontal="8dp"
-            android:paddingVertical="4dp"
-            android:textSize="12sp"
+            android:paddingVertical="2dp"
+            android:textSize="10sp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Details -->
+        <!-- Details: Campaign + Source -->
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/detailsContainer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             app:layout_constraintTop_toBottomOf="@id/leadName"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/leadAvatar"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="4dp">
+            android:layout_marginStart="12dp">
 
+            <!-- Campaign -->
             <TextView
                 android:id="@+id/leadCampaign"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Billing software demo"
-                android:textColor="#757575"
-                android:textSize="13sp"
+                android:textColor="@color/tc_secondary_text"
+                android:textSize="12sp"
+                android:ellipsize="end"
+                android:singleLine="true"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/leadSource"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:layout_marginEnd="8dp"/>
+                app:layout_constraintEnd_toStartOf="@id/leadSource" />
 
+            <!-- Source -->
             <TextView
                 android:id="@+id/leadSource"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="call/whatsapp"
-                android:textColor="#757575"
-                android:textSize="13sp"
+                android:textColor="@color/tc_secondary_text"
+                android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintBottom_toBottomOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Divider Line -->
+    <!-- Divider -->
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="8dp"
-        android:background="#E0E0E0" />
+        android:background="@color/tc_divider" />
 
 </LinearLayout>

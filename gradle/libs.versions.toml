@@ -21,6 +21,9 @@ fragmentKtx = "1.8.0"
 documentfile="1.0.1"
 work = "2.9.0"
 libphonenumber = "8.13.40"
+navigationFragmentKtx = "2.9.6"
+navigationUiKtx = "2.9.6"
+
 
 
 [libraries]
@@ -47,6 +50,8 @@ androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref
 documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "documentfile" }
 work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 libphonenumber = { module = "com.googlecode.libphonenumber:libphonenumber", version.ref = "libphonenumber" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

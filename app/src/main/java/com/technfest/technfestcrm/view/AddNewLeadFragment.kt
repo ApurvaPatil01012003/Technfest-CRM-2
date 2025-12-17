@@ -65,15 +65,15 @@ class AddNewLeadFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val toolbar = binding.toolbar
-        (activity as? androidx.appcompat.app.AppCompatActivity)?.apply {
-            setSupportActionBar(toolbar)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setDisplayShowHomeEnabled(true)
-        }
-        toolbar.setNavigationOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
+       // val toolbar = binding.toolbar
+//        (activity as? androidx.appcompat.app.AppCompatActivity)?.apply {
+//            setSupportActionBar(toolbar)
+//            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+//            supportActionBar?.setDisplayShowHomeEnabled(true)
+//        }
+//        toolbar.setNavigationOnClickListener {
+//            requireActivity().onBackPressedDispatcher.onBackPressed()
+//        }
 
         repository = LeadRepository()
         viewModel = ViewModelProvider(this, LeadViewModelFactory(repository))[LeadViewModel::class.java]

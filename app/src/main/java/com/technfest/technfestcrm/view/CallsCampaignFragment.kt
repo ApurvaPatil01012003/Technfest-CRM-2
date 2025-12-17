@@ -82,18 +82,6 @@ class CallsCampaignFragment : Fragment() {
 //        binding.campaignsRecyclerview.adapter = campaignAdapter
 //    }
 
-    private fun setupRecyclerView(token: String) {
-        val repository = CampaignRepository()
-
-        campaignAdapter = CampaignAdapter(
-            campaignList = emptyList(),
-            repository = repository,
-            token = token
-        )
-
-        binding.campaignsRecyclerview.layoutManager = LinearLayoutManager(requireContext())
-        binding.campaignsRecyclerview.adapter = campaignAdapter
-    }
 
 
     private fun observeData() {
@@ -124,20 +112,6 @@ class CallsCampaignFragment : Fragment() {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val toolbar =
-            view.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
-        (activity as? androidx.appcompat.app.AppCompatActivity)?.apply {
-            setSupportActionBar(toolbar)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setDisplayShowHomeEnabled(true)
-        }
-
-        toolbar.setNavigationOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
-    }
 
     private fun applyFilter(filter: String) {
 
@@ -186,4 +160,26 @@ class CallsCampaignFragment : Fragment() {
         Log.d("CAMPAIGN_FRAGMENT", "Fragment destroyed")
         _binding = null
     }
+    private fun setupRecyclerView(token: String) {
+        val repository = CampaignRepository()
+
+        campaignAdapter = CampaignAdapter(
+            campaignList = emptyList()
+        ) { selectedCampaign ->
+
+            // Navigate to CampaignDetailsFragment and pass campaignId
+            val bundle = Bundle().apply {
+                putString("campaignId", selectedCampaign.id.toString())
+            }
+
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, CallsCampaignDetailFragment().apply { arguments = bundle })
+                .addToBackStack(null)
+                .commit()
+        }
+
+        binding.campaignsRecyclerview.layoutManager = LinearLayoutManager(requireContext())
+        binding.campaignsRecyclerview.adapter = campaignAdapter
+    }
+
 }

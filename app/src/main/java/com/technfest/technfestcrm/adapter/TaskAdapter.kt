@@ -26,7 +26,7 @@ class TaskAdapter(
         val priority: TextView = itemView.findViewById(R.id.txtPriority)
       //  val channelName: TextView = itemView.findViewById(R.id.txtChnnelName)
         val assignName: TextView = itemView.findViewById(R.id.txtAssign)
-        val summary: TextView = itemView.findViewById(R.id.txtSummary)
+       // val summary: TextView = itemView.findViewById(R.id.txtSummary)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
@@ -65,7 +65,7 @@ class TaskAdapter(
         holder.priority.text = task.priority ?: "null"
        // holder.channelName.text = task.taskType ?: "null"
         holder.assignName.text = task.assignedEmployeeName ?: "null"
-        holder.summary.text = task.description ?: "null"
+      //  holder.summary.text = task.description ?: "null"
 
         holder.itemView.setBackgroundColor(
             if (task.id == highlightedTaskId) Color.GRAY else Color.WHITE

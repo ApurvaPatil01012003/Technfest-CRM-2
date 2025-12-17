@@ -28,6 +28,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import androidx.core.content.edit
+import com.technfest.technfestcrm.view.LeadsFragment.LeadCacheItem
 
 class CallStateForegroundService : Service() {
 
@@ -44,8 +45,8 @@ class CallStateForegroundService : Service() {
     // when TALK actually started (OFFHOOK) -> used for startTime & duration
     private var callStartTimeMs: Long = 0L
 
-    // small threshold to treat extremely short calls as unanswered (for outgoing)
-    private val ANSWERED_MIN_SECONDS = 1
+    // ⬆️ Increased threshold so very short outgoing “no pick” are treated as unanswered
+    private val ANSWERED_MIN_SECONDS = 5
 
     override fun onCreate() {
         super.onCreate()
@@ -74,11 +75,12 @@ class CallStateForegroundService : Service() {
                 if (!incomingNumber.isNullOrEmpty()) {
                     activeNumber = incomingNumber
                     currentNumber = incomingNumber
+                    currentNumberGlobal = incomingNumber
                 }
 
                 when (state) {
                     TelephonyManager.CALL_STATE_RINGING -> {
-                        // Incoming ringing
+                        fillMetaFromLeadCacheIfNeeded(incomingNumber)
                         wasRinging = true
                         wasOffhook = false
                         currentDirection = "incoming"
@@ -88,6 +90,8 @@ class CallStateForegroundService : Service() {
                     }
 
                     TelephonyManager.CALL_STATE_OFFHOOK -> {
+                        fillMetaFromLeadCacheIfNeeded(incomingNumber ?: currentNumber)
+                        CallPopupOverlay.show(this@CallStateForegroundService)
                         wasOffhook = true
 
                         // If we never saw RINGING, this is likely outgoing dial
@@ -118,7 +122,10 @@ class CallStateForegroundService : Service() {
 
                         if (!incomingNumber.isNullOrEmpty()) {
                             currentNumber = incomingNumber
+                            currentNumberGlobal = incomingNumber
                         }
+
+                        CallPopupOverlay.show(this@CallStateForegroundService)
                     }
 
                     TelephonyManager.CALL_STATE_IDLE -> {
@@ -141,7 +148,7 @@ class CallStateForegroundService : Service() {
                         val startStr: String
                         val endStr: String
 
-                        // For answered logic we still use small threshold for outgoing
+                        // For answered logic we still use threshold for outgoing
                         val calculatedDurationSec =
                             if (callStartTimeMs > 0L) {
                                 ((endTimeMs - callStartTimeMs) / 1000)
@@ -162,19 +169,12 @@ class CallStateForegroundService : Service() {
                             // start = OFFHOOK (pickup), end = hangup, duration = talk time
                             callStatus = "answered"
                             durationSec = calculatedDurationSec
-//                            startStr = formatLocal(callStartTimeMs)
-//                            endStr = formatLocal(endTimeMs)
-                            // Answered
                             startStr = formatIso(callStartTimeMs)
                             endStr = formatIso(endTimeMs)
                         } else {
-                            // ❌ Unanswered call:
-                            // start & end = today's 00:00:00, duration = 0
+
                             callStatus = "unanswered"
                             durationSec = 0
-//                            val midnight = todayMidnightMs()
-//                            startStr = formatLocal(midnight)
-//                            endStr = startStr
                             val midnight = todayMidnightMs()
                             startStr = formatIso(midnight)
                             endStr = startStr
@@ -192,12 +192,12 @@ class CallStateForegroundService : Service() {
                             direction = currentDirection,
                             durationSeconds = durationSec,
                             callStatus = callStatus,
-                            startIso = startStr,   // now in "yyyy-MM-dd HH:mm:ss"
+                            startIso = startStr,   // now in ISO
                             endIso = endStr
                         )
 
                         // Move recordings (as you had)
-                        triggerMoveWorker()
+                       // triggerMoveWorker()
 
                         // reset for next call
                         wasRinging = false
@@ -206,6 +206,9 @@ class CallStateForegroundService : Service() {
                         callStartTimeMs = 0L
                         currentDirection = "unknown"
                         currentNumber = null
+
+                        CallPopupOverlay.hide()
+                        FeedbackOverlay.show(this@CallStateForegroundService)
                     }
                 }
             }
@@ -223,78 +226,6 @@ class CallStateForegroundService : Service() {
         val micActive = am.isMicrophoneMute == false
         return audioActive && micActive
     }
-
-//    private fun sendCallLogToServer(
-//        phoneNumber: String?,
-//        direction: String,
-//        durationSeconds: Int,
-//        callStatus: String,
-//        startIso: String?,
-//        endIso: String
-//    ) {
-//        val ctx = this
-//
-//        val sessionPrefs = ctx.getSharedPreferences("UserSession", Context.MODE_PRIVATE)
-//        val token = sessionPrefs.getString("token", null)
-//        val workspaceId = sessionPrefs.getInt("workspaceId", 0)
-//        val userId = sessionPrefs.getInt("userId", 0)
-//
-//        if (token.isNullOrEmpty() || workspaceId == 0) {
-//            Log.e(TAG, "Missing session token/workspaceId — skipping call log")
-//            return
-//        }
-//
-//        val meta = ctx.getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
-//        val leadId = meta.getInt("leadId", 0)
-//        val leadName = meta.getString("leadName", "") ?: ""
-//        val campaignId = meta.getInt("campaignId", 0)
-//        val campaignCode = meta.getString("campaignCode", "") ?: ""
-//        val savedCustomerNumber = meta.getString("customerNumber", "") ?: ""
-//
-//        val raw = (phoneNumber ?: savedCustomerNumber).trim()
-//        val finalNumber = formatInternationalNumber(raw, "IN")
-//
-//        val request = CallLogRequest(
-//            workspaceId = workspaceId,
-//            userId = userId,
-//            leadId = if (leadId > 0) leadId else null,
-//            campaignId = campaignId,
-//            campaignCode = campaignCode,
-//            customerNumber = finalNumber,
-//            customerName = leadName,
-//            direction = direction,
-//            callStatus = callStatus,
-//            startTime = startIso ?: "",
-//            endTime = endIso,
-//            durationSeconds = durationSeconds,
-//            recordingUrl = "",
-//            source = "mobile",
-//            notes = "",
-//            externalEventId = ""
-//        )
-//
-//        CoroutineScope(Dispatchers.IO).launch {
-//            try {
-//                val webhookSecret = "super-secret-webhook-key"
-//                val resp = CallLogRepository().sendCallLog(webhookSecret, request)
-//                if (resp.isSuccessful) {
-//                    val id = resp.body()?.id ?: 0
-//                    Log.d(TAG, "Call log uploaded, id=$id")
-//                    if (id > 0) {
-//                        ctx.getSharedPreferences("CallLogPrefs", Context.MODE_PRIVATE)
-//                            .edit() { putInt("lastCallLogId", id) }
-//                    }
-//                } else {
-//                    Log.e(
-//                        TAG,
-//                        "Call log failed: code=${resp.code()} body=${resp.errorBody()?.string()}"
-//                    )
-//                }
-//            } catch (e: Exception) {
-//                Log.e(TAG, "Exception sending call log", e)
-//            }
-//        }
-//    }
 
     private fun sendCallLogToServer(
         phoneNumber: String?,
@@ -323,25 +254,32 @@ class CallStateForegroundService : Service() {
         val campaignCode = meta.getString("campaignCode", "") ?: ""
         val savedCustomerNumber = meta.getString("customerNumber", "") ?: ""
 
-
+        // 1) Final display number (universal format)
         val rawNumber = (phoneNumber ?: savedCustomerNumber).trim()
         val finalNumber = formatInternationalNumber(rawNumber, "IN")
 
-        // 🔹 2) Decide effective leadId + customerName based on number match
+
         val normIncoming = normalizeForCompare(phoneNumber)
         val normSaved = normalizeForCompare(savedCustomerNumber)
 
-        val effectiveLeadId: Int? =
-            if (!normIncoming.isNullOrBlank() && normIncoming == normSaved && metaLeadId > 0) {
-                // number match → attach lead
-                metaLeadId
-            } else {
-                // number mismatch / no meta → do not attach lead
-                null
-            }
+
+        val effectiveLeadId: Int? = when {
+
+            metaLeadId <= 0 -> null
+
+            normIncoming.isBlank() && normSaved.isNotBlank() -> metaLeadId
+
+            normIncoming.isNotBlank() && normIncoming == normSaved -> metaLeadId
+
+            else -> null
+        }
+
+//        val effectiveCustomerName: String =
+//            if (effectiveLeadId != null) metaLeadName else ""
 
         val effectiveCustomerName: String =
-            if (effectiveLeadId != null) metaLeadName else ""
+            if (effectiveLeadId != null && metaLeadName.isNotBlank()) metaLeadName else ""
+
 
         val request = CallLogRequest(
             workspaceId = workspaceId,
@@ -368,17 +306,37 @@ class CallStateForegroundService : Service() {
                 val resp = CallLogRepository().sendCallLog(webhookSecret, request)
                 if (resp.isSuccessful) {
                     val id = resp.body()?.id ?: 0
-                    Log.d(TAG, "Call log uploaded, id=$id")
                     if (id > 0) {
                         ctx.getSharedPreferences("CallLogPrefs", Context.MODE_PRIVATE)
                             .edit { putInt("lastCallLogId", id) }
+
+//                        val work = OneTimeWorkRequestBuilder<MoveRecordingsWorker>().build()
+//                        WorkManager.getInstance(ctx)
+//                            .enqueueUniqueWork("auto_move_recordings_foreground", ExistingWorkPolicy.REPLACE, work)
+
+
+                        val callEndMs = System.currentTimeMillis()
+
+                        val work = OneTimeWorkRequestBuilder<MoveRecordingsWorker>()
+                            .setInputData(
+                                androidx.work.workDataOf(
+                                    "CALL_LOG_ID" to id,
+                                    "CALL_END_MS" to callEndMs
+                                )
+                            )
+                            .build()
+
+                        WorkManager.getInstance(ctx)
+                            // ✅ unique per call log id, so same call won't run twice
+                            .enqueueUniqueWork(
+                                "move_recording_call_$id",
+                                ExistingWorkPolicy.KEEP,
+                                work
+                            )
+
                     }
-                } else {
-                    Log.e(
-                        TAG,
-                        "Call log failed: code=${resp.code()} body=${resp.errorBody()?.string()}"
-                    )
                 }
+
             } catch (e: Exception) {
                 Log.e(TAG, "Exception sending call log", e)
             }
@@ -389,19 +347,9 @@ class CallStateForegroundService : Service() {
     private fun triggerMoveWorker() {
         val work = OneTimeWorkRequestBuilder<MoveRecordingsWorker>().build()
         WorkManager.getInstance(this)
-            .enqueueUniqueWork("auto_move_recordings_foreground", ExistingWorkPolicy.KEEP, work)
+            .enqueueUniqueWork("auto_move_recordings_foreground", ExistingWorkPolicy.REPLACE, work)
     }
 
-//    // 🔹 Format as "yyyy-MM-dd HH:mm:ss" (local time)
-//    private fun formatLocal(epochMs: Long): String {
-//        return try {
-//            val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-//            sdf.timeZone = TimeZone.getDefault()
-//            sdf.format(Date(epochMs))
-//        } catch (e: Exception) {
-//            ""
-//        }
-//    }
     fun formatIso(epochMs: Long): String {
         return try {
             val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
@@ -412,7 +360,6 @@ class CallStateForegroundService : Service() {
         }
     }
 
-    // 🔹 Today at 00:00:00 (local)
     private fun todayMidnightMs(): Long {
         val cal = Calendar.getInstance()
         cal.set(Calendar.HOUR_OF_DAY, 0)
@@ -432,6 +379,31 @@ class CallStateForegroundService : Service() {
             .setOngoing(true)
             .build()
     }
+    private fun fillMetaFromLeadCacheIfNeeded(numberRaw: String?) {
+        if (numberRaw.isNullOrBlank()) return
+
+        val e164 = normalizeForCompare(numberRaw)
+        if (e164.isBlank()) return
+
+        val cachePrefs = getSharedPreferences("LeadCache", Context.MODE_PRIVATE)
+        val json = cachePrefs.getString("lead_map", null) ?: return
+
+        val type = object : com.google.gson.reflect.TypeToken<Map<String, LeadCacheItem>>() {}.type
+        val map: Map<String, LeadCacheItem> = com.google.gson.Gson().fromJson(json, type)
+
+        val hit = map[e164] ?: return
+
+        // ✅ write ActiveCallLeadMeta so overlay can show name even for default dialer first call
+        val meta = getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
+        meta.edit()
+            .putInt("leadId", hit.id)
+            .putString("leadName", hit.name)
+            .putInt("campaignId", hit.campaignId)
+            .putString("campaignCode", hit.campaignCode)
+            .putString("customerNumber", hit.customerNumber)
+            .apply()
+    }
+
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -454,10 +426,39 @@ class CallStateForegroundService : Service() {
 
     companion object {
         private const val TAG = "CallStateService"
+        var currentNumberGlobal: String? = null
+    }
+
+}
+private fun lookupLeadNameByNumber(ctx: Context, rawNumber: String?): Pair<Int, String>? {
+    if (rawNumber.isNullOrBlank()) return null
+
+    val e164 = normalizeForCompare(rawNumber) // returns E164 like +9198...
+    if (e164.isBlank()) return null
+
+    val prefs = ctx.getSharedPreferences("LeadCache", Context.MODE_PRIVATE)
+    val name = prefs.getString("lead_name_$e164", null)
+    val id = prefs.getInt("lead_id_$e164", 0)
+
+    return if (!name.isNullOrBlank() && id > 0) Pair(id, name) else null
+}
+
+private fun ensureLeadMetaFromCache(ctx: Context, incomingNumber: String?) {
+    val match = lookupLeadNameByNumber(ctx, incomingNumber) ?: return
+    val (leadId, leadName) = match
+
+    val prefs = ctx.getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
+
+    if (prefs.getInt("leadId", 0) <= 0 || prefs.getString("leadName", "").isNullOrBlank()) {
+        prefs.edit()
+            .putInt("leadId", leadId)
+            .putString("leadName", leadName)
+            .putString("customerNumber", normalizeForCompare(incomingNumber)) // store E164
+            .apply()
     }
 }
 
-// --- helper outside class, kept same ---
+
 private fun formatInternationalNumber(rawNumber: String?, defaultRegion: String = "IN"): String {
     if (rawNumber.isNullOrEmpty()) return ""
 
@@ -473,38 +474,28 @@ private fun formatInternationalNumber(rawNumber: String?, defaultRegion: String 
     } catch (e: Exception) {
         rawNumber
     }
-
-
 }
-private fun normalizeForCompare(number: String?): String {
+private fun normalizeForCompare(number: String?, defaultRegion: String = "IN"): String {
     if (number.isNullOrBlank()) return ""
-    val digits = number.filter { it.isDigit() }
-    return if (digits.length > 10) digits.takeLast(10) else digits
-}
+    return try {
+        val phoneUtil = com.google.i18n.phonenumbers.PhoneNumberUtil.getInstance()
+        val cleaned = number.replace("[^0-9+]".toRegex(), "")
+        val region = if (cleaned.startsWith("+")) null else defaultRegion
+        val proto = phoneUtil.parse(cleaned, region)
 
-fun mapCallStatusLabel(direction: String?, callStatus: String?): String {
-    return when (direction?.lowercase()) {
-        "incoming" -> {
-            when (callStatus?.lowercase()) {
-                "answered" -> "Answered"
-                "unanswered" -> "Missed"
-                else -> "Missed" // fallback
-            }
-        }
+        phoneUtil.format(
+            proto,
+            com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat.E164
+        )
+    } catch (e: Exception) {
 
-        "outgoing" -> {
-            when (callStatus?.lowercase()) {
-                "answered" -> "Dialed"
-                "unanswered" -> "No Dial"
-                else -> "Dialed" // fallback
-            }
-        }
-
-        else -> {
-            // unknown direction
-            "Unknown"
-        }
+        val digits = number.filter { it.isDigit() }
+        if (digits.length > 10) digits.takeLast(10) else digits
     }
+
+
+
+
 }
 
 

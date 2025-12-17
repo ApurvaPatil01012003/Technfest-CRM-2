@@ -13,4 +13,17 @@
     <color name="red">#A9362D</color>
     <color name="green">#38973C</color>
 
+    <color name="tc_primary">#0A81FF</color>
+    <color name="tc_toolbar_subtitle">#CCFFFFFF</color>
+    <color name="tc_screen_bg">#F3F6FB</color>
+    <color name="tc_primary_text">#14171F</color>
+    <color name="tc_secondary_text">#6C7685</color>
+    <color name="tc_divider">#E5E7EB</color>
+    <color name="tc_card_stroke">#E2E4EA</color>
+    <color name="tc_positive">#179E4B</color>
+    <color name="tc_warning">#E56A19</color>
+    <color name="tc_chip_text">#14171F</color>
+    <color name="tc_hint_text">#9FA4B0</color>
+
+
 </resources>

@@ -1,425 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/_8sdp"
-    app:cardBackgroundColor="@android:color/white"
-    app:cardCornerRadius="@dimen/_14sdp"
-    app:cardElevation="@dimen/_6sdp"
-    app:strokeColor="#DDDDDD"
-    app:strokeWidth="@dimen/_1sdp">
+    android:orientation="vertical">
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_1sdp"
+        android:background="@color/tc_divider" />
 
-    <LinearLayout
+
+    <!-- Campaign Card -->
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/_12sdp">
-
-        <!-- Campaign Name -->
-        <TextView
-            android:id="@+id/campaignName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/_6sdp"
-            android:text="Name of Campaign"
-            android:textColor="@android:color/black"
-            android:textSize="@dimen/_15ssp"
-            android:textStyle="bold" />
+        android:layout_marginTop="@dimen/_4sdp"
+        app:cardCornerRadius="@dimen/_4sdp"
+        app:cardElevation="@dimen/_2sdp"
+        app:strokeWidth="0.5dp"
+        app:strokeColor="@color/white">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingBottom="@dimen/_8sdp">
+            android:orientation="vertical"
+            android:background="@color/white"
+            android:padding="@dimen/_6sdp">
 
-            <!-- Type -->
-            <TextView
-                android:id="@+id/txtType"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Type: Call"
-                android:textColor="#444444"
-                android:textSize="@dimen/_13ssp" />
-
-            <!-- Total Calls Circular Badge -->
-            <TextView
-                android:id="@+id/txtTotalCalls"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:background="@drawable/circle_count_bg"
-                android:gravity="center"
-                android:text="0"
-                android:textColor="@android:color/black"
-                android:textSize="@dimen/_12ssp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-
-        <!-- Date + Owner Row -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="@dimen/_8sdp">
-
-            <!-- Date Range -->
+            <!-- Header -->
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Date Range"
-                    android:textColor="#716E6E"
-                    android:textSize="@dimen/_11ssp" />
-
-                <TextView
-                    android:id="@+id/txtDateRange"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="01 Nov 2025 → Ongoing"
-                    android:textColor="@android:color/black"
-                    android:textSize="@dimen/_12ssp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <!-- Owner -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Owner"
-                    android:textColor="#716E6E"
-                    android:textSize="@dimen/_11ssp" />
-
-                <TextView
-                    android:id="@+id/txtOwnerName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="XYZ"
-                    android:textColor="@android:color/black"
-                    android:textSize="@dimen/_12ssp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <!-- Budget / Leads -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="@dimen/_8sdp">
-
-            <!-- Budget / Spend -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Budget / Spend"
-                    android:textColor="#716E6E"
-                    android:textSize="@dimen/_11ssp" />
+                <ImageView
+                    android:layout_width="@dimen/_22sdp"
+                    android:layout_height="@dimen/_22sdp"
+                    android:src="@drawable/change"
+                     />
 
                 <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/campaignName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="FB – Diwali Offer"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/tc_primary_text" />
+
+                    <TextView
+                        android:id="@+id/txtType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Facebook Lead"
+                        android:textSize="11sp"
+                        android:textColor="@color/tc_secondary_text" />
+                </LinearLayout>
+
+                <!-- Status -->
+                <TextView
+                    android:id="@+id/txtStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:text="PAUSED"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="4dp"
+                    android:textColor="@color/tc_positive"
+                    android:background="@drawable/tag_chip_bg" />
+            </LinearLayout>
+
+
+
+            <!-- Stats Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="3">
+
+                <!-- Total Calls -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Total Calls"
+                        android:textSize="11sp"
+                        android:textColor="@color/tc_secondary_text" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txtTotalCalls"
+                        android:text="127"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/tc_primary_text" />
+                </LinearLayout>
+
+                <!-- Budget -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Budget / Spend"
+                        android:textSize="11sp"
+                        android:textColor="@color/tc_secondary_text" />
 
                     <TextView
                         android:id="@+id/txtBudget"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="₹8,000"
-                        android:textColor="@android:color/black"
-                        android:textSize="@dimen/_12ssp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=" / "
-                        android:textColor="@android:color/black"
-                        android:textSize="@dimen/_12ssp" />
-
-                    <TextView
-                        android:id="@+id/txtSpend"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="₹3,100"
-                        android:textColor="@android:color/black"
-                        android:textSize="@dimen/_12ssp"
-                        android:textStyle="bold" />
+                        android:text="2000 / 1200"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/tc_primary_text" />
                 </LinearLayout>
-            </LinearLayout>
 
-            <!-- Leads / CPL -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Leads / CPL"
-                    android:textColor="#716E6E"
-                    android:textSize="@dimen/_11ssp" />
-
+                <!-- Leads -->
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingTop="@dimen/_2sdp">
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Leads / CPL"
+                        android:textSize="11sp"
+                        android:textColor="@color/tc_secondary_text" />
 
                     <TextView
                         android:id="@+id/txtLeads"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="24 leads"
-                        android:textColor="@android:color/black"
-                        android:textSize="@dimen/_12ssp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=" • "
-                        android:textColor="@android:color/black"
-                        android:textSize="@dimen/_12ssp" />
-
-                    <TextView
-                        android:id="@+id/txtCpl"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="₹129"
-                        android:textColor="@android:color/black"
-                        android:textSize="@dimen/_12ssp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="@dimen/_8sdp">
-
-            <!-- Budget / Spend -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Status"
-                    android:textColor="#716E6E"
-                    android:textSize="@dimen/_11ssp" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/txtStatus"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Active"
-                        android:textColor="@android:color/black"
-                        android:textSize="@dimen/_12ssp"
-                        android:textStyle="bold" />
-
+                        android:text="8 / 6.0"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/tc_primary_text" />
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Leads / CPL -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ROI"
-                    android:textColor="#716E6E"
-                    android:textSize="@dimen/_11ssp" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingTop="@dimen/_2sdp">
-
-                    <TextView
-                        android:id="@+id/txtROI"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Missing in API"
-                        android:textColor="@android:color/black"
-                        android:textSize="@dimen/_12ssp"
-                        android:textStyle="bold" />
-
-
-                </LinearLayout>
-            </LinearLayout>
         </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/_4sdp"
-            android:text="Description"
-            android:textColor="#716E6E"
-            android:textSize="@dimen/_12ssp" />
+    <!-- Separator between campaigns -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_1sdp"
+        android:background="@color/tc_divider" />
 
-        <TextView
-            android:id="@+id/txtDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/_4sdp"
-            android:text="descrption"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_12ssp"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="@dimen/_8sdp"
-            android:gravity="center_vertical">
-
-            <!-- Left side -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Created by :"
-                    android:textColor="#716E6E"
-                    android:textSize="@dimen/_11ssp" />
-
-                <TextView
-                    android:id="@+id/txtCreatedBy"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:text="name"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_11ssp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/textview_bg"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="4dp"
-                android:text="Leads"
-                android:visibility="gone"
-                android:textColor="#716E6E"
-                android:textSize="@dimen/_11ssp" />
-
-        </LinearLayout>
-
-
-
-        <!-- Tags Label -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/_4sdp"
-            android:text="Tags"
-            android:textColor="#716E6E"
-            android:textSize="@dimen/_12ssp" />
-
-
-        <LinearLayout
-            android:id="@+id/tagsContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="@dimen/_8sdp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_4sdp"
-                android:background="@drawable/tag_chip_bg"
-                android:paddingLeft="@dimen/_8sdp"
-                android:paddingTop="@dimen/_4sdp"
-                android:paddingRight="@dimen/_8sdp"
-                android:paddingBottom="@dimen/_4sdp"
-                android:text="billing"
-                android:textColor="#3F51B5"
-                android:textSize="@dimen/_11ssp" />
-
-        </LinearLayout>
-
-
-        <!-- Buttons Row -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingTop="@dimen/_8sdp">
-
-            <!-- Pause Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnStart"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_8sdp"
-                android:layout_weight="1"
-                android:background="@drawable/btn_gradient"
-                android:text="Pause Campaign"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
-                app:backgroundTint="@null"
-                app:cornerRadius="@dimen/_12sdp" />
-
-            <!-- Edit Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnEdit"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Edit"
-                android:textColor="#6475D0"
-                android:textStyle="bold"
-                app:backgroundTint="@android:color/white"
-                app:cornerRadius="@dimen/_12sdp"
-                app:strokeColor="#6475D0"
-                app:strokeWidth="2dp" />
-        </LinearLayout>
-    </LinearLayout>
-</com.google.android.material.card.MaterialCardView>
+</LinearLayout>

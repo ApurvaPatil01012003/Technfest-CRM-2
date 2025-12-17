@@ -286,10 +286,10 @@ class AllRecordingsFragment : Fragment() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
-    fun autoMoveRecordings() {
-        moveAllRecordings()
-    }
+//    @RequiresApi(Build.VERSION_CODES.Q)
+//    fun autoMoveRecordings() {
+//        moveAllRecordings()
+//    }
     private fun fileToBase64(uri: Uri, mimeType: String): String {
         val inputStream = requireContext().contentResolver.openInputStream(uri)
         val bytes = inputStream?.readBytes() ?: return ""

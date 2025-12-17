@@ -1,14 +1,19 @@
 package com.technfest.technfestcrm.view
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
@@ -17,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.technfest.technfestcrm.R
 import com.technfest.technfestcrm.adapter.HomeTaskAdapter
 import com.technfest.technfestcrm.adapter.HotLeadAdapter
+import com.technfest.technfestcrm.databinding.CustomDrawerBinding
 import com.technfest.technfestcrm.databinding.FragmentHomeBinding
 import com.technfest.technfestcrm.model.HotLead
 import com.technfest.technfestcrm.network.RetrofitInstance
@@ -29,10 +35,7 @@ import com.technfest.technfestcrm.viewmodel.LeadViewModel
 import com.technfest.technfestcrm.viewmodel.LeadViewModelFactory
 import com.technfest.technfestcrm.viewmodel.TaskViewModel
 import com.technfest.technfestcrm.viewmodel.TaskViewModelFactory
-import okhttp3.internal.concurrent.Task
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+
 
 
 class HomeFragment : Fragment() {
@@ -43,7 +46,9 @@ class HomeFragment : Fragment() {
     private lateinit var viewModel: GetWorkspacesViewModel
     private lateinit var homeTaskAdapter: HomeTaskAdapter
     private lateinit var taskViewModel: TaskViewModel
+    private lateinit  var fullName :String
 
+    data class DrawerItem(val title: String, val icon: Int, val badgeCount: Int = 0)
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
@@ -56,15 +61,15 @@ class HomeFragment : Fragment() {
         var prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
         var token = prefs.getString("token", null)
         var workspaceId = prefs.getInt("workspaceId", -1)
-        val fullName = prefs.getString("fullName", "User")
+         fullName = prefs.getString("fullName", "User").toString()
         val savedWorkspaceName = prefs.getString("workspaceName", null)
 
-        binding.userName.text = fullName
-        binding.userInitialCircle.text = getInitials(fullName ?: "")
+//        binding.userName.text = fullName
+//        binding.userInitialCircle.text = getInitials(fullName ?: "")
 
-        if (!savedWorkspaceName.isNullOrEmpty()) {
-            binding.toolbarTitle.text = savedWorkspaceName
-        }
+//        if (!savedWorkspaceName.isNullOrEmpty()) {
+//            binding.toolbarTitle.text = savedWorkspaceName
+//        }
 
         val repository = GetWorkspacesRepository(RetrofitInstance.apiInterface)
         viewModel = ViewModelProvider(
@@ -77,7 +82,7 @@ class HomeFragment : Fragment() {
                 if (response.isSuccessful) {
                     val workspace = response.body()?.find { it.id == workspaceId }
                     workspace?.let {
-                        binding.toolbarTitle.text = it.name
+                       // binding.toolbarTitle.text = it.name
                         prefs.edit().apply {
                             putString("workspaceName", it.name)
                             apply()
@@ -90,25 +95,42 @@ class HomeFragment : Fragment() {
             }
         }
 
-        binding.myLead.setOnClickListener {
-            (activity as MainActivity).openLeadsFromHome()
-            val prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
-            val token = prefs.getString("token", null)
-            val workspaceId = prefs.getInt("workspaceId", -1)
+//        binding.myLead.setOnClickListener {
+//            (activity as MainActivity).openLeadsFromHome()
+//            val prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
+//            val token = prefs.getString("token", null)
+//            val workspaceId = prefs.getInt("workspaceId", -1)
+//
+//
+//            val f = LeadsFragment()
+//            val bundle = Bundle().apply {
+//                putString("Name", fullName)
+//                putString("Token", token)
+//                putInt("WorkspaceId", workspaceId)
+//                putString("WorkspaceName", binding.toolbarTitle.text.toString())
+//            }
+//            f.arguments = bundle
+//
+//            loadFragment(f)
+//
+//        }
 
 
-            val f = LeadsFragment()
-            val bundle = Bundle().apply {
-                putString("Name", fullName)
-                putString("Token", token)
-                putInt("WorkspaceId", workspaceId)
-                putString("WorkspaceName", binding.toolbarTitle.text.toString())
-            }
-            f.arguments = bundle
 
-            loadFragment(f)
+        val menuItems = listOf(
+            DrawerItem("Dashboard", R.drawable.home),
+            DrawerItem("Add Lead", R.drawable.plus),
+            DrawerItem("My Leads", R.drawable.leadschange, 25),
+            DrawerItem("Tasks", R.drawable.taskchange, 3),
+            DrawerItem("Campaigns", R.drawable.baseline_person_outline_24),
+            DrawerItem("Calls", R.drawable.calls),
+            DrawerItem("Reports", R.drawable.report)
+        )
 
-        }
+        // Create a binding for custom_drawer.xml
+       // val drawerBinding = CustomDrawerBinding.bind(binding.customDrawer.root)
+        //val container = drawerBinding.drawerMenuContainer
+
 
         prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
         token = prefs.getString("token", null)
@@ -135,7 +157,7 @@ class HomeFragment : Fragment() {
 
                 val token = prefs.getString("token", null)
                 val workspaceId = prefs.getInt("workspaceId", -1)
-                val fullName = prefs.getString("fullName", "User")
+                fullName = prefs.getString("fullName", "User").toString()
                 val workspaceName = prefs.getString("workspaceName", "")
 
                 val fragment = LeadsFragment()
@@ -155,54 +177,55 @@ class HomeFragment : Fragment() {
         }
 
 
-        binding.task.setOnClickListener {
-            (activity as MainActivity).openTasksFromHome()
-            val prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
-            val token = prefs.getString("token", null)
-            val workspaceId = prefs.getInt("workspaceId", -1)
-
-            val fragment = TaskFragment()
-            fragment.arguments = Bundle().apply {
-                putString("token", token)
-                putInt("workspaceId", workspaceId)
-            }
-
-            loadFragment(fragment)
-
-        }
-        binding.callsCampaign.setOnClickListener {
-            val prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
-            val token = prefs.getString("token", null)
-            val workspaceId = prefs.getInt("workspaceId", -1)
-
-            val fragment = CallsCampaignFragment()
-            fragment.arguments = Bundle().apply {
-                putString("token", token)
-                putInt("workspaceId", workspaceId)
-            }
-
-            loadFragment(fragment)
-        }
-
-        binding.addNewLead.setOnClickListener {
-            val prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
-            val token = prefs.getString("token", null)
-            val workspaceId = prefs.getInt("workspaceId", -1)
-
-            val fragment = AddNewLeadFragment()
-            fragment.arguments = Bundle().apply {
-                putString("token", token)
-                putInt("workspaceId", workspaceId)
-            }
-
-            loadFragment(fragment)
-        }
 
 
-        binding.calls.setOnClickListener { loadFragment(CallsFragment()) }
-        binding.report.setOnClickListener { loadFragment(ReportFragment()) }
-        binding.userInitialCircle.setOnClickListener { loadFragment(ProfileFragment()) }
 
+//        binding.task.setOnClickListener {
+//            (activity as MainActivity).openTasksFromHome()
+//            val prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
+//            val token = prefs.getString("token", null)
+//            val workspaceId = prefs.getInt("workspaceId", -1)
+//
+//            val fragment = TaskFragment()
+//            fragment.arguments = Bundle().apply {
+//                putString("token", token)
+//                putInt("workspaceId", workspaceId)
+//            }
+//
+//            loadFragment(fragment)
+//
+//        }
+//        binding.callsCampaign.setOnClickListener {
+//            val prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
+//            val token = prefs.getString("token", null)
+//            val workspaceId = prefs.getInt("workspaceId", -1)
+//
+//            val fragment = CallsCampaignFragment()
+//            fragment.arguments = Bundle().apply {
+//                putString("token", token)
+//                putInt("workspaceId", workspaceId)
+//            }
+//
+//            loadFragment(fragment)
+//        }
+
+//        binding.addNewLead.setOnClickListener {
+//            val prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
+//            val token = prefs.getString("token", null)
+//            val workspaceId = prefs.getInt("workspaceId", -1)
+//
+//            val fragment = AddNewLeadFragment()
+//            fragment.arguments = Bundle().apply {
+//                putString("token", token)
+//                putInt("workspaceId", workspaceId)
+//            }
+//
+//            loadFragment(fragment)
+//        }
+
+
+//        binding.calls.setOnClickListener { loadFragment(CallsFragment()) }
+//        binding.report.setOnClickListener { loadFragment(ReportFragment()) }
 
         binding.taskRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         homeTaskAdapter = HomeTaskAdapter(emptyList()) { task ->

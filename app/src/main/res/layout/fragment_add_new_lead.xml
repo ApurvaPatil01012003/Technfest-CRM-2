@@ -4,71 +4,58 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/tc_screen_bg"
     android:orientation="vertical"
     tools:context=".view.AddNewLeadFragment">
 
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/toolbar_gradient"
-        android:elevation="@dimen/_2sdp"
-        app:liftOnScroll="true">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@android:color/transparent"
-            app:navigationIconTint="@color/white"
-            app:subtitle="Quick create lead &amp; first follow-up"
-            app:subtitleTextAppearance="@style/ToolbarSubtitleText"
-            app:subtitleTextColor="@color/white"
-            app:title="Add New Lead"
-            app:titleTextAppearance="@style/ToolbarTitleText"
-            app:titleTextColor="@color/white" />
-
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        tools:context=".view.AddNewLeadActivity">
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/_10sdp">
-
+            android:padding="@dimen/_2sdp">
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/_6sdp"
                 app:cardBackgroundColor="@android:color/white"
-                app:cardCornerRadius="@dimen/_14sdp"
-                app:cardElevation="@dimen/_4sdp"
-                app:strokeColor="#DDDDDD"
+                app:cardCornerRadius="@dimen/_4sdp"
+                app:cardElevation="@dimen/_2sdp"
+                android:layout_marginBottom="@dimen/_30sdp"
+                app:strokeColor="@color/tc_card_stroke"
                 app:strokeWidth="@dimen/_1sdp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="@dimen/_10sdp">
+                    android:padding="@dimen/_12sdp">
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Basic Details"
-                        android:textColor="@color/black"
+                        android:text="Add new lead"
+                        android:textAlignment="center"
+                        android:textColor="@color/blue"
                         android:textSize="@dimen/_14ssp"
                         android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Basic Details"
+                        android:textColor="@color/tc_primary_text"
+                        android:textSize="@dimen/_14ssp"
+                        android:padding="@dimen/_10sdp"
+                        android:textStyle="bold" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_1sdp"
+                        android:background="#ECECEC" />
 
                     <!-- Full Name -->
                     <TextView
@@ -77,6 +64,7 @@
                         android:paddingStart="@dimen/_10sdp"
                         android:paddingTop="@dimen/_10sdp"
                         android:text="Full Name"
+                        android:textColor="@color/tc_secondary_text"
                         android:textSize="@dimen/_12ssp" />
 
                     <EditText
@@ -109,6 +97,7 @@
                                 android:layout_height="wrap_content"
                                 android:paddingStart="@dimen/_10sdp"
                                 android:text="Phone"
+                                android:textColor="@color/tc_secondary_text"
                                 android:textSize="@dimen/_12ssp" />
 
                             <EditText
@@ -135,6 +124,7 @@
                                 android:layout_height="wrap_content"
                                 android:paddingStart="@dimen/_10sdp"
                                 android:text="Email"
+                                android:textColor="@color/tc_secondary_text"
                                 android:textSize="@dimen/_12ssp" />
 
                             <EditText
@@ -169,6 +159,7 @@
                                 android:layout_height="wrap_content"
                                 android:paddingStart="@dimen/_10sdp"
                                 android:text="City/Location"
+                                android:textColor="@color/tc_secondary_text"
                                 android:textSize="@dimen/_12ssp" />
 
                             <EditText
@@ -195,6 +186,7 @@
                                 android:layout_height="wrap_content"
                                 android:paddingStart="@dimen/_10sdp"
                                 android:text="Company Name"
+                                android:textColor="@color/tc_secondary_text"
                                 android:textSize="@dimen/_12ssp" />
 
                             <EditText
@@ -217,6 +209,7 @@
                         android:paddingStart="@dimen/_10sdp"
                         android:paddingTop="@dimen/_10sdp"
                         android:text="Lead Message / Requirement"
+                        android:textColor="@color/tc_secondary_text"
                         android:textSize="@dimen/_12ssp" />
 
                     <EditText
@@ -231,35 +224,23 @@
                         android:padding="@dimen/_10sdp"
                         android:textSize="12sp" />
 
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
 
 
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/_6sdp"
-                app:cardBackgroundColor="@android:color/white"
-                app:cardCornerRadius="@dimen/_14sdp"
-                app:cardElevation="@dimen/_4sdp"
-                app:strokeColor="#DDDDDD"
-                app:strokeWidth="@dimen/_1sdp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="@dimen/_10sdp">
+                    <!-- Source & Status Card -->
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Source &amp; Status"
-                        android:textColor="@color/black"
+                        android:padding="@dimen/_10sdp"
+                        android:textColor="@color/tc_primary_text"
                         android:textSize="@dimen/_14ssp"
                         android:textStyle="bold" />
 
-                    <!-- Phone + Email Row -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_1sdp"
+                        android:background="#ECECEC" />
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -278,28 +259,28 @@
                                 android:layout_height="wrap_content"
                                 android:paddingStart="@dimen/_10sdp"
                                 android:text="Source"
+                                android:textColor="@color/tc_secondary_text"
                                 android:textSize="@dimen/_12ssp" />
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="@dimen/_38sdp"
                                 android:layout_marginTop="@dimen/_6sdp"
-                                android:background="@drawable/spinner_background"
-                                android:padding="@dimen/_8sdp">
+                                android:background="@drawable/spinner_background">
 
                                 <Spinner
                                     android:id="@+id/spnSource"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:dropDownVerticalOffset="@dimen/_8sdp"
-                                    android:gravity="center_vertical|start"
-                                    android:paddingEnd="@dimen/_40sdp"
+                                    android:layout_height="match_parent"
+                                    android:paddingLeft="@dimen/_2sdp"
+                                    android:paddingRight="@dimen/_26sdp"
                                     android:popupBackground="@color/white"
-                                    android:spinnerMode="dropdown" />
+                                    android:spinnerMode="dropdown"
+                                    android:textAlignment="center"
+                                    android:textSize="@dimen/_12ssp" />
 
 
                             </RelativeLayout>
-
 
                         </LinearLayout>
 
@@ -315,25 +296,26 @@
                                 android:layout_height="wrap_content"
                                 android:paddingStart="@dimen/_10sdp"
                                 android:text="Campaign Name"
+                                android:textColor="@color/tc_secondary_text"
                                 android:textSize="@dimen/_12ssp" />
 
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="@dimen/_38sdp"
                                 android:layout_marginTop="@dimen/_6sdp"
-                                android:background="@drawable/spinner_background"
-                                android:padding="@dimen/_8sdp">
+                                android:background="@drawable/spinner_background">
 
                                 <Spinner
                                     android:id="@+id/spnCampaignName"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:dropDownVerticalOffset="@dimen/_8sdp"
-                                    android:gravity="center_vertical|start"
-                                    android:paddingEnd="@dimen/_40sdp"
+                                    android:layout_height="match_parent"
+                                    android:paddingLeft="@dimen/_2sdp"
+                                    android:paddingRight="@dimen/_26sdp"
                                     android:popupBackground="@color/white"
-                                    android:spinnerMode="dropdown" />
+                                    android:spinnerMode="dropdown"
+                                    android:textAlignment="center"
+                                    android:textSize="@dimen/_12ssp" />
 
 
                             </RelativeLayout>
@@ -341,7 +323,7 @@
 
                     </LinearLayout>
 
-
+                    <!-- Status + Stage Row -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -360,24 +342,26 @@
                                 android:layout_height="wrap_content"
                                 android:paddingStart="@dimen/_10sdp"
                                 android:text="Lead Status"
+                                android:textColor="@color/tc_secondary_text"
                                 android:textSize="@dimen/_12ssp" />
+
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="@dimen/_38sdp"
                                 android:layout_marginTop="@dimen/_6sdp"
-                                android:background="@drawable/spinner_background"
-                                android:padding="@dimen/_8sdp">
+                                android:background="@drawable/spinner_background">
 
                                 <Spinner
                                     android:id="@+id/spnStatus"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:dropDownVerticalOffset="@dimen/_8sdp"
-                                    android:gravity="center_vertical|start"
-                                    android:paddingEnd="@dimen/_40sdp"
+                                    android:layout_height="match_parent"
+                                    android:paddingLeft="@dimen/_2sdp"
+                                    android:paddingRight="@dimen/_26sdp"
                                     android:popupBackground="@color/white"
-                                    android:spinnerMode="dropdown" />
+                                    android:spinnerMode="dropdown"
+                                    android:textAlignment="center"
+                                    android:textSize="@dimen/_12ssp" />
 
 
                             </RelativeLayout>
@@ -395,86 +379,76 @@
                                 android:layout_height="wrap_content"
                                 android:paddingStart="@dimen/_10sdp"
                                 android:text="Stage"
+                                android:textColor="@color/tc_secondary_text"
                                 android:textSize="@dimen/_12ssp" />
+
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="@dimen/_38sdp"
                                 android:layout_marginTop="@dimen/_6sdp"
-                                android:background="@drawable/spinner_background"
-                                android:padding="@dimen/_8sdp">
+                                android:background="@drawable/spinner_background">
 
                                 <Spinner
                                     android:id="@+id/spnStages"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:dropDownVerticalOffset="@dimen/_8sdp"
-                                    android:gravity="center_vertical|start"
-                                    android:paddingEnd="@dimen/_40sdp"
+                                    android:layout_height="match_parent"
+                                    android:paddingLeft="@dimen/_2sdp"
+                                    android:paddingRight="@dimen/_26sdp"
                                     android:popupBackground="@color/white"
-                                    android:spinnerMode="dropdown" />
+                                    android:spinnerMode="dropdown"
+                                    android:textAlignment="center"
+                                    android:textSize="@dimen/_12ssp" />
 
 
                             </RelativeLayout>
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Lead Message -->
+                    <!-- Priority -->
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingStart="@dimen/_10sdp"
                         android:paddingTop="@dimen/_10sdp"
                         android:text="Priority"
+                        android:textColor="@color/tc_secondary_text"
                         android:textSize="@dimen/_12ssp" />
 
                     <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="@dimen/_38sdp"
                         android:layout_marginTop="@dimen/_6sdp"
-                        android:background="@drawable/spinner_background"
-                        android:padding="@dimen/_8sdp">
+                        android:background="@drawable/spinner_background">
 
                         <Spinner
                             android:id="@+id/spnPriority"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:dropDownVerticalOffset="@dimen/_8sdp"
-                            android:gravity="center_vertical|start"
-                            android:paddingEnd="@dimen/_40sdp"
+                            android:layout_height="match_parent"
+                            android:paddingLeft="@dimen/_2sdp"
+                            android:paddingRight="@dimen/_26sdp"
                             android:popupBackground="@color/white"
-                            android:spinnerMode="dropdown" />
+                            android:spinnerMode="dropdown"
+                            android:textAlignment="center"
+                            android:textSize="@dimen/_12ssp" />
 
 
                     </RelativeLayout>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/_6sdp"
-                app:cardBackgroundColor="@android:color/white"
-                app:cardCornerRadius="@dimen/_14sdp"
-                app:cardElevation="@dimen/_4sdp"
-                app:strokeColor="#DDDDDD"
-                app:strokeWidth="@dimen/_1sdp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="@dimen/_10sdp">
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Assignment"
-                        android:textColor="@color/black"
+                        android:textColor="@color/tc_primary_text"
                         android:textSize="@dimen/_14ssp"
+                        android:padding="@dimen/_10sdp"
                         android:textStyle="bold" />
 
-                    <!-- Phone + Email Row -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_1sdp"
+                        android:background="#ECECEC" />
+                    <!-- Assign To Team + Type Row -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -493,29 +467,29 @@
                                 android:layout_height="wrap_content"
                                 android:paddingStart="@dimen/_10sdp"
                                 android:text="Assign To Team"
+                                android:textColor="@color/tc_secondary_text"
                                 android:textSize="@dimen/_12ssp" />
+
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="@dimen/_38sdp"
                                 android:layout_marginTop="@dimen/_6sdp"
-                                android:background="@drawable/spinner_background"
-                                android:padding="@dimen/_8sdp">
+                                android:background="@drawable/spinner_background">
 
                                 <Spinner
-
                                     android:id="@+id/spnAssignToTeam"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:dropDownVerticalOffset="@dimen/_8sdp"
-                                    android:gravity="center_vertical|start"
-                                    android:paddingEnd="@dimen/_40sdp"
+                                    android:layout_height="match_parent"
+                                    android:paddingLeft="@dimen/_2sdp"
+                                    android:paddingRight="@dimen/_26sdp"
                                     android:popupBackground="@color/white"
-                                    android:spinnerMode="dropdown" />
+                                    android:spinnerMode="dropdown"
+                                    android:textAlignment="center"
+                                    android:textSize="@dimen/_12ssp" />
 
 
                             </RelativeLayout>
-
 
                         </LinearLayout>
 
@@ -531,24 +505,25 @@
                                 android:layout_height="wrap_content"
                                 android:paddingStart="@dimen/_10sdp"
                                 android:text="Assign Type"
+                                android:textColor="@color/tc_secondary_text"
                                 android:textSize="@dimen/_12ssp" />
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="@dimen/_38sdp"
                                 android:layout_marginTop="@dimen/_6sdp"
-                                android:background="@drawable/spinner_background"
-                                android:padding="@dimen/_8sdp">
+                                android:background="@drawable/spinner_background">
 
                                 <Spinner
                                     android:id="@+id/spnAssignType"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:dropDownVerticalOffset="@dimen/_8sdp"
-                                    android:gravity="center_vertical|start"
-                                    android:paddingEnd="@dimen/_40sdp"
+                                    android:layout_height="match_parent"
+                                    android:paddingLeft="@dimen/_2sdp"
+                                    android:paddingRight="@dimen/_26sdp"
                                     android:popupBackground="@color/white"
-                                    android:spinnerMode="dropdown" />
+                                    android:spinnerMode="dropdown"
+                                    android:textAlignment="center"
+                                    android:textSize="@dimen/_12ssp" />
 
 
                             </RelativeLayout>
@@ -556,12 +531,14 @@
                         </LinearLayout>
                     </LinearLayout>
 
+                    <!-- Assign To User -->
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingStart="@dimen/_10sdp"
                         android:paddingTop="@dimen/_10sdp"
                         android:text="Assign To User (optional)"
+                        android:textColor="@color/tc_secondary_text"
                         android:textSize="@dimen/_12ssp" />
 
                     <EditText
@@ -574,13 +551,14 @@
                         android:padding="@dimen/_10sdp"
                         android:textSize="12sp" />
 
-
+                    <!-- Next Follow-up -->
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingStart="@dimen/_10sdp"
                         android:paddingTop="@dimen/_10sdp"
-                        android:text="Next Follow-up Date &amp; Time(optional)"
+                        android:text="Next Follow-up Date &amp; Time (optional)"
+                        android:textColor="@color/tc_secondary_text"
                         android:textSize="@dimen/_12ssp" />
 
                     <EditText
@@ -595,41 +573,22 @@
                         android:padding="@dimen/_10sdp"
                         android:textSize="@dimen/_10ssp" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="lead_id, created_at, assigned_date, rating etc. will be auto-generated/updated by backend."
-                        android:textColor="#A09D9D"
-                        android:textSize="@dimen/_10sdp" />
-                </LinearLayout>
 
-            </com.google.android.material.card.MaterialCardView>
+                    <!-- Tags + Save Button Card -->
 
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/_6sdp"
-                app:cardBackgroundColor="@android:color/white"
-                app:cardCornerRadius="@dimen/_14sdp"
-                app:cardElevation="@dimen/_4sdp"
-                app:strokeColor="#DDDDDD"
-                app:strokeWidth="@dimen/_1sdp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="@dimen/_10sdp">
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Tags"
-                        android:textColor="@color/black"
+                        android:padding="@dimen/_10sdp"
+                        android:textColor="@color/tc_primary_text"
                         android:textSize="@dimen/_14ssp"
                         android:textStyle="bold" />
-
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_1sdp"
+                        android:background="#ECECEC" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -637,6 +596,7 @@
                         android:paddingStart="@dimen/_10sdp"
                         android:paddingTop="@dimen/_10sdp"
                         android:text="Tags (comma separated)"
+                        android:textColor="@color/tc_secondary_text"
                         android:textSize="@dimen/_12ssp" />
 
                     <EditText
@@ -661,14 +621,15 @@
                         android:textAllCaps="false"
                         android:textColor="@android:color/white"
                         app:backgroundTint="@null"
-                        app:cornerRadius="12dp"
+                        app:cornerRadius="@dimen/_12sdp"
                         app:iconGravity="textStart"
                         app:iconPadding="8dp" />
 
                 </LinearLayout>
-
-
             </com.google.android.material.card.MaterialCardView>
+
+
+
 
 
         </LinearLayout>

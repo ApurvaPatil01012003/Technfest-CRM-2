@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.technfest.technfestcrm.R
 import com.technfest.technfestcrm.model.LeadResponseItem
 import com.google.i18n.phonenumbers.PhoneNumberUtil
-import com.google.i18n.phonenumbers.NumberParseException
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat
 
 class LeadAdapter(
@@ -18,15 +17,23 @@ class LeadAdapter(
 
     inner class LeadViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val leadName: TextView = itemView.findViewById(R.id.leadName)
-        val leadNumber : TextView = itemView.findViewById(R.id.leadNumber)
-        val location: TextView = itemView.findViewById(R.id.leadLocation)
+        val leadNumber: TextView = itemView.findViewById(R.id.leadNumber)
+
+        //        val location: TextView = itemView.findViewById(R.id.leadLocation)
         val priority: TextView = itemView.findViewById(R.id.leadPriority)
-        val source: TextView = itemView.findViewById(R.id.source)
+        val leadAvatar: TextView = itemView.findViewById(R.id.leadAvatar)
+
+        //  val source: TextView = itemView.findViewById(R.id.source)
         val status: TextView = itemView.findViewById(R.id.status)
         val leadStage: TextView = itemView.findViewById(R.id.leadStage)
-        val companyName: TextView = itemView.findViewById(R.id.companyName)
-        val leadOwner: TextView = itemView.findViewById(R.id.leadOwner)
+//        val companyName: TextView = itemView.findViewById(R.id.companyName)
+//        val leadOwner: TextView = itemView.findViewById(R.id.leadOwner)
     }
+        fun updateData(newList: List<LeadResponseItem>) {
+            leadList = newList
+            notifyDataSetChanged()
+        }
+
     private var selectedLeadId = -1
 
     fun setSelectedLead(id: Int) {
@@ -46,13 +53,14 @@ class LeadAdapter(
         holder.leadName.text = lead.fullName
 //        holder.leadNumber.text = "+91 ${lead.mobile}"
         holder.leadNumber.text = formatInternationalNumber(lead.mobile)
-        holder.location.text = "Location : ${lead.location?.toString() ?: "Not availble"}"
+      //  holder.location.text = "Location : ${lead.location?.toString() ?: "Not availble"}"
         holder.priority.text = "Priority : ${lead.priority}"
-        holder.source.text ="Source : ${lead.source?.toString() ?: "Not availble" }"
+       // holder.source.text ="Source : ${lead.source?.toString() ?: "Not availble" }"
         holder.status.text = "Status : ${lead.status}"
         holder.leadStage.text = "Stage : ${lead.stage ?: "Not availble"}"
-        holder.companyName.text = "Company Name : ${lead.company?.toString() ?: "Not availble"}"
-        holder.leadOwner.text = "Owner Name : ${lead.ownerName?.toString() ?: "Not availble"}"
+        setAvatar(holder.leadAvatar, lead.fullName)
+//        holder.companyName.text = "Company Name : ${lead.company?.toString() ?: "Not availble"}"
+//        holder.leadOwner.text = "Owner Name : ${lead.ownerName?.toString() ?: "Not availble"}"
 
 
         when (lead.priority.lowercase()) {
@@ -92,24 +100,67 @@ class LeadAdapter(
 
     override fun getItemCount() = leadList.size
 
-    fun updateList(newList: List<LeadResponseItem>) {
-        leadList = newList
-        notifyDataSetChanged()
+    private val avatarBackgrounds = listOf(
+        R.drawable.gradient_circle_blue,
+        R.drawable.gradient_circle_green,
+        R.drawable.gradient_circle_orange,
+        R.drawable.gradient_circle,
+        R.drawable.gradient_circle_blue_cyan,
+        R.drawable.gradient_circle_purple_pink,
+        R.drawable.gradient_circle_red_orange
+
+    )
+
+    private fun setAvatar(textView: TextView, name: String?) {
+        if (name.isNullOrBlank()) {
+            textView.text = "?"
+            textView.setBackgroundResource(avatarBackgrounds[0])
+            return
+        }
+
+        val cleanName = name.trim().replace("\\s+".toRegex(), " ")
+        val parts = cleanName.split(" ")
+
+        val initials = when {
+            parts.size >= 2 -> {
+                "${parts[0][0]}${parts[1][0]}"
+            }
+            else -> {
+                "${parts[0][0]}"
+            }
+        }
+
+        textView.text = initials.uppercase()
+
+        // Telegram-style stable background
+        val index = kotlin.math.abs(cleanName.hashCode()) % avatarBackgrounds.size
+        textView.setBackgroundResource(avatarBackgrounds[index])
     }
+}
 
 
+    fun formatInternationalNumber(rawNumber: String?): String {
+        if (rawNumber.isNullOrBlank()) return ""
 
-    fun formatInternationalNumber(rawNumber: String): String {
         return try {
             val phoneUtil = PhoneNumberUtil.getInstance()
 
-            // Parse using UNKNOWN region so it auto-detects country code
-            val numberProto = phoneUtil.parse(rawNumber, null)
+            // Clean unwanted characters
+            val cleaned = rawNumber.replace("[^0-9+]".toRegex(), "")
 
-            // Format in correct international style: +XX XXXXXXX
+            // Parse with IN as default region
+            val numberProto = phoneUtil.parse(cleaned, "IN")
+
+            // Always return FULL international format
             phoneUtil.format(numberProto, PhoneNumberFormat.INTERNATIONAL)
+
         } catch (e: Exception) {
-            rawNumber  // fallback if parsing fails
+            rawNumber  // fallback
         }
-    }
+
+
+
+
+
+
 }

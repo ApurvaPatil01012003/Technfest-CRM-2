@@ -18,8 +18,6 @@ class AutoMoveForegroundService : Service() {
         createNotification()
 
         triggerWorkManager()
-
-        // Service can stop itself, WorkManager handles actual job
         stopForeground(true)
         stopSelf()
 

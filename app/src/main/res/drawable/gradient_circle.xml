@@ -1,8 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
 
-    <gradient
-        android:startColor="#6C63FF"
-        android:endColor="#A57CFC"
-        android:angle="45" />
+    <solid android:color="#4D9DE0"/>
+
+
+
+    <padding
+        android:left="@dimen/_5sdp"
+        android:right="@dimen/_5sdp"
+        android:top="@dimen/_5sdp"
+        android:bottom="@dimen/_5sdp"/>
 </shape>

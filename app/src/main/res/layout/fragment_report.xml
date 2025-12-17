@@ -4,29 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/tc_screen_bg"
     tools:context=".view.ReportFragment">
-
-    <!-- App bar (toolbar only) -->
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/toolbar_gradient"
-        app:liftOnScroll="true">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:title="Reports"
-            app:titleTextColor="@color/white"
-            app:navigationIcon="@drawable/baseline_keyboard_backspace_24"
-            app:navigationIconTint="@color/white"
-            app:subtitle="Recognize your performance"
-            app:subtitleTextColor="@color/white"/>
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <!-- Content -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollContent"
         android:layout_width="match_parent"
@@ -38,15 +17,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="12dp">
+           >
 
-            <!-- Filters card -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardFilters"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="16dp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                app:cardCornerRadius="@dimen/_4sdp"
                 app:cardElevation="0dp"
                 app:strokeWidth="1dp">
 
@@ -54,8 +32,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingHorizontal="8dp"
-                    android:paddingVertical="8dp">
+                    android:paddingHorizontal="@dimen/_8sdp"
+                    android:paddingVertical="@dimen/_8sdp">
 
                     <!-- date filter buttons row -->
                     <LinearLayout
@@ -70,12 +48,12 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/bg_filter_unselected"
+                            android:background="@drawable/unselected_campaign_bg"
                             android:gravity="center"
                             android:paddingHorizontal="@dimen/_8sdp"
                             android:paddingVertical="@dimen/_10sdp"
                             android:text="Today"
-                            android:textColor="@android:color/white" />
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvYesterday"
@@ -83,12 +61,15 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
                             android:layout_weight="1"
-                            android:background="@drawable/bg_filter_unselected"
+                            android:background="@drawable/unselected_campaign_bg"
                             android:gravity="center"
                             android:paddingHorizontal="@dimen/_8sdp"
                             android:paddingVertical="@dimen/_10sdp"
                             android:text="Yesterday"
-                            android:textColor="@android:color/white" />
+                            android:textColor="@android:color/black"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:ellipsize="end" />
 
                         <TextView
                             android:id="@+id/tvThisWeek"
@@ -96,12 +77,12 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
                             android:layout_weight="1"
-                            android:background="@drawable/bg_filter_unselected"
+                            android:background="@drawable/unselected_campaign_bg"
                             android:gravity="center"
                             android:paddingHorizontal="@dimen/_8sdp"
                             android:paddingVertical="@dimen/_10sdp"
                             android:text="This Week"
-                            android:textColor="@android:color/white" />
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvCustom"
@@ -109,12 +90,12 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
                             android:layout_weight="1"
-                            android:background="@drawable/bg_filter_unselected"
+                            android:background="@drawable/unselected_campaign_bg"
                             android:gravity="center"
                             android:paddingHorizontal="@dimen/_8sdp"
                             android:paddingVertical="@dimen/_10sdp"
                             android:text="Custom"
-                            android:textColor="@android:color/white" />
+                            android:textColor="@android:color/black" />
                     </LinearLayout>
 
                     <!-- contact row -->
@@ -191,7 +172,8 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
+                app:cardCornerRadius="@dimen/_8sdp"
+                android:layout_margin="@dimen/_6sdp"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -206,6 +188,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Lead Status"
+                        android:textColor="@color/blue"
                         android:textStyle="bold"
                         android:textSize="@dimen/_16ssp" />
 
@@ -214,10 +197,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Today"
+                        android:paddingBottom="@dimen/_6sdp"
                         android:paddingTop="@dimen/_4sdp"
                         android:textSize="@dimen/_12ssp" />
 
-                    <!-- Chart (left) + Legend (right) -->
+                 <View
+                     android:layout_width="match_parent"
+                     android:layout_height="@dimen/_1sdp"
+                     android:background="#DCD8D8"/>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -347,7 +334,9 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="@dimen/_14sdp"
+                app:cardCornerRadius="@dimen/_8sdp"
+                android:layout_marginStart="@dimen/_6sdp"
+                android:layout_marginEnd="@dimen/_6sdp"
                 android:layout_marginTop="@dimen/_20sdp"
                 app:strokeWidth="@dimen/_1sdp">
 
@@ -362,6 +351,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Call Campaign Status"
+                        android:textColor="@color/blue"
                         android:textSize="@dimen/_14ssp"
                         android:textStyle="bold" />
 
@@ -370,8 +360,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingTop="@dimen/_2sdp"
+                        android:paddingBottom="@dimen/_6sdp"
                         android:text="Today"
                         android:textSize="@dimen/_10ssp" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_1sdp"
+                        android:background="#DCD8D8"/>
 
                     <!-- Chart (left) + Legend (right) -->
                     <LinearLayout
@@ -495,7 +490,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_20sdp"
-                app:cardCornerRadius="@dimen/_14sdp"
+                android:layout_marginStart="@dimen/_6sdp"
+                android:layout_marginEnd="@dimen/_6sdp"
+                app:cardCornerRadius="@dimen/_8sdp"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -518,7 +515,13 @@
                         android:layout_height="wrap_content"
                         android:text="Today"
                         android:textSize="@dimen/_10ssp"
-                        android:paddingTop="@dimen/_2sdp" />
+                        android:paddingTop="@dimen/_2sdp"
+                        android:paddingBottom="@dimen/_6sdp"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_1sdp"
+                        android:background="#DCD8D8"/>
 
                     <!-- Chart (left) + Legend (right) -->
                     <LinearLayout
@@ -616,7 +619,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_20sdp"
-                app:cardCornerRadius="@dimen/_14sdp"
+                android:layout_marginStart="@dimen/_6sdp"
+                android:layout_marginEnd="@dimen/_6sdp"
+                app:cardCornerRadius="@dimen/_8sdp"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -639,7 +644,12 @@
                         android:layout_height="wrap_content"
                         android:text="Today"
                         android:textSize="@dimen/_10ssp"
-                        android:paddingTop="@dimen/_2sdp" />
+                        android:paddingTop="@dimen/_2sdp"
+                        android:paddingBottom="@dimen/_6sdp"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_1sdp"
+                        android:background="#DCD8D8"/>
 
                     <!-- Chart (left) + Legend (right) -->
                     <LinearLayout

@@ -1,593 +1,249 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/tc_screen_bg"
     android:orientation="vertical"
     tools:context=".view.HomeFragment">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
 
-        <ScrollView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:fillViewport="true">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/_12sdp"
+            android:paddingTop="@dimen/_10sdp"
+            android:paddingBottom="@dimen/_16sdp">
+
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <com.google.android.material.appbar.MaterialToolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/toolbar_gradient"
-                    app:titleTextColor="@color/white"
-                    app:subtitleTextColor="@color/white"
-                    app:titleTextAppearance="@style/ToolbarTitleText"
-                    app:subtitleTextAppearance="@style/ToolbarSubtitleText">
-
-                    <!-- Main container -->
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingHorizontal="@dimen/_8sdp"
-                        android:paddingVertical="@dimen/_6sdp">
-
-                        <!-- Title + Subtitle on left -->
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_alignParentStart="true">
-
-                            <TextView
-                                android:id="@+id/toolbarTitle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Technfest Workspace"
-                                android:textColor="@color/white"
-                                android:textStyle="bold"
-                                android:textSize="@dimen/_14ssp" />
-
-                            <TextView
-                                android:id="@+id/toolbarSubtitle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Today’s summary &amp; follow-ups"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/_10ssp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/userInfoLayout"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_alignParentEnd="true">
-
-                            <TextView
-                                android:id="@+id/userName"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="@dimen/_6sdp"
-                                android:text="Amit Sharma"
-                                android:textColor="@android:color/white"
-                                android:textSize="@dimen/_10ssp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/userInitialCircle"
-                                android:layout_width="@dimen/_28sdp"
-                                android:layout_height="@dimen/_28sdp"
-                                android:gravity="center"
-                                android:text="A"
-                                android:textColor="@android:color/white"
-                                android:textStyle="bold"
-                                android:textSize="@dimen/_12ssp"
-                                android:background="@drawable/gradient_circle" />
-                        </LinearLayout>
-                    </RelativeLayout>
-                </com.google.android.material.appbar.MaterialToolbar>
-
-
-                <!-- Today's Snapshot -->
-                <TextView
-                    android:layout_width="@dimen/_150sdp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:layout_marginStart="@dimen/_20sdp"
-                    android:textStyle="bold"
-                    android:text="Today’s Snapshot"
-                    android:textAlignment="center"
-                    android:padding="@dimen/_6sdp"
-                    android:background="@drawable/bg_home_text"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_12ssp" />
-
-                <androidx.gridlayout.widget.GridLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_8sdp"
-                    android:padding="@dimen/_4sdp"
-                    app:rowCount="1"
-                    app:columnCount="3"
-                    app:alignmentMode="alignMargins"
-                    app:useDefaultMargins="true">
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        app:layout_columnWeight="1"
-                        app:layout_rowWeight="1"
-                        android:layout_margin="4dp"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="6dp"
-                        app:strokeColor="#DDDDDD"
-                        app:strokeWidth="1dp"
-                        app:cardBackgroundColor="@android:color/white">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="@dimen/_10sdp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="New Lead"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/_8ssp" />
-
-                            <TextView
-                                android:id="@+id/txtNewLeadCount"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/_12ssp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:text="5 from Facebook"
-                                android:textColor="#4CAF50"
-                                android:textSize="@dimen/_10ssp" />
-
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        app:layout_columnWeight="1"
-                        app:layout_rowWeight="1"
-                        android:layout_margin="4dp"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="6dp"
-                        app:strokeColor="#DDDDDD"
-                        app:strokeWidth="1dp"
-                        app:cardBackgroundColor="@android:color/white">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="@dimen/_10sdp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Pending Follow-ups"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/_8ssp" />
-
-                            <TextView
-                                android:id="@+id/txtTodayPendingTaskCount"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:text="7"
-                                android:textStyle="bold"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/_12ssp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:text="3 overdue"
-                                android:textColor="#4CAF50"
-                                android:textSize="@dimen/_10ssp" />
-
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Card 3: Today's Closures -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        app:layout_columnWeight="1"
-                        app:layout_rowWeight="1"
-                        android:layout_margin="4dp"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="6dp"
-                        app:strokeColor="#DDDDDD"
-                        app:strokeWidth="1dp"
-                        app:cardBackgroundColor="@android:color/white">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="@dimen/_10sdp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Today's Closures"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/_8ssp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:text="3"
-                                android:textStyle="bold"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/_12ssp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:text="45,000"
-                                android:textColor="#4CAF50"
-                                android:textSize="12sp" />
-
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-
-                </androidx.gridlayout.widget.GridLayout>
-
-                <!-- Quick Actions -->
-                <TextView
-                    android:layout_width="@dimen/_150sdp"
-                    android:layout_height="wrap_content"
-                    android:text="Quick Actions"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_12ssp"
-                    android:padding="@dimen/_6sdp"
-                    android:textAlignment="center"
-                    android:background="@drawable/bg_home_text"
-                    android:layout_marginStart="@dimen/_20sdp"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:textStyle="bold" />
-
-                <androidx.gridlayout.widget.GridLayout
-                    android:id="@+id/quickActionsGrid"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:rowCount="2"
-                    android:layout_marginStart="@dimen/_8sdp"
-                    android:padding="@dimen/_4sdp"
-                    app:alignmentMode="alignMargins"
-                    app:columnCount="3"
-                    app:useDefaultMargins="true">
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/addNewLead"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        app:layout_columnWeight="1"
-                        app:layout_rowWeight="1"
-                        android:layout_margin="4dp"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="6dp"
-                        app:strokeColor="#DDDDDD"
-                        app:strokeWidth="1dp"
-                        app:cardBackgroundColor="@android:color/white">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="@dimen/_10sdp">
-
-                            <ImageView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:src="@drawable/plus" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:text="Add Lead"
-                                android:textColor="@color/black"
-                                android:textSize="12sp" />
-
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Card 2: Call Campaign -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/callsCampaign"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        app:layout_columnWeight="1"
-                        app:layout_rowWeight="1"
-                        android:layout_margin="4dp"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="6dp"
-                        app:strokeColor="#DDDDDD"
-                        app:strokeWidth="1dp"
-                        app:cardBackgroundColor="@android:color/white">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="@dimen/_10sdp">
-
-                            <ImageView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:src="@drawable/change" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:text="Campaign"
-                                android:textColor="@color/black"
-                                android:textSize="12sp" />
-
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/calls"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        app:layout_columnWeight="1"
-                        app:layout_rowWeight="1"
-                        android:layout_margin="4dp"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="6dp"
-                        app:strokeColor="#DDDDDD"
-                        app:strokeWidth="1dp"
-                        app:cardBackgroundColor="@android:color/white">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="@dimen/_10sdp">
-
-                            <ImageView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:src="@drawable/callschange" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:text="Calls"
-                                android:textColor="@color/black"
-                                android:textSize="12sp" />
-
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Card 4: Task -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/task"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        app:layout_columnWeight="1"
-                        app:layout_rowWeight="1"
-                        android:layout_margin="4dp"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="6dp"
-                        app:strokeColor="#DDDDDD"
-                        app:strokeWidth="1dp"
-                        app:cardBackgroundColor="@android:color/white">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="@dimen/_10sdp">
-
-                            <ImageView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:src="@drawable/taskchange" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:text="Task"
-                                android:textColor="@color/black"
-                                android:textSize="12sp" />
-
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/myLead"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        app:layout_columnWeight="1"
-                        app:layout_rowWeight="1"
-                        android:layout_margin="4dp"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="6dp"
-                        app:strokeColor="#DDDDDD"
-                        app:strokeWidth="1dp"
-                        app:cardBackgroundColor="@android:color/white">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="@dimen/_10sdp">
-
-                            <ImageView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:src="@drawable/leadschange" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:text="My Lead"
-                                android:textColor="@color/black"
-                                android:textSize="12sp" />
-
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Card 6: Reports -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/report"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        app:layout_columnWeight="1"
-                        app:layout_rowWeight="1"
-                        android:layout_margin="4dp"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="6dp"
-                        app:strokeColor="#DDDDDD"
-                        app:strokeWidth="1dp"
-                        app:cardBackgroundColor="@android:color/white">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="@dimen/_10sdp">
-
-                            <ImageView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:src="@drawable/report" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:text="Reports"
-                                android:textColor="@color/black"
-                                android:textSize="12sp" />
-
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-
-                </androidx.gridlayout.widget.GridLayout>
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:padding="@dimen/_14sdp">
 
                 <TextView
-                    android:layout_width="@dimen/_150sdp"
-                    android:textAlignment="center"
-                    android:layout_height="wrap_content"
-                    android:text="Hot Leads (Today)"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_12ssp"
-                    android:background="@drawable/bg_home_text"
-                    android:padding="@dimen/_6sdp"
-                    android:layout_marginStart="@dimen/_20sdp"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:textStyle="bold" />
+                    style="@style/SectionHeader"
+                    android:layout_marginBottom="@dimen/_10sdp"
+                    android:text="Today's Snapshot" />
 
-                <androidx.cardview.widget.CardView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="12dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="4dp"
-                    android:backgroundTint="@android:color/white">
+                    android:orientation="horizontal">
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
                         android:orientation="vertical"
-                        android:padding="12dp">
+                        android:padding="@dimen/_4sdp">
 
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/leadsRecyclerView"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                        <TextView
+                            android:id="@+id/txtNewLeadCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="25"
+                            android:textColor="@color/tc_primary_text"
+                            android:textSize="@dimen/_18ssp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/stat_title_new_leads"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_2sdp"
+                            android:text="New Leads"
+                            android:textColor="@color/tc_secondary_text"
+                            android:textSize="@dimen/_10ssp" />
+
+                        <TextView
+                            android:id="@+id/stat_subtitle_new_leads"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_2sdp"
+                            android:text="+5 from facebook"
+                            android:textColor="@color/tc_positive"
+                            android:textSize="@dimen/_9ssp" />
 
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:layout_width="@dimen/_150sdp"
-                    android:layout_height="wrap_content"
-                    android:text="Today’s Tasks"
-                    android:textColor="@color/black"
-                    android:textAlignment="center"
-                    android:background="@drawable/bg_home_text"
-                    android:textSize="@dimen/_12ssp"
-                    android:padding="@dimen/_6sdp"
-                    android:layout_marginStart="@dimen/_20sdp"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:textStyle="bold" />
+                    <!-- Divider -->
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginHorizontal="@dimen/_4sdp"
+                        android:background="@color/tc_divider" />
+                    <!-- Stat Item 2: Pending -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="@dimen/_4sdp">
 
-                <androidx.cardview.widget.CardView
+                        <TextView
+                            android:id="@+id/txtTodayPendingTaskCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="25"
+                            android:textColor="@color/tc_primary_text"
+                            android:textSize="@dimen/_18ssp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_2sdp"
+                            android:text="Pending Follow-ups"
+                            android:textColor="@color/tc_secondary_text"
+                            android:textSize="@dimen/_10ssp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_2sdp"
+                            android:text="+3 overdue"
+                            android:textColor="#F4734E"
+                            android:textSize="@dimen/_9ssp" />
+
+                    </LinearLayout>
+
+                    <!-- Divider -->
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginHorizontal="@dimen/_4sdp"
+                        android:background="@color/tc_divider" />
+                    <!-- Stat Item 3: Closures -->
+                    <LinearLayout
+                        android:id="@+id/stat_new_leads"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="@dimen/_4sdp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="25"
+                            android:textColor="@color/tc_primary_text"
+                            android:textSize="@dimen/_18ssp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_2sdp"
+                            android:text="Today's Closures"
+                            android:textColor="@color/tc_secondary_text"
+                            android:textSize="@dimen/_10ssp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_2sdp"
+                            android:text="45000"
+                            android:textColor="@color/tc_positive"
+                            android:textSize="@dimen/_9ssp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:background="@drawable/bg_home_text"
+                android:paddingHorizontal="@dimen/_14sdp"
+                android:paddingVertical="@dimen/_8sdp"
+                android:text="Hot Leads (Today)"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_11ssp"
+                android:textStyle="bold" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_6sdp"
+                android:backgroundTint="@color/white"
+                app:cardCornerRadius="@dimen/_4sdp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="12dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="4dp"
-                    android:backgroundTint="@android:color/white">
+                    android:orientation="vertical"
+                    android:padding="@dimen/_6sdp">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/leadsRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:background="@drawable/bg_home_text"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:paddingVertical="@dimen/_8sdp"
+                android:text="Today’s Tasks"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_11ssp"
+                android:textStyle="bold" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_6sdp"
+                android:layout_marginBottom="@dimen/_30sdp"
+                android:backgroundTint="@color/white"
+                app:cardCornerRadius="@dimen/_12sdp"
+                app:cardElevation="@dimen/_2sdp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_6sdp">
+
                     <TextView
                         android:id="@+id/txtTaskNotAssign"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Task is not assign today"
-                        android:textStyle="bold"
-                        android:textColor="#757575"
+                        android:padding="@dimen/_8sdp"
+                        android:text="No tasks assigned today"
                         android:textAlignment="center"
-                        android:visibility="gone"/>
+                        android:textColor="@color/tc_secondary_text"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
 
-                    <LinearLayout
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/taskRecyclerView"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="12dp">
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/taskRecyclerView"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-            </LinearLayout>
-        </ScrollView>
-
-
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

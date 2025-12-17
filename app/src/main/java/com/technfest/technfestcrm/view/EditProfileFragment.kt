@@ -22,18 +22,6 @@ class EditProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val toolbar =
-            view.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
-        (activity as? androidx.appcompat.app.AppCompatActivity)?.apply {
-            setSupportActionBar(toolbar)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setDisplayShowHomeEnabled(true)
-        }
-
-        toolbar.setNavigationOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
-
         val name = arguments?.getString("name")
         val role = arguments?.getString("role")
         val team = arguments?.getString("team")

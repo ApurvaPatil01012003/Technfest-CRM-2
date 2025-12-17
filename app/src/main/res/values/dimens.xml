@@ -4,5 +4,6 @@
     <dimen name="_4ssp">11sp</dimen>
     <dimen name="_8sdp">8dp</dimen>
     <dimen name="_4sdp">4dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 
 </resources>

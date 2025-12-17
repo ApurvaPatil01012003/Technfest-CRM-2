@@ -6,100 +6,36 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".view.CallsFragment">
-
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayout"
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/toolbar_gradient"
-        android:elevation="@dimen/_2sdp"
-        app:liftOnScroll="true">
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="@dimen/_2sdp"
+        app:cardElevation="@dimen/_4sdp"
+        app:strokeColor="#DDDDDD"
+        app:strokeWidth="@dimen/_1sdp">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/toolbar_gradient"
-            app:navigationIconTint="@color/white"
-            app:subtitleTextAppearance="@style/ToolbarSubtitleText"
-            app:subtitleTextColor="@color/white"
-            app:titleTextAppearance="@style/ToolbarTitleText"
-            app:titleTextColor="@color/white">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="@dimen/_4sdp"
-                android:paddingVertical="@dimen/_2sdp">
-
-                <!-- Title + Subtitle on left -->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/toolbarTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Calls"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/_14ssp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/toolbarSubtitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Synced from Android call log"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/_10ssp" />
-                </LinearLayout>
-
-                <!-- Right side: user info -->
-                <LinearLayout
-                    android:id="@+id/userInfoLayout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:background="#3F51B5"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/_6sdp">
-
-                    <TextView
-                        android:id="@+id/userName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/_6sdp"
-                        android:text="Auto Sync:On/off"
-                        android:textColor="@android:color/white"
-                        android:textSize="@dimen/_10ssp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-            </RelativeLayout>
-        </com.google.android.material.appbar.MaterialToolbar>
-
-
-    </com.google.android.material.appbar.AppBarLayout>
-
-
+            android:orientation="vertical"
+            android:padding="@dimen/_6sdp">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:weightSum="4"
-        android:padding="@dimen/_6sdp"
+        android:padding="@dimen/_2sdp"
         android:gravity="center">
+
+
 
         <!-- Card Item Template -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_margin="@dimen/_4sdp"
+            android:layout_margin="@dimen/_2sdp"
             app:cardBackgroundColor="@android:color/white"
             app:cardCornerRadius="@dimen/_8sdp"
             app:cardElevation="@dimen/_2sdp"
@@ -111,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:background="@drawable/bg_filter_selected"
+                android:background="@drawable/bg_total_purple"
                 android:paddingVertical="@dimen/_8sdp">
 
                 <TextView
@@ -148,7 +84,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:background="@drawable/bg_filter_selected"
+                android:background="@drawable/bg_incoming_green"
                 android:paddingVertical="@dimen/_8sdp">
 
                 <TextView
@@ -185,7 +121,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:background="@drawable/bg_filter_selected"
+                android:background="@drawable/bg_outgoing_blue"
                 android:paddingVertical="@dimen/_8sdp">
 
                 <TextView
@@ -222,7 +158,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:background="@drawable/bg_filter_selected"
+                android:background="@drawable/bg_missed_red"
                 android:paddingVertical="@dimen/_8sdp">
 
                 <TextView
@@ -245,104 +181,15 @@
 
     </LinearLayout>
 
-
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_6sdp"
-        app:cardBackgroundColor="@android:color/white"
-        app:cardCornerRadius="@dimen/_14sdp"
-        app:cardElevation="@dimen/_4sdp"
-        app:strokeColor="#DDDDDD"
-        app:strokeWidth="@dimen/_1sdp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/_10sdp">
-
-            <!-- Scrollable filter row -->
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="none">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/_4sdp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/_4sdp"
-                        android:padding="@dimen/_8sdp"
-                        android:background="@drawable/status_background"
-                        android:text="All"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_10ssp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/_4sdp"
-                        android:background="@drawable/status_background"
-                        android:padding="@dimen/_8sdp"
-                        android:text="Today"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_10ssp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/_4sdp"
-                        android:background="@drawable/status_background"
-                        android:padding="@dimen/_8sdp"
-                        android:text="Missed"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_10ssp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/_4sdp"
-                        android:background="@drawable/status_background"
-                        android:padding="@dimen/_8sdp"
-                        android:text="With Lead"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_10ssp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/_4sdp"
-                        android:background="@drawable/status_background"
-                        android:padding="@dimen/_8sdp"
-                        android:text="Unknown"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_10ssp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/status_background"
-                        android:padding="@dimen/_8sdp"
-                        android:text="Not Logged"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_10ssp" />
-                </LinearLayout>
-            </HorizontalScrollView>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_10sdp"
         android:backgroundTint="@android:color/white"
-        app:cardCornerRadius="@dimen/_14sdp"
+        app:cardCornerRadius="@dimen/_2sdp"
         app:cardElevation="@dimen/_2sdp">
 
         <LinearLayout

@@ -3,6 +3,8 @@ package com.technfest.technfestcrm.view
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -18,11 +20,9 @@ import com.technfest.technfestcrm.model.TaskResponseItem
 import com.technfest.technfestcrm.repository.TaskRepository
 import com.technfest.technfestcrm.viewmodel.TaskViewModel
 import com.technfest.technfestcrm.viewmodel.TaskViewModelFactory
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.ZonedDateTime
-import java.util.Date
-import java.util.Locale
+
 
 class TaskFragment : Fragment() {
     private var highlightTaskId: Int? = null
@@ -43,6 +43,7 @@ class TaskFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
 
         arguments?.let {
             token = it.getString("token")
@@ -115,19 +116,7 @@ class TaskFragment : Fragment() {
 
         return view
     }
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val toolbar =
-            view.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
-        (activity as? androidx.appcompat.app.AppCompatActivity)?.apply {
-            setSupportActionBar(toolbar)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setDisplayShowHomeEnabled(true)
-        }
 
-        toolbar.setNavigationOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }}
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setupFilters() {
@@ -177,6 +166,50 @@ class TaskFragment : Fragment() {
         filterCompleted.setBackgroundResource(if (type == "Completed") selectedBg else defaultBg)
         filterHighPriority.setBackgroundResource(if (type == "HighPriority") selectedBg else defaultBg)
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_search, menu)
+
+        val searchItem = menu.findItem(R.id.action_search)
+        val searchView = searchItem.actionView as androidx.appcompat.widget.SearchView
+
+        searchView.queryHint = "Search leads..."
+
+        searchView.setOnQueryTextListener(object :
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
+
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                filterTasks(query.orEmpty())
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterTasks(newText.orEmpty())
+                return true
+            }
+        })
+
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+    // 🔹 Filter tasks based on search query
+    private fun filterTasks(query: String) {
+        if (query.isBlank()) {
+            // No query → show all tasks
+            taskAdapter.updateList(originalList)
+            return
+        }
+
+        val filtered = originalList.filter { task ->
+            task.title.orEmpty().contains(query, ignoreCase = true) ||
+                    task.description.orEmpty().contains(query, ignoreCase = true) ||
+                    task.priority.orEmpty().contains(query, ignoreCase = true) ||
+                    task.status.orEmpty().contains(query, ignoreCase = true)
+        }
+
+        taskAdapter.updateList(filtered)
+    }
+
 
 
 }

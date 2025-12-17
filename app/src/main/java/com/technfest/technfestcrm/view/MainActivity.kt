@@ -5,6 +5,9 @@ import android.os.Build
 import android.os.Bundle
 import android.telecom.TelecomManager
 import android.util.Log
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
@@ -24,6 +27,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var authMeViewModel: AuthMeViewModel
 
+    data class DrawerItem(val title: String, val icon: Int, val badgeCount: Int = 0)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -31,15 +36,23 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
-            binding.bottomNavigationView.setPadding(0, 0, 0, 0)
-            insets
-        }
+//        ViewCompat.setOnApplyWindowInsetsListener(binding.toolbar) { toolbar, insets ->
+//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+//            toolbar.setPadding(
+//                toolbar.paddingLeft,
+//                systemBars.top,
+//                toolbar.paddingRight,
+//                toolbar.paddingBottom
+//            )
+//            insets
+//        }
 
         startCallStateServiceSafely()
-        startAutoMoveService()
+        //startAutoMoveService()
+        setupDrawer()
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_menu_24)
 
         val prefs = getSharedPreferences("UserSession", MODE_PRIVATE)
         val token = prefs.getString("token", null)
@@ -71,18 +84,19 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        setupBottomNavigation()
+
         setDefaultDialer()
+        handleLeadOpenIntent(intent)
     }
 
-    private fun startAutoMoveService() {
-        val serviceIntent = Intent(this, AutoMoveForegroundService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(serviceIntent)
-        } else {
-            startService(serviceIntent)
-        }
-    }
+//    private fun startAutoMoveService() {
+//        val serviceIntent = Intent(this, AutoMoveForegroundService::class.java)
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            startForegroundService(serviceIntent)
+//        } else {
+//            startService(serviceIntent)
+//        }
+//    }
 
     private fun startCallStateServiceSafely() {
         val intent = Intent(this, CallStateForegroundService::class.java)
@@ -110,52 +124,6 @@ class MainActivity : AppCompatActivity() {
         loadFragment(homeFragment)
     }
 
-    private fun setupBottomNavigation() {
-        binding.bottomNavigationView.itemIconTintList = null
-        binding.bottomNavigationView.setOnItemSelectedListener { item ->
-            val prefs = getSharedPreferences("UserSession", MODE_PRIVATE)
-            val token = prefs.getString("token", null)
-            val fullName = prefs.getString("fullName", "User")
-            val workspaceId = prefs.getInt("workspaceId", -1)
-            val workspaceName = prefs.getString("workspaceName", "Workspace")
-
-            when (item.itemId) {
-                R.id.nav_home -> openHomeFragment(fullName, token, workspaceId)
-                R.id.nav_leads -> {
-                    val leadsFragment = LeadsFragment()
-                    val bundle = Bundle().apply {
-                        putString("Token", token)
-                        putInt("WorkspaceId", workspaceId)
-                        putString("Name", fullName)
-                        putString("WorkspaceName", workspaceName)
-                    }
-                    leadsFragment.arguments = bundle
-                    loadFragment(leadsFragment)
-                }
-                R.id.nav_task -> {
-                    val taskFragment = TaskFragment()
-                    val bundle = Bundle().apply {
-                        putString("token", token)
-                        putInt("workspaceId", workspaceId)
-                    }
-                    taskFragment.arguments = bundle
-                    loadFragment(taskFragment)
-                }
-
-                R.id.nav_settings -> {
-                    val settingFragment = SettingFragment()
-                    val bundle = Bundle().apply {
-                        putString("token", token)
-                        putInt("workspaceId", workspaceId)
-                    }
-                    settingFragment.arguments = bundle
-                    loadFragment(settingFragment)
-                }
-
-            }
-            true
-        }
-    }
 
     private fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
@@ -185,11 +153,144 @@ class MainActivity : AppCompatActivity() {
             super.onBackPressed()
         }
     }
-    fun openLeadsFromHome() {
-        binding.bottomNavigationView.selectedItemId = R.id.nav_leads
+
+
+    private fun setupDrawer() {
+        val drawerBinding =
+            com.technfest.technfestcrm.databinding.CustomDrawerBinding.bind(binding.customDrawer.root)
+        val container = drawerBinding.drawerMenuContainer
+        container.removeAllViews() // prevent duplicates
+
+        val prefs = getSharedPreferences("UserSession", MODE_PRIVATE)
+        val token = prefs.getString("token", null)
+        val fullName = prefs.getString("fullName", "User")
+        val workspaceId = prefs.getInt("workspaceId", -1)
+        val workspaceName = prefs.getString("workspaceName", "Workspace")
+
+        val menuItems = listOf(
+            DrawerItem("Dashboard", R.drawable.home),
+            DrawerItem("Add Lead", R.drawable.plus),
+            DrawerItem("My Leads", R.drawable.leadschange, 25),
+            DrawerItem("Tasks", R.drawable.taskchange, 3),
+            DrawerItem("Campaigns", R.drawable.change),
+            DrawerItem("Calls", R.drawable.calls),
+            DrawerItem("Reports", R.drawable.report),
+            DrawerItem("Setting", R.drawable.settings)
+        )
+
+        menuItems.forEachIndexed { index, item ->
+            val view = layoutInflater.inflate(R.layout.drawer_item, container, false)
+
+            view.findViewById<ImageView>(R.id.icon).setImageResource(item.icon)
+            view.findViewById<TextView>(R.id.title).text = item.title
+
+            val badge = view.findViewById<TextView>(R.id.badge)
+            if (item.badgeCount > 0) {
+                badge.text = item.badgeCount.toString()
+                badge.visibility = android.view.View.VISIBLE
+            }
+
+            view.setOnClickListener {
+                binding.homeDrawer.closeDrawer(androidx.core.view.GravityCompat.START)
+                handleDrawerClick(item, token, fullName, workspaceId, workspaceName)
+            }
+
+            container.addView(view)
+
+            // Add divider except after last item
+            if (index < menuItems.size - 1) {
+                val divider = android.view.View(this)
+                divider.layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, 1
+                )
+                divider.setBackgroundColor(android.graphics.Color.parseColor("#DDDDDD"))
+                container.addView(divider)
+            }
+        }
     }
-    fun openTasksFromHome() {
-        binding.bottomNavigationView.selectedItemId = R.id.nav_task
+
+    private fun handleDrawerClick(
+        item: DrawerItem,
+        token: String?,
+        fullName: String?,
+        workspaceId: Int,
+        workspaceName: String?
+    ) {
+        when (item.title) {
+            "Dashboard" -> openHomeFragment(fullName, token, workspaceId)
+            "Add Lead" -> {
+                val fragment = AddNewLeadFragment()
+                fragment.arguments = Bundle().apply {
+                    putString("token", token)
+                    putInt("workspaceId", workspaceId)
+                }
+                loadFragment(fragment)
+            }
+
+            "My Leads" -> {
+                val fragment = LeadsFragment()
+                fragment.arguments = Bundle().apply {
+                    putString("Token", token)
+                    putInt("WorkspaceId", workspaceId)
+                    putString("Name", fullName)
+                    putString("WorkspaceName", workspaceName)
+                }
+                loadFragment(fragment)
+            }
+
+            "Tasks" -> {
+                val fragment = TaskFragment()
+                fragment.arguments = Bundle().apply {
+                    putString("token", token)
+                    putInt("workspaceId", workspaceId)
+                }
+                loadFragment(fragment)
+            }
+
+            "Campaigns" -> {
+                val fragment = CallsCampaignFragment()
+                fragment.arguments = Bundle().apply {
+                    putString("token", token)
+                    putInt("workspaceId", workspaceId)
+                }
+                loadFragment(fragment)
+            }
+
+            "Calls" -> loadFragment(CallsFragment())
+            "Reports" -> loadFragment(ReportFragment())
+            "Setting" -> loadFragment(SettingFragment())
+        }
     }
+
+    override fun onSupportNavigateUp(): Boolean {
+        binding.homeDrawer.openDrawer(androidx.core.view.GravityCompat.START)
+        return true
+    }
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleLeadOpenIntent(intent)
+    }
+
+    private fun handleLeadOpenIntent(intent: Intent?) {
+        val leadId = intent?.getIntExtra("OPEN_LEAD_ID", 0) ?: 0
+        val workspaceId = intent?.getIntExtra("OPEN_LEAD_WORKSPACE_ID", 0) ?: 0
+        val token = intent?.getStringExtra("OPEN_LEAD_TOKEN") ?: ""
+
+        if (leadId > 0 && token.isNotBlank()) {
+
+            val fragment = LeadDetailFragment.newInstanceById(
+                leadId = leadId,
+                token = token,
+                workspaceId = workspaceId
+            )
+
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, fragment)
+                .addToBackStack(null)
+                .commit()
+        }
+    }
+
+
 
 }

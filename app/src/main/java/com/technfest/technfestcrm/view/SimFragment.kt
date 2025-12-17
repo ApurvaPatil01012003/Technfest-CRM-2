@@ -1,8 +1,3 @@
-
-
-
-
-
 package com.technfest.technfestcrm.view
 
 import android.os.Bundle
@@ -56,18 +51,4 @@ class SimFragment : Fragment() {
         _binding = null
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val toolbar =
-            view.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
-        (activity as? androidx.appcompat.app.AppCompatActivity)?.apply {
-            setSupportActionBar(toolbar)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setDisplayShowHomeEnabled(true)
-        }
-
-        toolbar.setNavigationOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
-    }
 }

@@ -22,17 +22,7 @@ _binding= FragmentCallAutomationBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val toolbar =
-            view.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
-        (activity as? androidx.appcompat.app.AppCompatActivity)?.apply {
-            setSupportActionBar(toolbar)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setDisplayShowHomeEnabled(true)
-        }
 
-        toolbar.setNavigationOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
         binding.edtStartTime.setOnClickListener {
             showTimePicker(binding.edtStartTime)
         }

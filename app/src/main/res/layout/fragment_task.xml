@@ -4,46 +4,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F3F5FB"
     android:orientation="vertical"
     tools:context=".view.TaskFragment">
-
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/toolbar_gradient"
-        android:elevation="4dp"
-        app:liftOnScroll="true">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@android:color/transparent"
-            app:navigationIconTint="@color/white"
-            app:subtitle="All pending &amp; history follow-ups"
-            app:subtitleTextAppearance="@style/ToolbarSubtitleText"
-            app:subtitleTextColor="@color/white"
-            app:title="Tasks"
-            app:titleTextAppearance="@style/ToolbarTitleText"
-            app:titleTextColor="@color/white" />
-
-    </com.google.android.material.appbar.AppBarLayout>
-
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:layout_marginTop="@dimen/_4sdp"
-        android:padding="@dimen/_10sdp"
-        app:cardElevation="@dimen/_6sdp">
+        android:background="@android:color/transparent"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="@dimen/_2sdp"
+        app:cardElevation="@dimen/_3sdp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/_10sdp">
+            android:padding="@dimen/_4sdp">
+
+            <TextView
+                android:id="@+id/tvTaskFiltersTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/_2sdp"
+                android:text="Task"
+                android:textColor="#1F2933"
+                android:textSize="@dimen/_10ssp"
+                android:textStyle="bold" />
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
@@ -61,15 +48,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/_6sdp"
-                        android:elevation="2dp"
                         android:background="@drawable/unselected_campaign_bg"
-                        android:gravity="center"
-                        android:padding="@dimen/_8sdp"
-                        android:paddingHorizontal="@dimen/_10sdp"
+                        android:paddingHorizontal="@dimen/_8sdp"
                         android:paddingVertical="@dimen/_4sdp"
                         android:text="All"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_12ssp"
+                        android:textColor="#2D3A4A"
+                        android:textSize="@dimen/_8ssp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -78,14 +62,11 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/_6sdp"
                         android:background="@drawable/unselected_campaign_bg"
-                        android:elevation="2dp"
-                        android:gravity="center"
-                        android:padding="@dimen/_8sdp"
-                        android:paddingHorizontal="@dimen/_10sdp"
+                        android:paddingHorizontal="@dimen/_8sdp"
                         android:paddingVertical="@dimen/_4sdp"
                         android:text="Today"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_12ssp"
+                        android:textColor="#2D3A4A"
+                        android:textSize="@dimen/_8ssp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -94,15 +75,13 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/_6sdp"
                         android:background="@drawable/unselected_campaign_bg"
-                        android:elevation="2dp"
-                        android:gravity="center"
-                        android:padding="@dimen/_8sdp"
-                        android:paddingHorizontal="@dimen/_10sdp"
-                        android:paddingVertical="@dimen/_4sdp"
+                        android:paddingHorizontal="@dimen/_8sdp"
+                        android:paddingVertical="@dimen/_6sdp"
                         android:text="Pending"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_12ssp"
+                        android:textColor="#2D3A4A"
+                        android:textSize="@dimen/_8sdp"
                         android:textStyle="bold" />
+
 
                     <TextView
                         android:id="@+id/filterCompleted"
@@ -110,14 +89,11 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/_6sdp"
                         android:background="@drawable/unselected_campaign_bg"
-                        android:elevation="2dp"
-                        android:gravity="center"
-                        android:padding="@dimen/_8sdp"
-                        android:paddingHorizontal="@dimen/_10sdp"
+                        android:paddingHorizontal="@dimen/_8sdp"
                         android:paddingVertical="@dimen/_4sdp"
                         android:text="Completed"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_12ssp"
+                        android:textColor="#2D3A4A"
+                        android:textSize="@dimen/_8sdp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -126,27 +102,25 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/_6sdp"
                         android:background="@drawable/unselected_campaign_bg"
-                        android:elevation="2dp"
-                        android:gravity="center"
-                        android:padding="@dimen/_8sdp"
-                        android:paddingHorizontal="@dimen/_10sdp"
+                        android:paddingHorizontal="@dimen/_8sdp"
                         android:paddingVertical="@dimen/_4sdp"
                         android:text="High priority"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_12ssp"
+                        android:textColor="#2D3A4A"
+                        android:textSize="@dimen/_8sdp"
                         android:textStyle="bold" />
-
 
                 </LinearLayout>
             </HorizontalScrollView>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/taskRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingStart="@dimen/_2sdp"
+        android:paddingTop="@dimen/_1sdp"
+        android:paddingEnd="@dimen/_2sdp" />
 
 </LinearLayout>

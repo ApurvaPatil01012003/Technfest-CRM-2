@@ -1,0 +1,114 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/_30sdp"
+    tools:context=".view.CallsCampaignDetailFragment">
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="@dimen/_2sdp"
+        app:cardElevation="@dimen/_2sdp"
+        app:strokeColor="@color/tc_card_stroke"
+        app:strokeWidth="@dimen/_1sdp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Leads in Campaign"
+                android:textColor="@color/tc_chip_text"
+                android:textSize="@dimen/_12ssp"
+                android:textStyle="bold"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:paddingVertical="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_2sdp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Description : description for campaign"
+                android:textColor="@color/tc_chip_text"
+                android:textSize="@dimen/_10ssp"
+                android:paddingHorizontal="@dimen/_6sdp"
+                android:paddingVertical="@dimen/_2sdp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Created by : Pratik developer"
+                android:textColor="@color/tc_chip_text"
+                android:textSize="@dimen/_10ssp"
+                android:paddingHorizontal="@dimen/_6sdp"
+                android:paddingVertical="@dimen/_2sdp"
+                android:layout_marginBottom="@dimen/_4sdp" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/leadsRecyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:layout_marginTop="@dimen/_6sdp"
+        android:paddingBottom="@dimen/_80sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
+    tools:listitem="@layout/item_campaign_detail" />
+
+    <!-- Buttons container -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+    android:layout_margin="@dimen/_8sdp"
+    android:gravity="center"
+    android:orientation="horizontal">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnStart"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_4sdp"
+        android:layout_weight="1"
+        android:background="@drawable/btn_gradient"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:paddingVertical="@dimen/_10sdp"
+        android:text="Start"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        app:backgroundTint="@null"
+        app:cornerRadius="12dp"
+        app:iconGravity="textStart"
+        app:iconPadding="8dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnPause"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_4sdp"
+        android:layout_weight="1"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:paddingVertical="@dimen/_10sdp"
+        android:text="Pause"
+        android:textAllCaps="false"
+        android:textColor="#6475D0"
+        app:backgroundTint="@android:color/white"
+        app:cornerRadius="12dp"
+        app:iconGravity="textStart"
+        app:iconPadding="8dp"
+        app:strokeColor="#6475D0"
+        app:strokeWidth="2dp" />
+</LinearLayout>
+
+    </FrameLayout>

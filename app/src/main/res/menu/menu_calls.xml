@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_search"
+        android:title="Search"
+        android:icon="@drawable/baseline_search_24"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView" />
+    <!-- 3-dot filters -->
+    <item android:id="@+id/filter_all" android:title="All" />
+    <item android:id="@+id/filter_today" android:title="Today" />
+    <item android:id="@+id/filter_missed" android:title="Missed" />
+    <item android:id="@+id/filter_unknown" android:title="Unknown" />
+    <item android:id="@+id/filter_not_logged" android:title="Not Logged" />
+
+</menu>

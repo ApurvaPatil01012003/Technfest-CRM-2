@@ -8,10 +8,10 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_6sdp"
+        android:layout_margin="@dimen/_4sdp"
         app:cardBackgroundColor="@android:color/white"
-        app:cardCornerRadius="@dimen/_14sdp"
-        app:cardElevation="@dimen/_4sdp"
+        app:cardCornerRadius="@dimen/_8sdp"
+        app:cardElevation="@dimen/_2sdp"
         app:strokeColor="#DDDDDD"
         app:strokeWidth="@dimen/_1sdp">
 
@@ -19,22 +19,28 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/_12sdp">
+            android:padding="@dimen/_8sdp">
 
             <TextView
                 android:id="@+id/txtHeading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/_8sdp"
+               android:padding="@dimen/_4sdp"
                 android:text="Task heading"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_14ssp"
+                android:textColor="@color/blue"
+                android:textSize="@dimen/_12ssp"
                 android:textStyle="bold" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#DDDDDD" />
 
             <!-- Lead Status & Stage -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_3sdp"
                 android:layout_marginBottom="@dimen/_6sdp"
                 android:orientation="horizontal">
 
@@ -50,7 +56,7 @@
                         android:layout_height="wrap_content"
                         android:text="Lead "
                         android:textColor="#625C5C"
-                        android:textSize="@dimen/_12ssp" />
+                        android:textSize="@dimen/_10ssp" />
 
                     <TextView
                         android:id="@+id/txtLeadName"
@@ -59,7 +65,7 @@
                         android:text="lead name"
                         android:textStyle="bold"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_12ssp" />
+                        android:textSize="@dimen/_10ssp" />
 
                 </LinearLayout>
 
@@ -75,7 +81,7 @@
                         android:layout_height="wrap_content"
                         android:text="Task Type"
                         android:textColor="#625C5C"
-                        android:textSize="@dimen/_12ssp" />
+                        android:textSize="@dimen/_10ssp" />
 
                     <TextView
                         android:id="@+id/txtTaskType"
@@ -83,7 +89,7 @@
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_12ssp"
+                        android:textSize="@dimen/_10ssp"
                          />
                 </LinearLayout>
             </LinearLayout>
@@ -106,7 +112,7 @@
                         android:layout_height="wrap_content"
                         android:text="Due "
                         android:textColor="#625C5C"
-                        android:textSize="@dimen/_12ssp" />
+                        android:textSize="@dimen/_10ssp" />
 
                     <TextView
                         android:id="@+id/txtTime"
@@ -116,7 +122,7 @@
                         android:textStyle="bold"
                         android:padding="@dimen/_2sdp"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_12ssp" />
+                        android:textSize="@dimen/_10ssp" />
 
                 </LinearLayout>
 
@@ -132,7 +138,7 @@
                         android:layout_height="wrap_content"
                         android:text="Status"
                         android:textColor="#625C5C"
-                        android:textSize="@dimen/_12ssp" />
+                        android:textSize="@dimen/_10ssp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -147,7 +153,7 @@
                             android:text="open"
                             android:textStyle="bold"
                             android:textColor="@color/black"
-                            android:textSize="@dimen/_12ssp" />
+                            android:textSize="@dimen/_10ssp" />
 
                     </LinearLayout>
                 </LinearLayout>
@@ -175,7 +181,7 @@
                         android:layout_height="wrap_content"
                         android:text="Priority "
                         android:textColor="#625C5C"
-                        android:textSize="@dimen/_12ssp" />
+                        android:textSize="@dimen/_10ssp" />
 
                     <TextView
                         android:id="@+id/txtPriority"
@@ -184,7 +190,7 @@
                         android:text="High"
                         android:textStyle="bold"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_12ssp" />
+                        android:textSize="@dimen/_10ssp" />
 
                 </LinearLayout>
 
@@ -200,7 +206,7 @@
                         android:layout_height="wrap_content"
                         android:text="Assigned To"
                         android:textColor="#625C5C"
-                        android:textSize="@dimen/_12ssp" />
+                        android:textSize="@dimen/_10ssp" />
 
                     <TextView
                         android:id="@+id/txtAssign"
@@ -209,32 +215,11 @@
                         android:text="name of assign"
                         android:textStyle="bold"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_12ssp"
+                        android:textSize="@dimen/_10ssp"
                          />
                 </LinearLayout>
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Description"
-                    android:textColor="#625C5C"
-                    android:textSize="@dimen/_12ssp"
-                    android:textStyle="bold" />
-                <TextView
-                    android:id="@+id/txtSummary"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Confirm time for today's billing + inventory software demo."
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:textSize="@dimen/_12ssp"
-                    />
-            </LinearLayout>
 
 
 

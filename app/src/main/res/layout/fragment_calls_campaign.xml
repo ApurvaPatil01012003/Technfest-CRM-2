@@ -5,87 +5,93 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/tc_screen_bg"
     tools:context=".view.CallsCampaignFragment">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/toolbar_gradient"
-        android:elevation="@dimen/_2sdp"
-        app:liftOnScroll="true">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@android:color/transparent"
-            app:navigationIconTint="@color/white"
-            app:subtitle="Campaigns,Facebook, Instagram, WhatsApp, Call &amp; SMS campaigns"
-            app:subtitleTextAppearance="@style/ToolbarSubtitleText"
-            app:subtitleTextColor="@color/white"
-            app:title="Campaigns"
-            app:titleTextAppearance="@style/ToolbarTitleText"
-            app:titleTextColor="@color/white" />
-    </com.google.android.material.appbar.AppBarLayout>
 
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+            <!-- Filter Card (compact, Truecaller style) -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="@dimen/_2sdp"
+                app:cardElevation="@dimen/_2sdp"
+                app:strokeColor="@color/tc_card_stroke"
+                app:strokeWidth="@dimen/_1sdp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center_vertical"
+                   >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Campaigns"
+                    android:textColor="@color/tc_chip_text"
+                    android:textSize="@dimen/_12ssp"
+                    android:textStyle="bold"
+                    android:paddingHorizontal="@dimen/_10sdp"
+                    android:paddingVertical="@dimen/_4sdp"
+                    android:layout_marginBottom="@dimen/_6sdp" />
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="@dimen/_4sdp">
+
+
+                    <!-- Small leading icon (optional) -->
+                    <ImageView
+                        android:layout_width="@dimen/_22sdp"
+                        android:layout_height="@dimen/_22sdp"
+                        android:src="@drawable/baseline_filter_list_24"
+                        app:tint="@color/black"
+                        android:layout_marginEnd="@dimen/_8sdp" />
+
+                    <!-- Spinner inside pill background -->
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_24sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/spinner_background">
+
+                        <androidx.appcompat.widget.AppCompatSpinner
+                            android:id="@+id/spnFilters"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:paddingLeft="@dimen/_4sdp"
+                            android:paddingRight="@dimen/_20sdp"
+                            android:spinnerMode="dropdown"
+                            android:popupBackground="@color/white"
+                            android:textAlignment="viewStart" />
+                    </RelativeLayout>
+
+                </LinearLayout>
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        tools:context=".view.AddNewLeadActivity">
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/_10sdp">
+            android:layout_marginBottom="@dimen/_30sdp"
+            android:paddingBottom="@dimen/_16sdp">
 
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/_2sdp"
-                app:cardBackgroundColor="@android:color/white"
-                app:cardCornerRadius="@dimen/_4sdp"
-                app:cardElevation="@dimen/_2sdp"
-                app:strokeColor="#DDDDDD"
-                app:strokeWidth="@dimen/_1sdp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="@dimen/_10sdp">
-
-
-
-                    <LinearLayout
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/campaignsRecyclerview"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/spinner_background"
-                        android:orientation="vertical"
-                        android:padding="@dimen/_4sdp">
-
-                        <androidx.appcompat.widget.AppCompatSpinner
-                            android:id="@+id/spnFilters"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="@dimen/_4sdp"
-                            android:spinnerMode="dropdown" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/campaignsRecyclerview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content" />
 
 
         </LinearLayout>

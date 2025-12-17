@@ -4,27 +4,27 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingVertical="8dp">
-
-
+    android:paddingVertical="8dp"
+    android:background="@drawable/bg_task_item">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="8dp">
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp">
 
+        <!-- Task Name -->
         <TextView
             android:id="@+id/txtTaskName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Task Name"
             android:textStyle="bold"
-            android:textColor="@android:color/black"
+            android:textColor="#222222"
             android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/leadStatus"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/txtLeadName"
             android:layout_marginEnd="8dp" />
 
         <!-- Status Chip -->
@@ -32,12 +32,12 @@
             android:id="@+id/leadStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="P"
-            android:textColor="@color/black"
-            android:background="@drawable/bg_text"
-            android:paddingHorizontal="8dp"
-            android:paddingVertical="4dp"
+            android:text="Pending"
+            android:textColor="#FFFFFF"
             android:textSize="12sp"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:background="@drawable/bg_status_chip"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginStart="8dp" />
@@ -47,7 +47,7 @@
             android:id="@+id/txtLeadName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="XYZ"
+            android:text="John Doe"
             android:textColor="#757575"
             android:textSize="13sp"
             android:layout_marginTop="4dp"
@@ -68,11 +68,5 @@
             app:layout_constraintStart_toEndOf="@id/txtLeadName" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="8dp"
-        android:background="#E0E0E0" />
 
 </LinearLayout>

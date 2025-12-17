@@ -5,6 +5,8 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
@@ -44,7 +46,10 @@ class LeadsFragment : Fragment() {
     fun Int?.safeInt(): Int {
         return this ?: 0
     }
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,8 +65,8 @@ class LeadsFragment : Fragment() {
         val workspaceId = arguments?.getInt("WorkspaceId", -1)
         val workspaceNameFromBundle = arguments?.getString("WorkspaceName")
 
-        binding.userName.text = fullName
-        binding.userInitialCircle.text = getInitials(fullName ?: "")
+//        binding.userName.text = fullName
+//        binding.userInitialCircle.text = getInitials(fullName ?: "")
 
         val wsRepo = GetWorkspacesRepository(RetrofitInstance.apiInterface)
         workspaceViewModel = ViewModelProvider(
@@ -74,23 +79,23 @@ class LeadsFragment : Fragment() {
             LeadViewModelFactory(leadRepo)
         )[LeadViewModel::class.java]
 
-        if (!workspaceNameFromBundle.isNullOrEmpty()) {
-            binding.toolbarTitle.text = workspaceNameFromBundle
-
-        } else if (!token.isNullOrEmpty() && workspaceId != null && workspaceId != -1) {
-
-            workspaceViewModel
-                .fetchWorkspaces("Bearer $token")
-                .observe(viewLifecycleOwner) { response ->
-
-                    if (response.isSuccessful) {
-                        val workspace = response.body()?.find { it.id == workspaceId }
-                        binding.toolbarTitle.text = workspace?.name ?: "Workspace"
-                    } else {
-                        binding.toolbarTitle.text = "Workspace"
-                    }
-                }
-        }
+//        if (!workspaceNameFromBundle.isNullOrEmpty()) {
+//          //  binding.toolbarTitle.text = workspaceNameFromBundle
+//
+//        } else if (!token.isNullOrEmpty() && workspaceId != null && workspaceId != -1) {
+//
+//            workspaceViewModel
+//                .fetchWorkspaces("Bearer $token")
+//                .observe(viewLifecycleOwner) { response ->
+//
+////                    if (response.isSuccessful) {
+////                        val workspace = response.body()?.find { it.id == workspaceId }
+////                        binding.toolbarTitle.text = workspace?.name ?: "Workspace"
+////                    } else {
+////                        binding.toolbarTitle.text = "Workspace"
+////                    }
+//                }
+//        }
         leadAdapter = LeadAdapter(leadList) { selectedLead ->
 
             val tokenStr = token ?: ""
@@ -118,7 +123,6 @@ class LeadsFragment : Fragment() {
         setupFilters()
         updateSelected(binding.filterAll)
 
-        setupSearchView(binding.searchView)
 
         if (!token.isNullOrEmpty() && workspaceId != null && workspaceId != -1) {
             leadViewModel.fetchLeads(token, workspaceId)
@@ -152,6 +156,8 @@ class LeadsFragment : Fragment() {
                     }
                 }
             }
+            saveLeadCache(requireContext(), data)
+
         }
 
 
@@ -176,67 +182,31 @@ class LeadsFragment : Fragment() {
         }
 
 
+//        binding.userInitialCircle.setOnClickListener {
+//            parentFragmentManager.beginTransaction()
+//                .replace(R.id.fragmentContainer, ProfileFragment())
+//                .addToBackStack(null)
+//                .commit()
+//        }
 
 
-
-        binding.userInitialCircle.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, ProfileFragment())
-                .addToBackStack(null)
-                .commit()
-        }
 
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val toolbar =
-            view.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
-        (activity as? androidx.appcompat.app.AppCompatActivity)?.apply {
-            setSupportActionBar(toolbar)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setDisplayShowHomeEnabled(true)
-        }
+//    override fun onResume() {
+//        super.onResume()
+//
+//        (activity as? MainActivity)?.setToolbar(
+//            title = "Leads",
+//            subtitle = "Today's summary & follow-ups"
+//        )
+//    }
+//    override fun onPause() {
+//        super.onPause()
+//        (activity as? MainActivity)?.setToolbar("Technfest Workspace", "Today's summary & follow-ups")
+//    }
 
-        toolbar.setNavigationOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
-    }
-
-    private fun setupSearchView(searchView: SearchView) {
-        searchView.queryHint = "Search leads..."
-        searchView.isIconified = false
-        searchView.clearFocus()
-
-        val searchEditText =
-            searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
-        searchEditText.hint = "Search leads..."
-        searchEditText.setHintTextColor(Color.GRAY)
-        searchEditText.setTextColor(Color.BLACK)
-
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?) = false
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                val text = newText?.trim()?.lowercase() ?: ""
-
-                leadList.clear()
-                leadList.addAll(
-                    if (text.isEmpty()) fullLeadList
-                    else fullLeadList.filter { lead ->
-                        lead.fullName.orEmpty().lowercase().contains(text) ||
-                                lead.mobile.orEmpty().lowercase().contains(text) ||
-                                lead.sourceDetails.orEmpty().lowercase().contains(text)
-                    }
-                )
-
-                leadAdapter.notifyDataSetChanged()
-                return true
-            }
-
-        })
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -327,7 +297,95 @@ class LeadsFragment : Fragment() {
         leadList.addAll(filtered)
         leadAdapter.notifyDataSetChanged()
     }
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_search, menu)
 
+        val searchItem = menu.findItem(R.id.action_search)
+        val searchView = searchItem.actionView as androidx.appcompat.widget.SearchView
+
+        searchView.queryHint = "Search leads..."
+
+        searchView.setOnQueryTextListener(object :
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
+
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                filterLeads(query.orEmpty())
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterLeads(newText.orEmpty())
+                return true
+            }
+        })
+
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+    private fun filterLeads(query: String) {
+
+        if (query.isBlank()) {
+            leadList.clear()
+            leadList.addAll(fullLeadList)
+            leadAdapter.notifyDataSetChanged()
+            return
+        }
+
+        val filtered = fullLeadList.filter { lead ->
+            lead.fullName.orEmpty().contains(query, ignoreCase = true) ||
+                    lead.mobile.orEmpty().contains(query) ||
+                    lead.sourceDetails.orEmpty().contains(query, ignoreCase = true)
+        }
+
+        leadList.clear()
+        leadList.addAll(filtered)
+        leadAdapter.notifyDataSetChanged()
+    }
+    private fun saveLeadCache(ctx: Context, leads: List<LeadResponseItem>) {
+        val map = HashMap<String, LeadCacheItem>()
+
+        for (l in leads) {
+            val raw = l.mobile ?: continue
+            val e164 = normalizeForCompare(raw)
+            if (e164.isBlank()) continue
+
+            map[e164] = LeadCacheItem(
+                id = l.id,
+                name = l.fullName ?: "",
+                campaignId = l.campaignId ?: 0,
+                campaignCode =  "",
+                customerNumber = raw
+            )
+        }
+
+        val json = com.google.gson.Gson().toJson(map)
+        ctx.getSharedPreferences("LeadCache", Context.MODE_PRIVATE)
+            .edit()
+            .putString("lead_map", json)
+            .apply()
+    }
+
+    data class LeadCacheItem(
+        val id: Int,
+        val name: String,
+        val campaignId: Int,
+        val campaignCode: String,
+        val customerNumber: String
+    )
+
+    private fun normalizeForCompare(number: String?, defaultRegion: String = "IN"): String {
+        if (number.isNullOrBlank()) return ""
+        return try {
+            val phoneUtil = com.google.i18n.phonenumbers.PhoneNumberUtil.getInstance()
+            val cleaned = number.replace("[^0-9+]".toRegex(), "")
+            val region = if (cleaned.startsWith("+")) null else defaultRegion
+            val proto = phoneUtil.parse(cleaned, region)
+            phoneUtil.format(proto, com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat.E164)
+        } catch (e: Exception) {
+            val digits = number.filter { it.isDigit() }
+            if (digits.length > 10) digits.takeLast(10) else digits
+        }
+    }
 
 
 }

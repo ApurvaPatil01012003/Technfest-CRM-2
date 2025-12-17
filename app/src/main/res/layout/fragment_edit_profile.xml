@@ -5,36 +5,15 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:background="@color/tc_screen_bg"
     tools:context=".view.EditProfileFragment">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/toolbar_gradient"
-        android:elevation="4dp"
-        app:liftOnScroll="true">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@android:color/transparent"
-            app:navigationIconTint="@color/white"
-            app:subtitle="Manage your profile"
-            app:subtitleTextAppearance="@style/ToolbarSubtitleText"
-            app:subtitleTextColor="@color/white"
-            app:title="User Profile"
-            app:titleTextAppearance="@style/ToolbarTitleText"
-            app:titleTextColor="@color/white" />
-
-    </com.google.android.material.appbar.AppBarLayout>
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/_6sdp"
-        app:cardCornerRadius="@dimen/_14sdp"
+        app:cardCornerRadius="@dimen/_6sdp"
         app:cardElevation="@dimen/_4sdp"
         app:strokeColor="#DDDDDD"
         app:strokeWidth="@dimen/_1sdp"

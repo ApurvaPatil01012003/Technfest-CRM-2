@@ -10,13 +10,11 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.telephony.SubscriptionManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
@@ -27,7 +25,6 @@ import com.technfest.technfestcrm.databinding.FragmentSettingBinding
 import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelStore
 import com.technfest.technfestcrm.repository.WorkspaceRepository
 import com.technfest.technfestcrm.viewmodel.WorkspaceViewModel
 import com.technfest.technfestcrm.viewmodel.WorkspaceViewModelFactory
@@ -319,20 +316,10 @@ class SettingFragment : Fragment() {
         _binding = null
     }
 
-    // ───────────────── Toolbar & lifecycle ─────────────────
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val toolbar =
-            view.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
-        (activity as? androidx.appcompat.app.AppCompatActivity)?.apply {
-            setSupportActionBar(toolbar)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        }
 
-        toolbar.setNavigationOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
 
         refreshAllSwitchStates()
 
