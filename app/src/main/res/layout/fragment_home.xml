@@ -191,6 +191,16 @@
                     android:orientation="vertical"
                     android:padding="@dimen/_6sdp">
 
+                    <TextView
+                        android:id="@+id/txtLeadNotAssign"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/_8sdp"
+                        android:text="Today New lead is not assign"
+                        android:textAlignment="center"
+                        android:textColor="@color/tc_secondary_text"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/leadsRecyclerView"
                         android:layout_width="match_parent"

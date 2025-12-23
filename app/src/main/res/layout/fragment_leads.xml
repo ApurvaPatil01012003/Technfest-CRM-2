@@ -74,7 +74,7 @@
                         android:layout_marginEnd="@dimen/_2sdp"
                         android:background="@drawable/textview_bg"
                         android:padding="@dimen/_2sdp"
-                        android:text="My Leads"
+                        android:text="Contacted"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_10ssp" />
 

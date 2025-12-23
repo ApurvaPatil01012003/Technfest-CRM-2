@@ -1,231 +1,277 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#F6F8FB">
+    android:background="#F6F8FB"
+    android:orientation="vertical">
 
-    <LinearLayout
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/_2sdp"
+                    android:layout_weight="1"
+                    android:text="Call Feedback"
+                    android:padding="@dimen/_6sdp"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_16ssp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/ivClose"
+                    android:layout_width="@dimen/_24sdp"
+                    android:layout_height="@dimen/_24sdp"
+                    android:padding="@dimen/_2sdp"
+                    android:src="@drawable/baseline_close_24" />
+            </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/scrollContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/_14sdp"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:orientation="vertical"
+            android:padding="@dimen/_14sdp">
 
             <TextView
-                android:text="Call Feedback"
-                android:textSize="@dimen/_16ssp"
-                android:textStyle="bold"
-                android:textAlignment="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Lead Name"
                 android:textColor="@color/black"
-                android:layout_marginBottom="@dimen/_2sdp"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"/>
+                android:textStyle="bold" />
 
-            <ImageView
-                android:id="@+id/ivClose"
-                android:layout_width="@dimen/_24sdp"
-                android:layout_height="@dimen/_24sdp"
-                android:src="@drawable/baseline_close_24"
-                android:padding="4dp"/>
-        </LinearLayout>
-        <TextView
-            android:text="Lead Name"
-            android:textStyle="bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <EditText
-            android:id="@+id/etLeadName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:hint="Lead Name"
-            android:background="@android:drawable/edit_text"
-            android:padding="10dp"/>
-
-        <TextView
-            android:text="Number"
-            android:textStyle="bold"
-            android:layout_marginTop="8dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <EditText
-            android:id="@+id/etNumber"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:hint="Number"
-            android:background="@android:drawable/edit_text"
-            android:padding="10dp"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Call Status"
-            android:textStyle="bold"
-            android:layout_marginTop="8dp"/>
-
-        <RadioGroup
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/rgStatus"
-            android:orientation="vertical">
-
-            <RadioButton
+            <EditText
+                android:id="@+id/etLeadName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/rbInterested" android:text="Interested"/>
-            <RadioButton
+                android:textColor="@color/black"
+                android:background="@android:drawable/edit_text"
+                android:hint="Lead Name"
+                android:padding="@dimen/_8sdp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_6sdp"
+                android:text="Number"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/rbNotInterested" android:text="Not Interested"/>
-            <RadioButton
+                android:background="@android:drawable/edit_text"
+                android:enabled="false"
+                android:textColor="@color/black"
+                android:hint="Number"
+                android:padding="10dp" />
+
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/rbConfused" android:text="Confused"/>
-            <RadioButton
+                android:layout_marginTop="@dimen/_6sdp"
+                android:text="Call Status"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+
+            <RadioGroup
+                android:id="@+id/rgStatus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/rbCallback" android:text="Call Back Later"/>
-            <RadioButton
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/rbInterested"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Interested"
+                    android:textColor="@color/black" />
+
+                <RadioButton
+                    android:id="@+id/rbNotInterested"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Not Interested"
+                    android:textColor="@color/black" />
+
+                <RadioButton
+                    android:id="@+id/rbConfused"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Confused"
+                    android:textColor="@color/black" />
+
+                <RadioButton
+                    android:id="@+id/rbCallback"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Call Back Later"
+                    android:textColor="@color/black" />
+
+                <RadioButton
+                    android:id="@+id/rbWrong"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Wrong Number"
+                    android:textColor="@color/black" />
+
+                <RadioButton
+                    android:id="@+id/rbOff"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Not Rechable / Switch Off"
+                    android:textColor="@color/black" />
+
+                <RadioButton
+                    android:id="@+id/rbBusy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Busy/cut"
+                    android:textColor="@color/black" />
+
+                <RadioButton
+                    android:id="@+id/rbInvalid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Invalid Number"
+                    android:textColor="@color/black" />
+
+
+            </RadioGroup>
+
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/rbWrong" android:text="Wrong Number"/>
-            <RadioButton
+                android:layout_marginTop="10dp"
+                android:text="Rating (1 - Low | 5 - High)"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+
+            <RatingBar
+                android:id="@+id/ratingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:numStars="5"
+                android:stepSize="1" />
+
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/rbOff" android:text="Not Rechable / Switch Off"/>
-            <RadioButton
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/_10sdp"
+                    android:text="Call received by"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12ssp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_38sdp"
+                    android:layout_marginTop="@dimen/_6sdp"
+                    android:background="@drawable/spinner_background">
+
+                    <Spinner
+                        android:id="@+id/spnLastCallReceivedUser"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:paddingLeft="@dimen/_2sdp"
+                        android:paddingRight="@dimen/_26sdp"
+                        android:popupBackground="@color/white"
+                        android:spinnerMode="dropdown"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp" />
+
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/rbBusy" android:text="Busy/cut"/>
-            <RadioButton
+                android:layout_marginTop="8dp"
+                android:text="Note"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etNote"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/rbInvalid" android:text="Invalid Number"/>
-
-
-
-        </RadioGroup>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Rating (1 - Low | 5 - High)"
-            android:textStyle="bold"
-            android:layout_marginTop="10dp"/>
-
-        <RatingBar
-            android:id="@+id/ratingBar"
-            android:numStars="5"
-            android:stepSize="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+                android:layout_height="80dp"
+                android:background="@drawable/unselected_campaign_bg"
+                android:focusableInTouchMode="true"
+                android:gravity="top"
+                android:hint="Write reason of call..."
+                android:inputType="textMultiLine"
+                android:isScrollContainer="true"
+                android:overScrollMode="always"
+                android:scrollbars="vertical"
+                android:textColor="@color/black" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/_10sdp"
-                android:text="Call received by"
-                android:textColor="@color/tc_secondary_text"
+                android:paddingTop="@dimen/_10sdp"
+                android:text="Next Follow-up Date &amp; Time (optional)"
+                android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp" />
 
-            <RelativeLayout
+            <EditText
+                android:id="@+id/edtFollowUpdate"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_38sdp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_6sdp"
-                android:background="@drawable/spinner_background">
-
-                <Spinner
-                    android:id="@+id/spnLastCallReceivedUser"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:paddingLeft="@dimen/_2sdp"
-                    android:paddingRight="@dimen/_26sdp"
-                    android:popupBackground="@color/white"
-                    android:spinnerMode="dropdown"
-                    android:textAlignment="center"
-                    android:textSize="@dimen/_12ssp" />
+                android:background="@drawable/edit_text_bg"
+                android:drawableEnd="@drawable/baseline_date_range_24"
+                android:editable="false"
+                android:hint="mm/dd/yy"
+                android:inputType="phone"
+                android:padding="@dimen/_10sdp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_10ssp" />
 
 
-            </RelativeLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSaveFeedback"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:layout_marginEnd="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_6sdp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_gradient"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingVertical="@dimen/_10sdp"
+                android:text="Save"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                app:backgroundTint="@null"
+                app:cornerRadius="12dp"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp" />
+
 
         </LinearLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Note"
-            android:textStyle="bold"
-            android:layout_marginTop="8dp"/>
-
-        <EditText
-            android:id="@+id/etNote"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:gravity="top"
-            android:maxLines="3"
-            android:background="@android:drawable/edit_text"
-            android:hint="Write note here..."
-            android:inputType="textMultiLine"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="@dimen/_10sdp"
-            android:paddingTop="@dimen/_10sdp"
-            android:text="Next Follow-up Date &amp; Time (optional)"
-            android:textColor="@color/tc_secondary_text"
-            android:textSize="@dimen/_12ssp" />
-
-        <EditText
-            android:id="@+id/edtFollowUpdate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_6sdp"
-            android:background="@drawable/edit_text_bg"
-            android:drawableEnd="@drawable/baseline_date_range_24"
-            android:hint="mm/dd/yy"
-            android:inputType="phone"
-            android:editable="false"
-            android:padding="@dimen/_10sdp"
-            android:textSize="@dimen/_10ssp" />
-
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSaveFeedback"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_12sdp"
-            android:layout_marginEnd="@dimen/_4sdp"
-            android:layout_marginBottom="@dimen/_6sdp"
-            android:layout_weight="1"
-            android:background="@drawable/btn_gradient"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:paddingVertical="@dimen/_10sdp"
-            android:text="Save"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            app:backgroundTint="@null"
-            app:cornerRadius="12dp"
-            app:iconGravity="textStart"
-            app:iconPadding="8dp" />
-
-
-
-    </LinearLayout>
-
-</ScrollView>
+    </ScrollView>
+</LinearLayout>

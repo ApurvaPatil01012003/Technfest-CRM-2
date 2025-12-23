@@ -17,7 +17,6 @@
             android:orientation="vertical"
             android:padding="@dimen/_12sdp">
 
-            <!-- MAIN CARD -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -36,8 +35,8 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="@dimen/_14sdp">
+                        android:padding="@dimen/_14sdp"
+                        android:orientation="vertical">
 
                         <TextView
                             android:layout_width="match_parent"
@@ -58,22 +57,22 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="@dimen/_14sdp">
+                        android:padding="@dimen/_14sdp"
+                        android:orientation="vertical">
 
                         <!-- LINKED LEAD -->
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Linked Lead"
+                            android:textStyle="bold"
                             android:textSize="@dimen/_11ssp"
-                            android:textColor="#6B7280" />
+                            android:textColor="@color/black" />
 
                         <TextView
                             android:id="@+id/txtLeadName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Amit Sharma"
                             android:textSize="@dimen/_14ssp"
                             android:textStyle="bold"
                             android:textColor="#111827"
@@ -84,14 +83,12 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            android:gravity="start"
                             android:layout_marginBottom="@dimen/_14sdp">
 
                             <TextView
                                 android:id="@+id/txtStatus"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Status : Pending"
                                 android:textSize="@dimen/_11ssp"
                                 android:textStyle="bold"
                                 android:paddingHorizontal="@dimen/_10sdp"
@@ -103,13 +100,12 @@
                                 android:id="@+id/txtPriority"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Priority : High"
                                 android:textSize="@dimen/_11ssp"
                                 android:textStyle="bold"
                                 android:paddingHorizontal="@dimen/_10sdp"
                                 android:paddingVertical="@dimen/_4sdp"
-                                android:textColor="#991B1B"
                                 android:layout_marginStart="@dimen/_8sdp"
+                                android:textColor="#991B1B"
                                 android:background="@drawable/bg_priority_tag" />
                         </LinearLayout>
 
@@ -119,13 +115,13 @@
                             android:layout_height="wrap_content"
                             android:text="Due Date &amp; Time"
                             android:textSize="@dimen/_11ssp"
-                            android:textColor="#6B7280" />
+                            android:textColor="@color/black"
+                            />
 
                         <TextView
                             android:id="@+id/txtDue"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Today • 1:00 PM"
                             android:textSize="@dimen/_14ssp"
                             android:textStyle="bold"
                             android:textColor="#111827"
@@ -136,14 +132,14 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Assigned To"
+                            android:textStyle="bold"
                             android:textSize="@dimen/_11ssp"
-                            android:textColor="#6B7280" />
+                            android:textColor="@color/black" />
 
                         <TextView
                             android:id="@+id/txtAssignTo"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Rahul Verma"
                             android:textSize="@dimen/_14ssp"
                             android:textStyle="bold"
                             android:textColor="#111827"
@@ -154,14 +150,14 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Task Type"
+                            android:textStyle="bold"
                             android:textSize="@dimen/_11ssp"
-                            android:textColor="#6B7280" />
+                            android:textColor="@color/black" />
 
                         <TextView
                             android:id="@+id/txtTaskType"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Follow-up Call"
                             android:textSize="@dimen/_14ssp"
                             android:textStyle="bold"
                             android:textColor="#111827"
@@ -172,14 +168,14 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Required Hours"
+                            android:textStyle="bold"
                             android:textSize="@dimen/_11ssp"
-                            android:textColor="#6B7280" />
+                            android:textColor="@color/black" />
 
                         <TextView
                             android:id="@+id/txtEstimateHours"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="2 Hours"
                             android:textSize="@dimen/_14ssp"
                             android:textStyle="bold"
                             android:textColor="#111827"
@@ -199,14 +195,70 @@
                             android:id="@+id/txtDescription"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Call Amol Sir to recap yesterday's demo, clarify package and confirm payment plan before 6 PM."
                             android:textSize="@dimen/_13ssp"
                             android:textColor="#374151"
                             android:lineSpacingExtra="4dp"
                             android:padding="@dimen/_12sdp"
                             android:background="@drawable/bg_description" />
 
+                        <!-- CHANGE STATUS -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_14sdp"
+                            android:text="Change status of task"
+                            android:textStyle="bold"
+                            android:textSize="@dimen/_12ssp"
+                            android:textColor="@color/black" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_6sdp"
+                            android:background="@drawable/spinner_background">
+
+                            <Spinner
+                                android:id="@+id/spnStatus"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingLeft="@dimen/_2sdp"
+                                android:paddingRight="@dimen/_26sdp"
+                                android:popupBackground="@color/white"
+                                android:spinnerMode="dropdown" />
+                        </RelativeLayout>
+
+
+                        <LinearLayout
+                            android:id="@+id/layoutReschedule"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingStart="@dimen/_10sdp"
+                                android:paddingTop="@dimen/_10sdp"
+                                android:text="ReScheduled Follow-up Date &amp; Time (optional)"
+                                android:textColor="@color/tc_secondary_text"
+                                android:textSize="@dimen/_12ssp" />
+
+                            <EditText
+                                android:id="@+id/edtFollowUpdate"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_6sdp"
+                                android:background="@drawable/edit_text_bg"
+                                android:drawableEnd="@drawable/baseline_date_range_24"
+                                android:hint="mm/dd/yy"
+                                android:inputType="phone"
+                                android:padding="@dimen/_10sdp"
+                                android:textSize="@dimen/_10ssp" />
+                        </LinearLayout>
+
                     </LinearLayout>
+
+
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

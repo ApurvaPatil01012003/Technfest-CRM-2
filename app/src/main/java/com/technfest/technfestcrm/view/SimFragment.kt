@@ -1,5 +1,6 @@
 package com.technfest.technfestcrm.view
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,6 +17,9 @@ class SimFragment : Fragment() {
 
     private var _binding: FragmentSimBinding? = null
     private val binding get() = _binding!!
+    val PREF_SIM_SYNC = "SimSyncPrefs"
+    val KEY_SYNCED_NUMBERS = "synced_numbers" // Set<String>
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,6 +32,39 @@ class SimFragment : Fragment() {
         Log.d("SIM FRag","$simNumber")
         binding.tvSimName.text = simName
         binding.tvSimNumber.text = simNumber
+
+        val syncedNumbers = getSyncedNumbers(requireContext())
+        val isSynced = syncedNumbers.contains(simNumber)
+
+        binding.switchStatus.isChecked = isSynced
+        binding.tvStatus.text = if (isSynced) "Active" else "Deactive"
+
+        binding.tvStatus.setBackgroundResource(
+            if (isSynced) R.drawable.green_status_bg
+            else R.drawable.red_status_bg
+        )
+        binding.switchStatus.setOnCheckedChangeListener { _, isChecked ->
+
+            val updatedSynced = getSyncedNumbers(requireContext())
+
+            if (isChecked) {
+                updatedSynced.add(simNumber!!)
+            } else {
+                updatedSynced.remove(simNumber)
+            }
+
+            saveSyncedNumbers(requireContext(), updatedSynced)
+
+            // Update UI
+            binding.tvStatus.text = if (isChecked) "Active" else "Deactive"
+            binding.tvStatus.setBackgroundResource(
+                if (isChecked)
+                    R.drawable.green_status_bg
+                else
+                    R.drawable.red_status_bg
+            )
+        }
+
         Log.d("SIM FRag","$simName")
         Log.d("SIM FRag","$simNumber")
         val allCalls = listOf(
@@ -49,6 +86,37 @@ class SimFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    fun getSyncedNumbers(context: Context): MutableSet<String> {
+        val prefs = context.getSharedPreferences(PREF_SIM_SYNC, Context.MODE_PRIVATE)
+        return prefs.getStringSet(KEY_SYNCED_NUMBERS, emptySet())?.toMutableSet()
+            ?: mutableSetOf()
+    }
+
+    fun saveSyncedNumbers(context: Context, numbers: Set<String>) {
+        val prefs = context.getSharedPreferences(PREF_SIM_SYNC, Context.MODE_PRIVATE)
+        prefs.edit()
+            .putStringSet(KEY_SYNCED_NUMBERS, numbers)
+            .apply()
+    }
+
+    fun formatNumberWithCountryCode(number: String?): String {
+        if (number.isNullOrEmpty()) return "Unknown"
+
+        var formatted = number.trim()
+
+        // Add + if missing
+        if (!formatted.startsWith("+")) {
+            formatted = "+91 $formatted" // default to +91 (India) or dynamically detect
+        }
+
+        // Add a space after country code if missing
+        if (!formatted.contains(" ")) {
+            formatted = formatted.substring(0, 3) + " " + formatted.substring(3)
+        }
+
+        return formatted
     }
 
 }

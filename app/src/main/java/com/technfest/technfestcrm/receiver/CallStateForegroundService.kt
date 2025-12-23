@@ -30,22 +30,19 @@ import java.util.TimeZone
 import androidx.core.content.edit
 import com.technfest.technfestcrm.view.LeadsFragment.LeadCacheItem
 
+
 class CallStateForegroundService : Service() {
 
     private lateinit var telephonyManager: TelephonyManager
     private var phoneStateListener: PhoneStateListener? = null
 
-    // runtime state
     private var currentNumber: String? = null
     private var currentDirection: String = "unknown"
 
-    // incoming call actually answered (RINGING -> OFFHOOK)
     private var callAnswered: Boolean = false
 
-    // when TALK actually started (OFFHOOK) -> used for startTime & duration
     private var callStartTimeMs: Long = 0L
 
-    // ⬆️ Increased threshold so very short outgoing “no pick” are treated as unanswered
     private val ANSWERED_MIN_SECONDS = 5
 
     override fun onCreate() {
@@ -64,8 +61,8 @@ class CallStateForegroundService : Service() {
     private fun registerPhoneStateListener() {
         if (phoneStateListener != null) return
 
-        var wasRinging = false      // observed RINGING
-        var wasOffhook = false      // observed OFFHOOK
+        var wasRinging = false
+        var wasOffhook = false
         var activeNumber: String? = null
 
         phoneStateListener = object : PhoneStateListener() {
@@ -79,13 +76,13 @@ class CallStateForegroundService : Service() {
                 }
 
                 when (state) {
+
                     TelephonyManager.CALL_STATE_RINGING -> {
                         fillMetaFromLeadCacheIfNeeded(incomingNumber)
                         wasRinging = true
                         wasOffhook = false
                         currentDirection = "incoming"
                         callAnswered = false
-                        // 🚫 DO NOT set start time here. We only want from pickup.
                         Log.d(TAG, "RINGING -> number=$activeNumber")
                     }
 
@@ -131,7 +128,6 @@ class CallStateForegroundService : Service() {
                     TelephonyManager.CALL_STATE_IDLE -> {
                         val endTimeMs = System.currentTimeMillis()
 
-                        // 🔹 Avoid fake log when service starts and no call happened
                         val noRealCall =
                             !wasRinging && !wasOffhook &&
                                     callStartTimeMs == 0L &&
@@ -186,6 +182,9 @@ class CallStateForegroundService : Service() {
                                     "status=$callStatus duration=$durationSec s start=$startStr end=$endStr"
                         )
 
+
+
+
                         // send to server
                         sendCallLogToServer(
                             phoneNumber = currentNumber,
@@ -196,10 +195,6 @@ class CallStateForegroundService : Service() {
                             endIso = endStr
                         )
 
-                        // Move recordings (as you had)
-                       // triggerMoveWorker()
-
-                        // reset for next call
                         wasRinging = false
                         wasOffhook = false
                         callAnswered = false
@@ -215,16 +210,6 @@ class CallStateForegroundService : Service() {
         }
 
         telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE)
-    }
-
-
-    private fun isCallReallyAnswered(): Boolean {
-        val am = getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
-        val audioActive =
-            am.mode == android.media.AudioManager.MODE_IN_CALL ||
-                    am.mode == android.media.AudioManager.MODE_IN_COMMUNICATION
-        val micActive = am.isMicrophoneMute == false
-        return audioActive && micActive
     }
 
     private fun sendCallLogToServer(
@@ -343,13 +328,6 @@ class CallStateForegroundService : Service() {
         }
     }
 
-
-    private fun triggerMoveWorker() {
-        val work = OneTimeWorkRequestBuilder<MoveRecordingsWorker>().build()
-        WorkManager.getInstance(this)
-            .enqueueUniqueWork("auto_move_recordings_foreground", ExistingWorkPolicy.REPLACE, work)
-    }
-
     fun formatIso(epochMs: Long): String {
         return try {
             val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
@@ -443,22 +421,6 @@ private fun lookupLeadNameByNumber(ctx: Context, rawNumber: String?): Pair<Int, 
     return if (!name.isNullOrBlank() && id > 0) Pair(id, name) else null
 }
 
-private fun ensureLeadMetaFromCache(ctx: Context, incomingNumber: String?) {
-    val match = lookupLeadNameByNumber(ctx, incomingNumber) ?: return
-    val (leadId, leadName) = match
-
-    val prefs = ctx.getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
-
-    if (prefs.getInt("leadId", 0) <= 0 || prefs.getString("leadName", "").isNullOrBlank()) {
-        prefs.edit()
-            .putInt("leadId", leadId)
-            .putString("leadName", leadName)
-            .putString("customerNumber", normalizeForCompare(incomingNumber)) // store E164
-            .apply()
-    }
-}
-
-
 private fun formatInternationalNumber(rawNumber: String?, defaultRegion: String = "IN"): String {
     if (rawNumber.isNullOrEmpty()) return ""
 
@@ -497,5 +459,7 @@ private fun normalizeForCompare(number: String?, defaultRegion: String = "IN"): 
 
 
 }
+
+
 
 

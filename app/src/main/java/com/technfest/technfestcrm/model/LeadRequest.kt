@@ -19,5 +19,9 @@ data class LeadRequest(
     val status: String,
     val tags: List<String>,
     val teamId: Int,
-    val teamName: String
+    val teamName: String,
+    val ownerName: String,
+    val note: String,
+    val id: Int
+
 )

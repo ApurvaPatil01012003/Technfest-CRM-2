@@ -541,15 +541,26 @@
                         android:textColor="@color/tc_secondary_text"
                         android:textSize="@dimen/_12ssp" />
 
-                    <EditText
-                        android:id="@+id/edtUserName"
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="@dimen/_38sdp"
                         android:layout_marginTop="@dimen/_6sdp"
-                        android:background="@drawable/edit_text_bg"
-                        android:hint="Username"
-                        android:padding="@dimen/_10sdp"
-                        android:textSize="12sp" />
+                        android:background="@drawable/spinner_background">
+
+                        <Spinner
+                            android:id="@+id/edtUserName"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:paddingLeft="@dimen/_2sdp"
+                            android:paddingRight="@dimen/_26sdp"
+                            android:popupBackground="@color/white"
+                            android:spinnerMode="dropdown"
+                            android:textAlignment="center"
+                            android:textSize="@dimen/_12ssp" />
+
+
+                    </RelativeLayout>
+
 
                     <!-- Next Follow-up -->
                     <TextView

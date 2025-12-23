@@ -29,10 +29,7 @@ class LeadAdapter(
 //        val companyName: TextView = itemView.findViewById(R.id.companyName)
 //        val leadOwner: TextView = itemView.findViewById(R.id.leadOwner)
     }
-        fun updateData(newList: List<LeadResponseItem>) {
-            leadList = newList
-            notifyDataSetChanged()
-        }
+
 
     private var selectedLeadId = -1
 

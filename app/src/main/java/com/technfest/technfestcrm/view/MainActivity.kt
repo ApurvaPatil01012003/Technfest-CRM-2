@@ -11,12 +11,9 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.technfest.technfestcrm.R
 import com.technfest.technfestcrm.databinding.ActivityMainBinding
-import com.technfest.technfestcrm.receiver.AutoMoveForegroundService
 import com.technfest.technfestcrm.receiver.CallStateForegroundService
 import com.technfest.technfestcrm.utils.AllRecordingsAutoMover
 import com.technfest.technfestcrm.repository.AuthMeRepository
@@ -35,21 +32,16 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-//        ViewCompat.setOnApplyWindowInsetsListener(binding.toolbar) { toolbar, insets ->
-//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-//            toolbar.setPadding(
-//                toolbar.paddingLeft,
-//                systemBars.top,
-//                toolbar.paddingRight,
-//                toolbar.paddingBottom
-//            )
-//            insets
-//        }
+        handleIntent(intent)
 
         startCallStateServiceSafely()
-        //startAutoMoveService()
-        setupDrawer()
+        supportFragmentManager.setFragmentResultListener(
+            "lead_added",
+            this
+        ) { _, _ ->
+            setupDrawer()
+        }
+
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_menu_24)
@@ -87,16 +79,41 @@ class MainActivity : AppCompatActivity() {
 
         setDefaultDialer()
         handleLeadOpenIntent(intent)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = android.app.NotificationChannel(
+                "task_channel",
+                "Task Notifications",
+                android.app.NotificationManager.IMPORTANCE_HIGH
+            )
+            val manager = getSystemService(android.app.NotificationManager::class.java)
+            manager.createNotificationChannel(channel)
+        }
+
+        handleNotificationIntent(intent)
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
+                != android.content.pm.PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 2001)
+            }
+        }
+
+
     }
 
-//    private fun startAutoMoveService() {
-//        val serviceIntent = Intent(this, AutoMoveForegroundService::class.java)
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            startForegroundService(serviceIntent)
-//        } else {
-//            startService(serviceIntent)
-//        }
-//    }
+
+    private fun handleNotificationIntent(intent: Intent?): Boolean {
+        val highlightTaskId = intent?.getIntExtra("highlightTaskId", -1) ?: -1
+        if (highlightTaskId != -1) {
+            openTaskFromNotification(highlightTaskId)
+            return true
+        }
+        return false
+    }
+
 
     private fun startCallStateServiceSafely() {
         val intent = Intent(this, CallStateForegroundService::class.java)
@@ -134,6 +151,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        setupDrawer()
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 AllRecordingsAutoMover(this).autoMoveRecordings()
@@ -155,7 +173,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun setupDrawer() {
+    internal fun setupDrawer() {
         val drawerBinding =
             com.technfest.technfestcrm.databinding.CustomDrawerBinding.bind(binding.customDrawer.root)
         val container = drawerBinding.drawerMenuContainer
@@ -167,11 +185,25 @@ class MainActivity : AppCompatActivity() {
         val workspaceId = prefs.getInt("workspaceId", -1)
         val workspaceName = prefs.getString("workspaceName", "Workspace")
 
+        val allLocalLeads = com.technfest.technfestcrm.localdatamanager.LocalLeadManager.getLeads(this)
+        val totalLeadsCount = allLocalLeads.size
+
+        val allLocalTasksPrefs = getSharedPreferences("LocalTasks", MODE_PRIVATE)
+        val tasksJson = allLocalTasksPrefs.getString("task_list", null)
+        val totalTasksCount = if (tasksJson != null) {
+            val type = object : com.google.gson.reflect.TypeToken<List<com.technfest.technfestcrm.model.LocalTask>>() {}.type
+            val localTasks: List<com.technfest.technfestcrm.model.LocalTask> =
+                com.google.gson.Gson().fromJson(tasksJson, type)
+            localTasks.size
+        } else 0
+
+
+
         val menuItems = listOf(
             DrawerItem("Dashboard", R.drawable.home),
             DrawerItem("Add Lead", R.drawable.plus),
-            DrawerItem("My Leads", R.drawable.leadschange, 25),
-            DrawerItem("Tasks", R.drawable.taskchange, 3),
+            DrawerItem("My Leads", R.drawable.leadschange, totalLeadsCount),
+            DrawerItem("Tasks", R.drawable.taskchange, totalTasksCount),
             DrawerItem("Campaigns", R.drawable.change),
             DrawerItem("Calls", R.drawable.calls),
             DrawerItem("Reports", R.drawable.report),
@@ -269,6 +301,8 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleLeadOpenIntent(intent)
+        handleNotificationIntent(intent)
+        handleIntent(intent)
     }
 
     private fun handleLeadOpenIntent(intent: Intent?) {
@@ -290,6 +324,42 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
     }
+
+    private fun handleIntent(intent: Intent?) {
+        intent ?: return
+
+        val fragmentToOpen = intent.getStringExtra("openFragment")
+        val highlightTaskId = intent.getIntExtra("highlightTaskId", -1)
+
+        if (fragmentToOpen == "TASK") {
+            val fragment = TaskFragment().apply {
+                arguments = Bundle().apply {
+                    if (highlightTaskId != -1) {
+                        putInt("highlightTaskId", highlightTaskId)
+                    }
+                }
+            }
+
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, fragment)
+                .commit()
+        }
+    }
+
+
+    private fun openTaskFromNotification(taskId: Int) {
+        val fragment = TaskFragment().apply {
+            arguments = Bundle().apply {
+                putInt("highlightTaskId", taskId)
+            }
+        }
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
 
 
 

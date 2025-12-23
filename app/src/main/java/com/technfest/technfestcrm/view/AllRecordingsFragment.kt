@@ -77,6 +77,7 @@ class AllRecordingsFragment : Fragment() {
             showOptionsDialog(file)
 
         }
+
     }
 
     private fun readRecordings(): List<DocumentFile> {
@@ -333,6 +334,7 @@ class AllRecordingsFragment : Fragment() {
 
                     if (!url.isNullOrEmpty()) {
                         saveLastRecordingUrl(url)
+
                     }
 
                     Toast.makeText(requireActivity(), "Uploaded: ${body?.recordingUrl}", Toast.LENGTH_LONG).show()

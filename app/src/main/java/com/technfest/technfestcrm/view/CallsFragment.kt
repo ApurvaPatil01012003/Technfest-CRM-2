@@ -59,9 +59,6 @@ class CallsFragment : Fragment() {
 
         return binding.root
     }
-
-
-    // 🔹 Handle 3-dot menu clicks
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
 

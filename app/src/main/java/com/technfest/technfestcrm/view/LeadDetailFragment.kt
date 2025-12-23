@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.telephony.TelephonyManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,18 +22,12 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.technfest.technfestcrm.R
 import com.technfest.technfestcrm.model.LeadResponseItem
-import com.technfest.technfestcrm.model.TaskRequest
-import com.technfest.technfestcrm.repository.LeadRepository
 import com.technfest.technfestcrm.repository.TaskRepository
-import kotlinx.coroutines.launch
 import java.util.Calendar
 import com.technfest.technfestcrm.databinding.FragmentLeadDetailBinding
 import com.technfest.technfestcrm.repository.CampaignRepository
@@ -45,19 +38,28 @@ import com.technfest.technfestcrm.viewmodel.TaskViewModel
 import com.technfest.technfestcrm.viewmodel.TaskViewModelFactory
 import com.technfest.technfestcrm.viewmodel.UserViewModelFactory
 import com.technfest.technfestcrm.viewmodel.UsersViewModel
-import androidx.core.content.edit
 import androidx.core.net.toUri
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.technfest.technfestcrm.adapter.RecentFeedbackAdapter
+import com.technfest.technfestcrm.localdatamanager.LocalLeadManager
+import com.technfest.technfestcrm.model.CallFeedback
+import com.technfest.technfestcrm.model.LeadRequest
+import com.technfest.technfestcrm.model.LocalTask
+import java.util.Locale
 
 class LeadDetailFragment : Fragment() {
     private lateinit var binding: FragmentLeadDetailBinding
     private lateinit var telephonyManager: TelephonyManager
     private var workspaceId = 0
     private var token = ""
+
     private var leadNumber: String = ""
     private var leadName: String = ""
     private var leadId: Int = 0
     private var userId: Int = 0
     private var campaignId: Int = 0
+    private lateinit var feedbackAdapter: RecentFeedbackAdapter
+
 
 
     override fun onCreateView(
@@ -73,6 +75,7 @@ class LeadDetailFragment : Fragment() {
         leadId = arguments?.getInt("leadId") ?: 0
         userId = arguments?.getInt("ownerUserId") ?: 0
         campaignId = arguments?.getInt("campaignId") ?: 0
+
 
 
         telephonyManager =
@@ -96,8 +99,12 @@ class LeadDetailFragment : Fragment() {
                 ).show()
                 return@setOnClickListener
             }
+//            prepareLeadMetaForService()
+//            makeCall()
+
             prepareLeadMetaForService()
-            makeCall()
+            startCallWithSyncedSimChooser()
+
         }
 
         binding.btnMarkCompleted.setOnClickListener {
@@ -181,6 +188,7 @@ class LeadDetailFragment : Fragment() {
         )[TaskViewModel::class.java]
 
 
+
         binding.btnCreateTask.setOnClickListener {
 
             val dialogView = layoutInflater.inflate(R.layout.alert_lead_create_lead_task, null)
@@ -189,96 +197,46 @@ class LeadDetailFragment : Fragment() {
                 .setCancelable(true)
                 .create()
 
-            val leadNameStr = arguments?.getString("name") ?: "N/A"
-            val leadId = arguments?.getInt("leadId") ?: 0
-
-
             // Views
             val leadNameText = dialogView.findViewById<TextView>(R.id.txtLeadName)
             val edtTitle = dialogView.findViewById<EditText>(R.id.edtTitle)
             val edtDescription = dialogView.findViewById<EditText>(R.id.edtDescription)
-            // val edtProjectName = dialogView.findViewById<EditText>(R.id.edtProjectName)
-
             val edtDueDate = dialogView.findViewById<EditText>(R.id.edtDueDate)
             val edtDueTime = dialogView.findViewById<EditText>(R.id.edtDueTime)
             val edtStatus = dialogView.findViewById<EditText>(R.id.edtStatus)
             val spinnerPriority = dialogView.findViewById<Spinner>(R.id.spinnerPriority)
             val spinnerAssignToUser = dialogView.findViewById<Spinner>(R.id.spnAssignToUser)
-            val edtEstimateHours = dialogView.findViewById<EditText>(R.id.edtEstimateHours)
             val spinnerTaskType = dialogView.findViewById<Spinner>(R.id.spinnerTaskType)
+            val edtEstimateHours = dialogView.findViewById<EditText>(R.id.edtEstimateHours)
             val btnSave = dialogView.findViewById<MaterialButton>(R.id.btnCreateTask)
             val btnCancel = dialogView.findViewById<MaterialButton>(R.id.btnCancel)
             val ivClose = dialogView.findViewById<ImageView>(R.id.ivClose)
-            leadNameText.text = leadNameStr
 
-            taskViewModel.fetchTaskType(token, workspaceId)
+            leadNameText.text = arguments?.getString("name") ?: "N/A"
 
-            taskViewModel.taskTypeResult.observe(requireActivity()) { types ->
-                if (!types.isNullOrEmpty()) {
-                    val adapter = ArrayAdapter(
-                        requireContext(),
-                        android.R.layout.simple_spinner_item,
-                        types
-                    )
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    spinnerTaskType.adapter = adapter
-                }
-            }
+            // --- Set Static Spinner Values ---
+            val taskTypes = listOf("general")
+            spinnerTaskType.adapter = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                taskTypes
+            ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
 
+            val priorities = listOf("High", "Low", "Normal")
+            spinnerPriority.adapter = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                priorities
+            ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
 
-            lifecycleScope.launch {
-                try {
-                    val repo = LeadRepository()
-                    val response = repo.getLeadMeta(token, workspaceId, "priority")
+            val assignUsers = listOf("Sagar", "Pratik")
+            spinnerAssignToUser.adapter = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                assignUsers
+            ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
 
-                    if (response.isSuccessful && response.body() != null) {
-                        val priorityItems = response.body()!!
-
-                        val priorityNames = priorityItems.map { it.name }
-
-                        val adapter = ArrayAdapter(
-                            requireContext(),
-                            android.R.layout.simple_spinner_item,
-                            priorityNames
-                        )
-                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                        spinnerPriority.adapter = adapter
-                    } else {
-                        Toast.makeText(
-                            requireContext(),
-                            "Failed to load priority!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                } catch (e: Exception) {
-                    Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            }
-
-
-
-
-            usersViewModel.usersList.observe(viewLifecycleOwner) { users ->
-                if (users != null) {
-                    val assignUserList = users.map { it.full_name }
-                    val assignAdapter = ArrayAdapter(
-                        requireContext(),
-                        android.R.layout.simple_spinner_item,
-                        assignUserList
-                    )
-                    assignAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    spinnerAssignToUser.adapter = assignAdapter
-
-                    val userIdMap = users.associate { it.full_name to it.id }
-
-
-                    val assignedUserName = spinnerAssignToUser.selectedItem.toString()
-                    val assignedUserId = userIdMap[assignedUserName] ?: 0
-                }
-            }
-
-
+            // --- Date & Time Pickers ---
             edtDueDate.setOnClickListener {
                 val c = Calendar.getInstance()
                 DatePickerDialog(
@@ -292,7 +250,6 @@ class LeadDetailFragment : Fragment() {
                 ).show()
             }
 
-            // Time Picker
             edtDueTime.setOnClickListener {
                 val c = Calendar.getInstance()
                 TimePickerDialog(
@@ -306,110 +263,73 @@ class LeadDetailFragment : Fragment() {
                 ).show()
             }
 
-            dialog.show()
-
-
             btnSave.setOnClickListener {
-                val leadNameStr = arguments?.getString("name") ?: "N/A"
-
                 val title = edtTitle.text.toString().trim()
                 val description = edtDescription.text.toString().trim()
                 val dueDate = edtDueDate.text.toString().trim()
                 val dueTime = edtDueTime.text.toString().trim()
-                //  val projectName = edtProjectName.text.toString().trim()
-
                 val status = edtStatus.text.toString().trim()
-                val estimateHoursStr = edtEstimateHours.text.toString().trim()
                 val priority = spinnerPriority.selectedItem.toString()
-                val assignedUserName = spinnerAssignToUser.selectedItem.toString()
-                val estimateHours: Int? = if (estimateHoursStr.isNotEmpty()) {
-                    estimateHoursStr.toIntOrNull()
-                } else null
-                val finalDueDate = if (dueDate.isNotEmpty())
-                    "${dueDate}" else null
 
-                val finalDueAt = if (dueDate.isNotEmpty() && dueTime.isNotEmpty())
-                    "$dueDate $dueTime" else null
+                val finalDueAt = if (dueDate.isNotEmpty() && dueTime.isNotEmpty()) "$dueDate $dueTime" else ""
 
-                val taskRequest = TaskRequest(
-                    workspaceId = arguments?.getInt("workspaceId") ?: 0,
-                    title = title,
-                    description = description,
-                    taskType = "general",
-                    projectId = 2,
-                    assignedToEmployeeId = 5,
-                    estimatedHours = estimateHours,
-                    dueDate = finalDueDate,
+                val localTask = LocalTask(
+                    id = System.currentTimeMillis().toInt(),
+                    title = edtTitle.text.toString().trim(),
+                    description = edtDescription.text.toString().trim(),
                     dueAt = finalDueAt,
-                    projectName = "Client Onboarding Automation",
-                    status = status,
-                    priority = priority,
-                    assignedUserName = assignedUserName,
-                    leadName = leadNameStr,
-                    leadId = leadId
+                    status = edtStatus.text.toString().ifEmpty { "Pending" },
+                    priority = spinnerPriority.selectedItem.toString(),
+                    taskType = spinnerTaskType.selectedItem.toString(),
+                    source = "Manual",
+                    leadName = leadNameText.text.toString(),
+                    assignedToUser = spinnerAssignToUser.selectedItem.toString(),
+                    estimatedHours = edtEstimateHours.text.toString().ifEmpty { "0" }
                 )
-                Log.d("WorkspaceIDDDD", workspaceId.toString())
+                saveTaskLocally(requireContext(), localTask)
 
-                lifecycleScope.launch {
-                    try {
-                        val passedToken = token
-                        Log.d("Tokens", passedToken)
-                        val passedWorkspaceId = workspaceId
+                scheduleTaskNotification(requireContext(), localTask)
 
-                        val repo = TaskRepository()
-                        val response = repo.createTask(passedToken, taskRequest)
-
-
-                        if (response.isSuccessful) {
-                            Toast.makeText(
-                                requireContext(),
-                                "Task Created Successfully",
-                                Toast.LENGTH_LONG
-                            )
-                                .show()
-                            dialog.dismiss()
-                        } else {
-                            Toast.makeText(
-                                requireContext(),
-                                "Failed: ${response.errorBody()?.string()}",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-
-                    } catch (e: Exception) {
-                        Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_LONG)
-                            .show()
-                    }
-                }
-
-
-            }
-            btnCancel.setOnClickListener {
+                Toast.makeText(requireContext(), "Task saved locally", Toast.LENGTH_LONG).show()
                 dialog.dismiss()
             }
-            ivClose.setOnClickListener {
-                dialog.dismiss()
-            }
+
+            btnCancel.setOnClickListener { dialog.dismiss() }
+            ivClose.setOnClickListener { dialog.dismiss() }
+
+            dialog.show()
         }
 
 
+
         val args = arguments
-        binding.txtName.text = args?.getString("name")
-        binding.txtCompanyName.text = args?.getString("company")
-        binding.txtLeadLocation.text = args?.getString("location")
-        binding.txtLeadNumber.text = args?.getString("mobile")
-        binding.txtLeadEmail.text = args?.getString("email")
-        binding.txtLeadStatus.text = args?.getString("status")
-        binding.txtSource.text = args?.getString("source")
-        binding.txtStage.text = args?.getString("stage")
-        binding.txtPriority.text = args?.getString("priority")
-        binding.txtCampaignName.text = args?.getString("campaignName")
-        binding.txtLeadRequirement.text = args?.getString("leadRequirement")
-        binding.txtScheduledFollowUp.text = args?.getString("nextFollowupAt")
-        binding.txtFllowUpStatus.text = args?.getString("followupStatus")
-        binding.txtOwnerName.text = args?.getString("ownerName")
-        binding.txtTeam.text = args?.getString("teamName")
-        binding.txtNote.text = args?.getString("note")
+        binding.txtName.text = args.getSafeString("name")
+        binding.txtCompanyName.text = args.getSafeString("company")
+        binding.txtLeadLocation.text = args.getSafeString("location")
+        binding.txtLeadNumber.text = args.getSafeString("mobile")
+        binding.txtLeadEmail.text = args.getSafeString("email")
+        binding.txtLeadStatus.text = args.getSafeString("status")
+        binding.txtSource.text = args.getSafeString("source")
+        binding.txtStage.text = args.getSafeString("stage")
+        binding.txtPriority.text = args.getSafeString("priority")
+        binding.txtCampaignName.text = args.getSafeString("campaignName")
+        binding.txtLeadRequirement.text = args.getSafeString("leadRequirement")
+
+        val leadFromLocal: LeadRequest? = if (leadNumber.isNotBlank()) {
+            LocalLeadManager.getLeads(requireContext()).find { it.mobile == leadNumber }
+        } else null
+
+
+        val followUpDate = leadFromLocal?.nextFollowupAt ?: args.getSafeString("nextFollowupAt")
+        binding.txtScheduledFollowUp.text = followUpDate
+        binding.txtFllowUpStatus.text =
+            if (!followUpDate.isNullOrBlank() && followUpDate != "N/A") "Scheduled" else "Not Scheduled"
+
+
+        binding.txtOwnerName.text = args.getSafeString("ownerName")
+        binding.txtTeam.text = args.getSafeString("teamName")
+        binding.txtNote.text = args.getSafeString("note")
+
         val leadName = args?.getString("name") ?: "N/A"
         binding.btnZoom.setOnClickListener {
             val dialogView = layoutInflater.inflate(R.layout.alert_zoom_task, null)
@@ -420,17 +340,40 @@ class LeadDetailFragment : Fragment() {
                 .show()
         }
 
-        binding.tvTitle.setOnClickListener {
-            val dialogView = layoutInflater.inflate(R.layout.alert_feedback_form, null)
-            AlertDialog.Builder(requireContext())
-                .setView(dialogView)
-                .setCancelable(true)
-                .create()
-                .show()
+
+
+        binding.rvRecentActivity.layoutManager =
+            LinearLayoutManager(requireContext())
+
+        feedbackAdapter = RecentFeedbackAdapter(emptyList())
+        binding.rvRecentActivity.adapter = feedbackAdapter
+
+        val feedbackList = getFeedbackForLead(leadId)
+
+        if (feedbackList.isNotEmpty()) {
+            feedbackAdapter.update(feedbackList)
+            binding.rvRecentActivity.visibility = View.VISIBLE
+        } else {
+            binding.rvRecentActivity.visibility = View.GONE
         }
+
         return binding.root
     }
 
+    private fun saveTaskLocally(context: Context, task: LocalTask) {
+        val prefs = context.getSharedPreferences("LocalTasks", Context.MODE_PRIVATE)
+        val json = prefs.getString("task_list", null)
+
+        // Correct type for LocalTask list
+        val type = object : com.google.gson.reflect.TypeToken<MutableList<LocalTask>>() {}.type
+
+        val tasks: MutableList<LocalTask> = if (json != null) {
+            com.google.gson.Gson().fromJson(json, type)
+        } else mutableListOf()
+
+        tasks.add(task)
+        prefs.edit().putString("task_list", com.google.gson.Gson().toJson(tasks)).apply()
+    }
 
 
     companion object {
@@ -445,32 +388,22 @@ class LeadDetailFragment : Fragment() {
 
             val fragment = LeadDetailFragment()
             val args = Bundle().apply {
-
-                putString("token", token)
-                putInt("workspaceId", workspaceId)
                 putInt("leadId", lead.id)
-                putInt("campaignCategoryId", campaignCategoryId)
-                putInt("ownerUserId", (lead.ownerUserId ?: 0))
-                putInt("campaignId", lead.campaignId ?: 0)
-
-
-
                 putString("name", lead.fullName ?: "N/A")
-                putString("location", (lead.location ?: "N/A").toString())
                 putString("mobile", lead.mobile ?: "N/A")
-                putString("email", lead.email ?: "N/A")
-                putString("company", (lead.company ?: "N/A").toString())
-                putString("source", (lead.source ?: "N/A").toString())
                 putString("status", lead.status ?: "N/A")
                 putString("stage", (lead.stage ?: "N/A").toString())
                 putString("priority", lead.priority ?: "N/A")
-                putString("campaignName", lead.campaignName ?: "N/A")
                 putString("leadRequirement", (lead.leadRequirement ?: "N/A").toString())
-                putString("nextFollowupAt", (lead.nextFollowupAt ?: "N/A").toString())
-                putString("followupStatus", (lead.followupStatus ?: "N/A").toString())
+                putString("campaignName", lead.campaignName ?: "N/A")
+                putString("location", (lead.location ?: "N/A").toString())
+                putString("email", lead.email ?: "N/A")
+                putString("company", (lead.company ?: "N/A").toString())
+                putString("source", (lead.source ?: "N/A").toString())
+                putString("nextFollowupAt", lead.nextFollowupAt ?: "N/A")
                 putString("ownerName", (lead.ownerName ?: "N/A").toString())
                 putString("teamName", (lead.teamName ?: "N/A").toString())
-                putString("note", lead.notes ?: "N/A")
+
             }
 
             fragment.arguments = args
@@ -513,19 +446,6 @@ class LeadDetailFragment : Fragment() {
             categoryMap = categories.associateBy({ it.id }, { it.code })
         }
     }
-
-//    private fun prepareLeadMetaForService() {
-//        val prefs =
-//            requireContext().getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
-//        prefs.edit() {
-//            putInt("leadId", leadId)
-//                .putString("leadName", leadName)
-//                .putInt("campaignId", campaignId)
-//                .putInt("campaignCategoryId", arguments?.getInt("campaignCategoryId") ?: 0)
-//                .putString("customerNumber", leadNumber)
-//        }
-//    }
-
     private fun prepareLeadMetaForService() {
         val prefs = requireContext().getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
 
@@ -536,8 +456,8 @@ class LeadDetailFragment : Fragment() {
             .putString("leadName", leadName)
             .putInt("campaignId", campaignId)
             .putInt("campaignCategoryId", arguments?.getInt("campaignCategoryId") ?: 0)
-            .putString("customerNumber", leadNumber)          // keep original
-            .putString("customerNumberE164", e164)            // ✅ for matching
+            .putString("customerNumber", leadNumber)
+            .putString("customerNumberE164", e164)
             .apply()
     }
     private fun normalizeToE164(context: Context, raw: String): String {
@@ -547,7 +467,6 @@ class LeadDetailFragment : Fragment() {
 
             val phoneUtil = com.google.i18n.phonenumbers.PhoneNumberUtil.getInstance()
 
-            // region from SIM/network for numbers WITHOUT +
             val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
             val region = (tm.networkCountryIso ?: tm.simCountryIso ?: "")
                 .uppercase()
@@ -563,6 +482,90 @@ class LeadDetailFragment : Fragment() {
         } catch (e: Exception) {
             ""
         }
+    }
+
+    private fun getFeedbackForLead(leadId: Int): List<CallFeedback> {
+
+        val prefs = requireContext()
+            .getSharedPreferences("CallFeedbackStore", Context.MODE_PRIVATE)
+
+        val json = prefs.getString("feedback_list", null) ?: return emptyList()
+
+        val type =
+            object : com.google.gson.reflect.TypeToken<List<CallFeedback>>() {}.type
+
+        return com.google.gson.Gson()
+            .fromJson<List<CallFeedback>>(json, type)
+            .filter { it.leadId == leadId }
+            .sortedByDescending { it.timestamp }
+    }
+
+    private fun Bundle?.getSafeString(key: String): String {
+        val value = this?.getString(key)
+        return if (value.isNullOrBlank()) "N/A" else value
+    }
+    private fun startCallWithSyncedSimChooser() {
+        val synced = com.technfest.technfestcrm.utils.SimSyncStore
+            .getSyncedNumbers(requireContext())
+            .map { it.trim() }
+            .filter { it.isNotBlank() && !it.equals("Unknown", true) }
+
+        // ✅ If nothing synced => block call
+        if (synced.isEmpty()) {
+            Toast.makeText(requireContext(), "Please sync number first", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        // ✅ 1 synced => call directly (still save selectedSimNumber for tagging)
+        if (synced.size == 1) {
+            val meta = requireContext().getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
+            meta.edit().putString("selectedSimNumber", synced[0]).apply()
+            makeCall()
+            return
+        }
+
+        // ✅ Multiple synced => ask which SIM
+        val items = synced.toTypedArray()
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Call from which SIM?")
+            .setItems(items) { _, which ->
+                val selectedSimNumber = items[which]
+
+                val meta = requireContext().getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
+                meta.edit().putString("selectedSimNumber", selectedSimNumber).apply()
+
+                makeCall()
+            }
+            .setCancelable(true)
+            .show()
+    }
+
+    private fun scheduleTaskNotification(context: Context, task: LocalTask) {
+        val dueAt = task.dueAt ?: return
+
+        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        sdf.isLenient = false
+
+        val dueMs = try { sdf.parse(dueAt)?.time } catch (e: Exception) { null } ?: return
+
+        val delay = dueMs - System.currentTimeMillis()
+        if (delay <= 0) return
+
+        val safeId = (task.id and Int.MAX_VALUE)
+
+        val work = androidx.work.OneTimeWorkRequestBuilder<com.technfest.technfestcrm.worker.TaskNotificationWorker>()
+            .setInitialDelay(delay, java.util.concurrent.TimeUnit.MILLISECONDS)
+            .setInputData(
+                androidx.work.workDataOf(
+                    "taskId" to safeId,
+                    "taskTitle" to (task.title ?: "Task Reminder")
+                )
+            )
+            .build()
+
+        androidx.work.WorkManager.getInstance(context)
+            .enqueueUniqueWork("task_notify_$safeId", androidx.work.ExistingWorkPolicy.REPLACE, work)
     }
 
 

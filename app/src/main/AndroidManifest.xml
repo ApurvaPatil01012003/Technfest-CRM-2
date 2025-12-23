@@ -33,10 +33,7 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.TechnfestCRM"
         tools:targetApi="31">
-        <activity
-            android:name=".view.CampaignDetailsFragment"
-            android:exported="false"
-            android:theme="@style/Base.Theme.TechnfestCRM" />
+
         <activity
             android:name=".view.DisplayOverlayActivity"
             android:exported="false" />
@@ -69,6 +66,7 @@
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
         </receiver>
+
 
         <service
             android:name=".receiver.AutoMoveForegroundService"

@@ -1,6 +1,7 @@
 package com.technfest.technfestcrm.model
 
 data class CallFeedback(
+    val leadId: Int,
     val number: String,
     val leadName: String?,
     val callStatus: String,
@@ -8,5 +9,5 @@ data class CallFeedback(
     val note: String,
     val followUp: String?,
     val receivedBy: String?,
-    val timestamp: Long
+    val timestamp: Long = System.currentTimeMillis()
 )

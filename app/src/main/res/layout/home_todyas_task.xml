@@ -1,72 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingVertical="8dp"
-    android:background="@drawable/bg_task_item">
+    android:fillViewport="true"
+    android:scrollbars="vertical">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="12dp"
-        android:paddingVertical="8dp">
+        android:orientation="vertical"
+        android:paddingVertical="@dimen/_6sdp"
+        android:layout_marginTop="@dimen/_3sdp"
+        android:background="@drawable/bg_task_item">
 
-        <!-- Task Name -->
-        <TextView
-            android:id="@+id/txtTaskName"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Task Name"
-            android:textStyle="bold"
-            android:textColor="#222222"
-            android:textSize="15sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/leadStatus"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginEnd="8dp" />
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="8dp">
 
-        <!-- Status Chip -->
-        <TextView
-            android:id="@+id/leadStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pending"
-            android:textColor="#FFFFFF"
-            android:textSize="12sp"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="4dp"
-            android:background="@drawable/bg_status_chip"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginStart="8dp" />
+            <!-- Task Name -->
+            <TextView
+                android:id="@+id/txtTaskName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Task Name"
+                android:textStyle="bold"
+                android:textColor="#222222"
+                android:textSize="15sp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/leadStatus"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Lead Name -->
-        <TextView
-            android:id="@+id/txtLeadName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="John Doe"
-            android:textColor="#757575"
-            android:textSize="13sp"
-            android:layout_marginTop="4dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txtTaskName" />
+            <!-- Status Chip -->
+            <TextView
+                android:id="@+id/leadStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pending"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:background="@drawable/bg_status_chip"
+                android:layout_marginStart="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Due Time -->
-        <TextView
-            android:id="@+id/txtTaskDue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Due 3:30 PM"
-            android:textColor="#757575"
-            android:textSize="13sp"
-            android:layout_marginTop="4dp"
-            android:layout_marginStart="8dp"
-            app:layout_constraintTop_toBottomOf="@id/txtTaskName"
-            app:layout_constraintStart_toEndOf="@id/txtLeadName" />
+            <!-- Lead Name -->
+            <TextView
+                android:id="@+id/txtLeadName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="John Doe"
+                android:textColor="#757575"
+                android:textSize="13sp"
+                android:layout_marginTop="4dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtTaskName" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <!-- Due Time -->
+            <TextView
+                android:id="@+id/txtTaskDue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Due 3:30 PM"
+                android:textColor="#757575"
+                android:textSize="13sp"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="8dp"
+                app:layout_constraintTop_toBottomOf="@id/txtTaskName"
+                app:layout_constraintStart_toEndOf="@id/txtLeadName" />
 
-</LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+</ScrollView>

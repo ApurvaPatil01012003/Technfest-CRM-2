@@ -9,6 +9,7 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.technfest.technfestcrm.R
 import com.technfest.technfestcrm.model.TaskResponseItem
+import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -40,15 +41,17 @@ class HomeTaskAdapter(
 
         val formattedTime = try {
             task.dueAt?.let {
-                val zdt = ZonedDateTime.parse(it)
-                val formatter = DateTimeFormatter.ofPattern("hh:mm a")
-                "Due ${zdt.format(formatter)}"
+                val formatterInput = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                val dateTime = LocalDateTime.parse(it, formatterInput)
+
+                val formatterOutput = DateTimeFormatter.ofPattern("hh:mm a")
+                "Due At : ${dateTime.format(formatterOutput)}"
             } ?: "No Due Time"
         } catch (e: Exception) {
             "No Due Time"
         }
-
         holder.txtTaskDue.text = formattedTime
+
 
         holder.itemView.setOnClickListener {
             onItemClick(task)

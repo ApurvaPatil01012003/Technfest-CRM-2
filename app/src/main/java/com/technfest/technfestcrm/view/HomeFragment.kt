@@ -1,41 +1,35 @@
 package com.technfest.technfestcrm.view
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.view.GravityCompat
+import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.technfest.technfestcrm.R
 import com.technfest.technfestcrm.adapter.HomeTaskAdapter
 import com.technfest.technfestcrm.adapter.HotLeadAdapter
-import com.technfest.technfestcrm.databinding.CustomDrawerBinding
 import com.technfest.technfestcrm.databinding.FragmentHomeBinding
-import com.technfest.technfestcrm.model.HotLead
-import com.technfest.technfestcrm.network.RetrofitInstance
-import com.technfest.technfestcrm.repository.GetWorkspacesRepository
-import com.technfest.technfestcrm.repository.LeadRepository
-import com.technfest.technfestcrm.repository.TaskRepository
-import com.technfest.technfestcrm.viewmodel.GetWorkspacesViewModel
-import com.technfest.technfestcrm.viewmodel.GetWorkspacesViewModelFactory
-import com.technfest.technfestcrm.viewmodel.LeadViewModel
-import com.technfest.technfestcrm.viewmodel.LeadViewModelFactory
-import com.technfest.technfestcrm.viewmodel.TaskViewModel
-import com.technfest.technfestcrm.viewmodel.TaskViewModelFactory
-
+import com.technfest.technfestcrm.model.LeadResponseItem
+import com.technfest.technfestcrm.model.LocalTask
+import com.technfest.technfestcrm.model.TaskResponseItem
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import android.telephony.SubscriptionManager
+import android.widget.Switch
 
 
 class HomeFragment : Fragment() {
@@ -43,12 +37,11 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: GetWorkspacesViewModel
     private lateinit var homeTaskAdapter: HomeTaskAdapter
-    private lateinit var taskViewModel: TaskViewModel
     private lateinit  var fullName :String
+    private val PREF_SIM_SYNC = "SimSyncPrefs"
+    private val KEY_SYNCED_NUMBERS = "synced_numbers" // Set<String>
 
-    data class DrawerItem(val title: String, val icon: Int, val badgeCount: Int = 0)
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
@@ -57,226 +50,85 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         binding.leadsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        checkAndShowSimSyncDialog()
 
         var prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
-        var token = prefs.getString("token", null)
-        var workspaceId = prefs.getInt("workspaceId", -1)
          fullName = prefs.getString("fullName", "User").toString()
-        val savedWorkspaceName = prefs.getString("workspaceName", null)
-
-//        binding.userName.text = fullName
-//        binding.userInitialCircle.text = getInitials(fullName ?: "")
-
-//        if (!savedWorkspaceName.isNullOrEmpty()) {
-//            binding.toolbarTitle.text = savedWorkspaceName
-//        }
-
-        val repository = GetWorkspacesRepository(RetrofitInstance.apiInterface)
-        viewModel = ViewModelProvider(
-            this,
-            GetWorkspacesViewModelFactory(repository)
-        ).get(GetWorkspacesViewModel::class.java)
-
-        if (!token.isNullOrEmpty() && workspaceId != -1 && savedWorkspaceName.isNullOrEmpty()) {
-            viewModel.fetchWorkspaces("Bearer $token").observe(viewLifecycleOwner) { response ->
-                if (response.isSuccessful) {
-                    val workspace = response.body()?.find { it.id == workspaceId }
-                    workspace?.let {
-                       // binding.toolbarTitle.text = it.name
-                        prefs.edit().apply {
-                            putString("workspaceName", it.name)
-                            apply()
-                        }
-
-                    }
-                } else {
-                    Log.e("WorkspaceError", response.message().toString())
-                }
-            }
-        }
-
-//        binding.myLead.setOnClickListener {
-//            (activity as MainActivity).openLeadsFromHome()
-//            val prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
-//            val token = prefs.getString("token", null)
-//            val workspaceId = prefs.getInt("workspaceId", -1)
-//
-//
-//            val f = LeadsFragment()
-//            val bundle = Bundle().apply {
-//                putString("Name", fullName)
-//                putString("Token", token)
-//                putInt("WorkspaceId", workspaceId)
-//                putString("WorkspaceName", binding.toolbarTitle.text.toString())
-//            }
-//            f.arguments = bundle
-//
-//            loadFragment(f)
-//
-//        }
-
-
-
-        val menuItems = listOf(
-            DrawerItem("Dashboard", R.drawable.home),
-            DrawerItem("Add Lead", R.drawable.plus),
-            DrawerItem("My Leads", R.drawable.leadschange, 25),
-            DrawerItem("Tasks", R.drawable.taskchange, 3),
-            DrawerItem("Campaigns", R.drawable.baseline_person_outline_24),
-            DrawerItem("Calls", R.drawable.calls),
-            DrawerItem("Reports", R.drawable.report)
-        )
-
-        // Create a binding for custom_drawer.xml
-       // val drawerBinding = CustomDrawerBinding.bind(binding.customDrawer.root)
-        //val container = drawerBinding.drawerMenuContainer
-
 
         prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
-        token = prefs.getString("token", null)
-        workspaceId = prefs.getInt("workspaceId", -1)
+        val allLocalLeads = getLocalLeads(requireContext())
+        val newLeads = allLocalLeads.filter { it.status.equals("new", ignoreCase = true) }
 
-        val leadRepository = LeadRepository()
-        val leadFactory = LeadViewModelFactory(leadRepository)
-        val leadViewModel = ViewModelProvider(this, leadFactory)[LeadViewModel::class.java]
+        binding.txtNewLeadCount.text = newLeads.size.toString()
 
-        if (!token.isNullOrEmpty() && workspaceId != -1) {
-            leadViewModel.fetchLeads(token, workspaceId)
+
+        if (newLeads.isEmpty()) {
+            binding.txtLeadNotAssign.visibility = View.VISIBLE
+            binding.leadsRecyclerView.visibility = View.GONE
+        } else {
+            binding.txtLeadNotAssign.visibility = View.GONE
+            binding.leadsRecyclerView.visibility = View.VISIBLE
         }
 
-        leadViewModel.leadsLiveData.observe(viewLifecycleOwner) { leads ->
+        setupHotLeads(newLeads)
 
-            val hotLeads = leads.filter {
-                it.status.equals("new", ignoreCase = true)
-            }
-            val newLeadCount = hotLeads.size
-            binding.txtNewLeadCount.text = newLeadCount.toString()
-            val adapter = HotLeadAdapter(hotLeads) { clickedLead ->
-
-                val prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
-
-                val token = prefs.getString("token", null)
-                val workspaceId = prefs.getInt("workspaceId", -1)
-                fullName = prefs.getString("fullName", "User").toString()
-                val workspaceName = prefs.getString("workspaceName", "")
-
-                val fragment = LeadsFragment()
-                fragment.arguments = Bundle().apply {
-                    putInt("leadId", clickedLead.id)
-                    putString("Token", token)
-                    putInt("WorkspaceId", workspaceId)
-                    putString("Name", fullName)
-                    putString("WorkspaceName", workspaceName)
-                }
-
-                loadFragment(fragment)
-
-            }
-
-            binding.leadsRecyclerView.adapter = adapter
-        }
-
-
-
-
-
-//        binding.task.setOnClickListener {
-//            (activity as MainActivity).openTasksFromHome()
+//        binding.leadsRecyclerView.adapter = HotLeadAdapter(newLeads) { clickedLead ->
 //            val prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
-//            val token = prefs.getString("token", null)
-//            val workspaceId = prefs.getInt("workspaceId", -1)
-//
-//            val fragment = TaskFragment()
-//            fragment.arguments = Bundle().apply {
-//                putString("token", token)
-//                putInt("workspaceId", workspaceId)
+//            val fragment = LeadsFragment().apply {
+//                arguments = Bundle().apply {
+//                    putInt("leadId", clickedLead.id)
+//                    putString("Token", prefs.getString("token", ""))
+//                    putInt("WorkspaceId", prefs.getInt("workspaceId", -1))
+//                    putString("Name", prefs.getString("fullName", "User"))
+//                    putString("WorkspaceName", prefs.getString("workspaceName", ""))
+//                }
 //            }
-//
-//            loadFragment(fragment)
-//
-//        }
-//        binding.callsCampaign.setOnClickListener {
-//            val prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
-//            val token = prefs.getString("token", null)
-//            val workspaceId = prefs.getInt("workspaceId", -1)
-//
-//            val fragment = CallsCampaignFragment()
-//            fragment.arguments = Bundle().apply {
-//                putString("token", token)
-//                putInt("workspaceId", workspaceId)
-//            }
-//
 //            loadFragment(fragment)
 //        }
 
-//        binding.addNewLead.setOnClickListener {
-//            val prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
-//            val token = prefs.getString("token", null)
-//            val workspaceId = prefs.getInt("workspaceId", -1)
-//
-//            val fragment = AddNewLeadFragment()
-//            fragment.arguments = Bundle().apply {
-//                putString("token", token)
-//                putInt("workspaceId", workspaceId)
-//            }
-//
-//            loadFragment(fragment)
-//        }
-
-
-//        binding.calls.setOnClickListener { loadFragment(CallsFragment()) }
-//        binding.report.setOnClickListener { loadFragment(ReportFragment()) }
 
         binding.taskRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        homeTaskAdapter = HomeTaskAdapter(emptyList()) { task ->
-            val fragment = TaskFragment()
-            val bundle = Bundle().apply {
-                putString("token", token)
-                putInt("workspaceId", workspaceId)
-                putInt("highlightTaskId", task.id)
+
+//        homeTaskAdapter = HomeTaskAdapter(emptyList()) { task ->
+//            val fragment = TaskFragment()
+//            val bundle = Bundle().apply {
+//                putInt("highlightTaskId", task.id)
+//            }
+//            fragment.arguments = bundle
+//            loadFragment(fragment)
+//        }
+//        binding.taskRecyclerView.adapter = homeTaskAdapter
+
+
+
+        val allLocalTasks = getLocalTasks(requireContext())
+
+        val today = LocalDate.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+
+        val todayPendingTasks = allLocalTasks.filter { task ->
+            try {
+                val taskDate = LocalDateTime.parse(task.dueAt, formatter).toLocalDate()
+                taskDate == today && task.status.equals("pending", ignoreCase = true)
+            } catch (e: Exception) {
+                false
             }
-            fragment.arguments = bundle
-            loadFragment(fragment)
-        }
-        binding.taskRecyclerView.adapter = homeTaskAdapter
+        }.sortedBy { it.dueAt }
 
-        val taskRepository = TaskRepository()
-        val taskFactory = TaskViewModelFactory(taskRepository)
-        taskViewModel = ViewModelProvider(this, taskFactory)[TaskViewModel::class.java]
+        binding.txtTodayPendingTaskCount.text = todayPendingTasks.size.toString()
 
-        if (!token.isNullOrEmpty() && workspaceId != -1) {
-            taskViewModel.fetchTasks(token, workspaceId)
+        //homeTaskAdapter.updateList(todayPendingTasks)
+        setupTodayTasks(todayPendingTasks)
+
+        if (todayPendingTasks.isEmpty()) {
+            binding.txtTaskNotAssign.visibility = View.VISIBLE
+            binding.taskRecyclerView.visibility = View.GONE
         } else {
-            Toast.makeText(requireContext(), "Invalid workspace/token", Toast.LENGTH_SHORT).show()
+            binding.txtTaskNotAssign.visibility = View.GONE
+            binding.taskRecyclerView.visibility = View.VISIBLE
         }
-        taskViewModel.taskResult.observe(viewLifecycleOwner) { tasks ->
-            val today = java.time.LocalDate.now()
-            val todayTasks = tasks.filter { task ->
-                try {
-                    task.dueAt?.let {
-                        val taskDate = java.time.ZonedDateTime.parse(it).toLocalDate()
-                        taskDate == today
-                    } ?: false
-                } catch (e: Exception) {
-                    false
-                }
-            }
-            homeTaskAdapter.updateList(todayTasks)
-            val pendingTodayCount = todayTasks.count {
-                it.status.equals("pending", ignoreCase = true)
-            }
-            if (todayTasks.isEmpty()) {
-                binding.txtTaskNotAssign.visibility = View.VISIBLE
-                binding.taskRecyclerView.visibility = View.GONE
-            } else {
-                binding.txtTaskNotAssign.visibility = View.GONE
-                binding.taskRecyclerView.visibility = View.VISIBLE
-            }
-
-            binding.txtTodayPendingTaskCount.text = pendingTodayCount.toString()
 
 
-        }
 
 
 
@@ -290,15 +142,276 @@ class HomeFragment : Fragment() {
             .commit()
     }
 
-    private fun getInitials(fullName: String): String {
-        return fullName.split(" ")
-            .filter { it.isNotEmpty() }
-            .joinToString("") { it.first().uppercase() }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun getLocalTasks(context: Context): List<TaskResponseItem> {
+
+        val prefs = context.getSharedPreferences("LocalTasks", Context.MODE_PRIVATE)
+        val json = prefs.getString("task_list", null) ?: return emptyList()
+
+        val type = object :
+            com.google.gson.reflect.TypeToken<List<LocalTask>>() {}.type
+
+        val localTasks: List<LocalTask> =
+            com.google.gson.Gson().fromJson(json, type)
+
+        return localTasks.map { it.toTaskResponseItem() }
+    }
+
+    private fun LocalTask.toTaskResponseItem(): TaskResponseItem {
+        return TaskResponseItem(
+            assignedEmployeeName = "Self",
+            assignedToEmployeeId = 0,
+            assignedToUserId = 0,
+            assignedUserName = "Self",
+            completedAt = "",
+            createdAt = "",
+            createdByName = "System",
+            createdByUserId = 0,
+            currentVersion = 1,
+            departmentId = "",
+            departmentName = "",
+            description = this.description,
+            dueAt = this.dueAt.toString(),
+            dueDate = this.dueAt.toString(),
+            estimatedHours = "0",
+            id = this.id,
+            isActive = true,
+            lastActivityAt = "",
+            leadId = 0,
+            leadName = this.leadName.toString(),
+            priority = this.priority.toString(),
+            projectId = 0,
+            projectName = "",
+            status = this.status.toString(),
+            taskType = this.taskType,
+            title = this.title,
+            totalLoggedMinutes = 0,
+            updatedAt = "",
+            workspaceId = 0
+        )
+    }
+    private fun getLocalLeads(context: Context): List<com.technfest.technfestcrm.model.LeadResponseItem> {
+        val localLeads = com.technfest.technfestcrm.localdatamanager.LocalLeadManager.getLeads(context)
+        return localLeads.mapIndexed { index, lead ->
+            com.technfest.technfestcrm.localdatamanager.LocalLeadMapper.toResponse(lead, index + 1)
+        }
+    }
+
+//    override fun onResume() {
+//        super.onResume()
+//
+//        // Update HomeFragment lead counts
+//        val allLocalLeads = getLocalLeads(requireContext())
+//        val newLeads = allLocalLeads.filter { it.status.equals("new", ignoreCase = true) }
+//        binding.txtNewLeadCount.text = newLeads.size.toString()
+//
+//        if (newLeads.isEmpty()) {
+//            binding.txtLeadNotAssign.visibility = View.VISIBLE
+//            binding.leadsRecyclerView.visibility = View.GONE
+//        } else {
+//            binding.txtLeadNotAssign.visibility = View.GONE
+//            binding.leadsRecyclerView.visibility = View.VISIBLE
+//        }
+//        binding.leadsRecyclerView.adapter = HotLeadAdapter(newLeads) { clickedLead ->
+//
+//        }
+//        setupHotLeads(newLeads)
+//
+//        (activity as? MainActivity)?.setupDrawer()
+//    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onResume() {
+        super.onResume()
+
+        // Refresh Leads
+        val allLocalLeads = getLocalLeads(requireContext())
+        val newLeads = allLocalLeads.filter { it.status.equals("new", true) }
+        binding.txtNewLeadCount.text = newLeads.size.toString()
+        setupHotLeads(newLeads)
+
+        // Refresh Today Tasks
+        val allLocalTasks = getLocalTasks(requireContext())
+        val today = LocalDate.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+
+        val todayPendingTasks = allLocalTasks.filter {
+            try {
+                LocalDateTime.parse(it.dueAt, formatter).toLocalDate() == today &&
+                        it.status.equals("pending", true)
+            } catch (e: Exception) {
+                false
+            }
+        }
+
+        setupTodayTasks(todayPendingTasks)
+
+        (activity as? MainActivity)?.setupDrawer()
+    }
+
+    private fun setupHotLeads(newLeads: List<LeadResponseItem>) {
+        binding.leadsRecyclerView.adapter = HotLeadAdapter(newLeads) { clickedLead ->
+            val prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
+            val fragment = LeadsFragment().apply {
+                arguments = Bundle().apply {
+                    putInt("leadId", clickedLead.id)
+                    putString("Token", prefs.getString("token", ""))
+                    putInt("WorkspaceId", prefs.getInt("workspaceId", -1))
+                    putString("Name", prefs.getString("fullName", "User"))
+                    putString("WorkspaceName", prefs.getString("workspaceName", ""))
+                }
+            }
+            loadFragment(fragment)
+        }
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun setupTodayTasks(todayPendingTasks: List<TaskResponseItem>) {
+
+        homeTaskAdapter = HomeTaskAdapter(todayPendingTasks) { task ->
+            val fragment = TaskFragment().apply {
+                arguments = Bundle().apply {
+                    putInt("highlightTaskId", task.id)
+                }
+            }
+            loadFragment(fragment)
+        }
+
+        binding.taskRecyclerView.adapter = homeTaskAdapter
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun checkAndShowSimSyncDialog() {
+        val prefs = requireContext().getSharedPreferences(PREF_SIM_SYNC, Context.MODE_PRIVATE)
+        val syncedNumbers = prefs.getStringSet(KEY_SYNCED_NUMBERS, emptySet())
+
+        // If no SIM synced → show dialog
+        if (syncedNumbers.isNullOrEmpty()) {
+            checkPermissionAndShowDialog()
+        }
+    }
+    private fun checkPermissionAndShowDialog() {
+        if (
+            ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_PHONE_STATE
+            ) != PackageManager.PERMISSION_GRANTED ||
+            ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_PHONE_NUMBERS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(
+                arrayOf(
+                    Manifest.permission.READ_PHONE_STATE,
+                    Manifest.permission.READ_PHONE_NUMBERS
+                ),
+                201
+            )
+        } else {
+            showSimSyncDialog()
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun showSimSyncDialog() {
+
+        val dialogView = layoutInflater.inflate(R.layout.alert_sim_sync, null)
+        val container = dialogView.findViewById<LinearLayout>(R.id.layoutSimContainer)
+        val btnSave = dialogView.findViewById<Button>(R.id.btnSave)
+        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        val subscriptionManager =
+            requireContext().getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
+
+        val subscriptions = subscriptionManager.activeSubscriptionInfoList
+        val selectedNumbers = mutableSetOf<String>()
+
+        container.removeAllViews()
+
+        if (subscriptions.isNullOrEmpty()) {
+            val tv = TextView(requireContext()).apply {
+                text = "No SIM cards detected"
+            }
+            container.addView(tv)
+        } else {
+            for (info in subscriptions) {
+
+                val simView = layoutInflater.inflate(
+                    R.layout.item_sim_sync,
+                    container,
+                    false
+                )
+
+                val txtName = simView.findViewById<TextView>(R.id.txtSimName)
+                val txtNumber = simView.findViewById<TextView>(R.id.txtSimNumber)
+                val switchSync = simView.findViewById<Switch>(R.id.switchSync)
+
+                val simName = info.displayName?.toString() ?: "SIM ${info.simSlotIndex + 1}"
+                val simNumber = info.number?.takeIf { it.isNotEmpty() } ?: "Unknown"
+
+                txtName.text = simName
+                txtNumber.text = simNumber
+
+                switchSync.setOnCheckedChangeListener { _, isChecked ->
+                    if (isChecked) {
+                        selectedNumbers.add(simNumber)
+                    } else {
+                        selectedNumbers.remove(simNumber)
+                    }
+                }
+
+                container.addView(simView)
+            }
+        }
+
+        btnSave.setOnClickListener {
+            if (selectedNumbers.isNotEmpty()) {
+                saveSyncedSims(selectedNumbers)
+                dialog.dismiss()
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "Please sync at least one SIM",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        btnCancel.setOnClickListener {
+            // User skipped → dialog will appear next time again
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+    private fun saveSyncedSims(numbers: Set<String>) {
+        val prefs = requireContext().getSharedPreferences(PREF_SIM_SYNC, Context.MODE_PRIVATE)
+        prefs.edit()
+            .putStringSet(KEY_SYNCED_NUMBERS, numbers)
+            .apply()
+    }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == 201 &&
+            grantResults.isNotEmpty() &&
+            grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+        ) {
+            showSimSyncDialog()
+        }
     }
 
 

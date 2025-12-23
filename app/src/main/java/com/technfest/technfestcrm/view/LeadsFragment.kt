@@ -1,32 +1,21 @@
 package com.technfest.technfestcrm.view
 
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.TextView
-import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.technfest.technfestcrm.R
 import com.technfest.technfestcrm.adapter.LeadAdapter
 import com.technfest.technfestcrm.databinding.FragmentLeadsBinding
+import com.technfest.technfestcrm.localdatamanager.LocalLeadManager
+import com.technfest.technfestcrm.localdatamanager.LocalLeadMapper
 import com.technfest.technfestcrm.model.LeadResponseItem
-import com.technfest.technfestcrm.network.RetrofitInstance
-import com.technfest.technfestcrm.repository.GetWorkspacesRepository
-import com.technfest.technfestcrm.repository.LeadRepository
-import com.technfest.technfestcrm.viewmodel.GetWorkspacesViewModel
-import com.technfest.technfestcrm.viewmodel.GetWorkspacesViewModelFactory
-import com.technfest.technfestcrm.viewmodel.LeadViewModel
-import com.technfest.technfestcrm.viewmodel.LeadViewModelFactory
-import java.util.Locale
 
 
 class LeadsFragment : Fragment() {
@@ -36,16 +25,13 @@ class LeadsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var leadAdapter: LeadAdapter
-    private lateinit var leadViewModel: LeadViewModel
-    private lateinit var workspaceViewModel: GetWorkspacesViewModel
+//    private lateinit var leadViewModel: LeadViewModel
+//    private lateinit var workspaceViewModel: GetWorkspacesViewModel
 
     private var fullLeadList = mutableListOf<LeadResponseItem>()
     private var leadList = mutableListOf<LeadResponseItem>()
     private fun String?.safeLower() = this?.trim()?.lowercase() ?: ""
-    private fun String?.safeString() = this ?: ""
-    fun Int?.safeInt(): Int {
-        return this ?: 0
-    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -60,120 +46,48 @@ class LeadsFragment : Fragment() {
         _binding = FragmentLeadsBinding.inflate(inflater, container, false)
         selectedLeadId = arguments?.getInt("leadId", -1) ?: -1
 
-        val fullName = arguments?.getString("Name")
-        val token = arguments?.getString("Token")
-        val workspaceId = arguments?.getInt("WorkspaceId", -1)
-        val workspaceNameFromBundle = arguments?.getString("WorkspaceName")
+//        val token = arguments?.getString("Token")
+//        val workspaceId = arguments?.getInt("WorkspaceId", -1)
 
-//        binding.userName.text = fullName
-//        binding.userInitialCircle.text = getInitials(fullName ?: "")
 
-        val wsRepo = GetWorkspacesRepository(RetrofitInstance.apiInterface)
-        workspaceViewModel = ViewModelProvider(
-            this,
-            GetWorkspacesViewModelFactory(wsRepo)
-        )[GetWorkspacesViewModel::class.java]
-        val leadRepo = LeadRepository()
-        leadViewModel = ViewModelProvider(
-            this,
-            LeadViewModelFactory(leadRepo)
-        )[LeadViewModel::class.java]
+//        val wsRepo = GetWorkspacesRepository(RetrofitInstance.apiInterface)
+//        workspaceViewModel = ViewModelProvider(
+//            this,
+//            GetWorkspacesViewModelFactory(wsRepo)
+//        )[GetWorkspacesViewModel::class.java]
+//        val leadRepo = LeadRepository()
+//        leadViewModel = ViewModelProvider(
+//            this,
+//            LeadViewModelFactory(leadRepo)
+//        )[LeadViewModel::class.java]
 
-//        if (!workspaceNameFromBundle.isNullOrEmpty()) {
-//          //  binding.toolbarTitle.text = workspaceNameFromBundle
+
+//        leadAdapter = LeadAdapter(leadList) { selectedLead ->
 //
-//        } else if (!token.isNullOrEmpty() && workspaceId != null && workspaceId != -1) {
+////            val tokenStr = token ?: ""
+////            val wsId = workspaceId ?: 0
+//            val ownerUserId = selectedLead.ownerUserId ?: 0
+//            val campaignId = selectedLead.campaignId ?:0
 //
-//            workspaceViewModel
-//                .fetchWorkspaces("Bearer $token")
-//                .observe(viewLifecycleOwner) { response ->
 //
-////                    if (response.isSuccessful) {
-////                        val workspace = response.body()?.find { it.id == workspaceId }
-////                        binding.toolbarTitle.text = workspace?.name ?: "Workspace"
-////                    } else {
-////                        binding.toolbarTitle.text = "Workspace"
-////                    }
-//                }
+//
+//            parentFragmentManager.beginTransaction()
+//                .replace(R.id.fragmentContainer, LeadDetailFragment())
+//                .addToBackStack(null)
+//                .commit()
 //        }
+
+
         leadAdapter = LeadAdapter(leadList) { selectedLead ->
 
-            val tokenStr = token ?: ""
-            val wsId = workspaceId ?: 0
-            val ownerUserId = selectedLead.ownerUserId ?: 0
-            val campaignId = selectedLead.campaignId ?:0
-
-            val detailFragment =
-                LeadDetailFragment.newInstance( selectedLead,
-                    tokenStr,
-                    wsId,
-                    selectedLead.campaignCategoryId ?: 0,
-                    ownerUserId ,
-                   campaignId)
-
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, detailFragment)
-                .addToBackStack(null)
-                .commit()
-        }
-
-        binding.leadRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.leadRecyclerView.adapter = leadAdapter
-
-        setupFilters()
-        updateSelected(binding.filterAll)
-
-
-        if (!token.isNullOrEmpty() && workspaceId != null && workspaceId != -1) {
-            leadViewModel.fetchLeads(token, workspaceId)
-        }
-
-        leadViewModel.leadsLiveData.observe(viewLifecycleOwner) { data ->
-
-            fullLeadList.clear()
-            fullLeadList.addAll(data)
-
-            leadList.clear()
-            leadList.addAll(data)
-            updateFilteredList(fullLeadList)
-            //ownerUserId
-            //campaignId
-            //campaincodeN-> campaignCategoryId
-
-
-            Log.d("LeadData", data.toString())
-
-
-            binding.txtCountLead.text = "Leads Count: ${data.size}"
-
-            if (selectedLeadId != -1) {
-                val position = fullLeadList.indexOfFirst { it.id == selectedLeadId }
-
-                if (position != -1) {
-                    binding.leadRecyclerView.post {
-                        binding.leadRecyclerView.scrollToPosition(position)
-                        leadAdapter.setSelectedLead(selectedLeadId)
-                    }
-                }
-            }
-            saveLeadCache(requireContext(), data)
-
-        }
-
-
-
-        binding.fabAddLead.setOnClickListener {
-            val prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
-            val token = prefs.getString("token", null)
-            val workspaceId = prefs.getInt("workspaceId", -1)
-            val userId = prefs.getInt("userId", 0)
-
-            val fragment = AddNewLeadFragment()
-            fragment.arguments = Bundle().apply {
-                putString("token", token)
-                putInt("workspaceId", workspaceId)
-
-            }
+            val fragment = LeadDetailFragment.newInstance(
+                lead = selectedLead,
+                token = "",          // local mode → empty
+                workspaceId = 0,
+                campaignCategoryId = 0,
+                ownerUserId = selectedLead.ownerUserId ?: 0,
+                campaignId = selectedLead.campaignId ?: 0
+            )
 
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainer, fragment)
@@ -182,30 +96,42 @@ class LeadsFragment : Fragment() {
         }
 
 
-//        binding.userInitialCircle.setOnClickListener {
-//            parentFragmentManager.beginTransaction()
-//                .replace(R.id.fragmentContainer, ProfileFragment())
-//                .addToBackStack(null)
-//                .commit()
-//        }
+        binding.leadRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.leadRecyclerView.adapter = leadAdapter
+        loadLocalLeads()
+
+        setupFilters()
+        updateSelected(binding.filterAll)
+
+        binding.fabAddLead.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, AddNewLeadFragment())
+                .addToBackStack(null)
+                .commit()
+        }
 
 
 
         return binding.root
     }
 
-//    override fun onResume() {
-//        super.onResume()
-//
-//        (activity as? MainActivity)?.setToolbar(
-//            title = "Leads",
-//            subtitle = "Today's summary & follow-ups"
-//        )
-//    }
-//    override fun onPause() {
-//        super.onPause()
-//        (activity as? MainActivity)?.setToolbar("Technfest Workspace", "Today's summary & follow-ups")
-//    }
+    override fun onResume() {
+        super.onResume()
+        loadLocalLeads()
+        if (selectedLeadId != -1) {
+            val position = fullLeadList.indexOfFirst { it.id == selectedLeadId }
+            if (position != -1) {
+                binding.leadRecyclerView.post {
+                    binding.leadRecyclerView.scrollToPosition(position)
+                    leadAdapter.setSelectedLead(selectedLeadId)
+                }
+            }
+        }
+
+
+
+
+    }
 
 
     override fun onDestroyView() {
@@ -213,12 +139,6 @@ class LeadsFragment : Fragment() {
         _binding = null
     }
 
-    private fun getInitials(name: String): String {
-        return name.split(" ")
-            .filter { it.isNotEmpty() }
-            .map { it[0].uppercaseChar() }
-            .joinToString("")
-    }
 
     private fun setupFilters() {
 
@@ -227,19 +147,6 @@ class LeadsFragment : Fragment() {
             updateSelected(binding.filterAll)
             updateFilteredList(fullLeadList)
         }
-
-//        binding.filterMyLead.setOnClickListener {
-//            updateSelected(binding.filterMyLead)
-//
-//            val prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
-//            val currentUserId = prefs.getInt("userId", -1)
-//
-//            val filtered = fullLeadList.filter {
-//                it.ownerUserId.safeInt() == currentUserId
-//            }
-//
-//            updateFilteredList(filtered)
-//        }
 
         binding.filterNew.setOnClickListener {
             updateSelected(binding.filterNew)
@@ -261,7 +168,15 @@ class LeadsFragment : Fragment() {
 
             updateFilteredList(filtered)
         }
+binding.filterMyLead.setOnClickListener {
+    updateSelected(binding.filterMyLead)
 
+    val filtered = fullLeadList.filter {
+        it.status?.equals("Contacted") == true
+    }
+
+    updateFilteredList(filtered)
+}
         // High Priority
         binding.filterHigh.setOnClickListener {
             updateSelected(binding.filterHigh)
@@ -385,6 +300,31 @@ class LeadsFragment : Fragment() {
             val digits = number.filter { it.isDigit() }
             if (digits.length > 10) digits.takeLast(10) else digits
         }
+    }
+    private fun getEditedLeadName(context: Context, number: String?): String? {
+        if (number.isNullOrBlank()) return null
+        val e164 = normalizeForCompare(number)
+        val prefs = context.getSharedPreferences("EditedLeadNames", Context.MODE_PRIVATE)
+        return prefs.getString(e164, null)
+    }
+
+    private fun loadLocalLeads() {
+
+        val localLeads = LocalLeadManager.getLeads(requireContext())
+
+        fullLeadList.clear()
+
+        localLeads.forEachIndexed { index, leadRequest ->
+            val responseItem =
+                LocalLeadMapper.toResponse(leadRequest, index + 1)
+            fullLeadList.add(responseItem)
+        }
+
+        leadList.clear()
+        leadList.addAll(fullLeadList)
+        leadAdapter.notifyDataSetChanged()
+
+        binding.txtCountLead.text = "Leads Count: ${fullLeadList.size}"
     }
 
 
