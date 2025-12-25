@@ -68,52 +68,13 @@ class LeadDetailFragment : Fragment() {
         registerForActivityResult(
             androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
         ) { granted ->
-        if (granted) {
-
-            val synced = SimSyncStore.getSynced(requireContext())
-            if (synced.isEmpty()) {
-                Toast.makeText(requireContext(), "Please sync number first", Toast.LENGTH_LONG).show()
-                return@registerForActivityResult
-            }
-
-            prepareLeadMetaForService()
-
-            val meta = requireContext().getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
-
-            if (synced.size == 1) {
-                val pick = synced[0]
-                meta.edit()
-                    .putInt("selectedSubId", pick.subId)
-                    .putString("selectedSimNumber", pick.number ?: "")
-                    .apply()
-
-                placeCallUsingSimSubId(leadNumber, pick.subId)
+            if (granted) {
+                prepareLeadMetaForService()
+                startCallWithSyncedSimChooser()
             } else {
-                val items = synced.map {
-                    val num = it.number ?: "Unknown"
-                    "${it.displayName} ($num)"
-                }.toTypedArray()
-
-                AlertDialog.Builder(requireContext())
-                    .setTitle("Call from which SIM?")
-                    .setItems(items) { _, which ->
-                        val pick = synced[which]
-                        meta.edit()
-                            .putInt("selectedSubId", pick.subId)
-                            .putString("selectedSimNumber", pick.number ?: "")
-                            .apply()
-
-                        placeCallUsingSimSubId(leadNumber, pick.subId)
-                    }
-                    .setCancelable(true)
-                    .show()
+                Toast.makeText(requireContext(), "Call permission denied", Toast.LENGTH_SHORT).show()
             }
-
-        } else {
-            Toast.makeText(requireContext(), "Call permission denied", Toast.LENGTH_SHORT).show()
         }
-    }
-
 
     private lateinit var binding: FragmentLeadDetailBinding
     private lateinit var telephonyManager: TelephonyManager
@@ -482,23 +443,6 @@ class LeadDetailFragment : Fragment() {
                 .create()
                 .show()
         }
-
-
-
-//        binding.rvRecentActivity.layoutManager =
-//            LinearLayoutManager(requireContext())
-
-//        feedbackAdapter = RecentFeedbackAdapter(emptyList())
-//        binding.rvRecentActivity.adapter = feedbackAdapter
-//
-//        val feedbackList = getFeedbackForLead(leadId)
-//
-//        if (feedbackList.isNotEmpty()) {
-//            feedbackAdapter.update(feedbackList)
-//            binding.rvRecentActivity.visibility = View.VISIBLE
-//        } else {
-//            binding.rvRecentActivity.visibility = View.GONE
-//        }
 
         binding.rvRecentActivity.layoutManager = LinearLayoutManager(requireContext())
         activityAdapter = RecentActivityAdapter(emptyList())
