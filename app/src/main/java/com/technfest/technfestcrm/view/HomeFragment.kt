@@ -201,28 +201,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-//    override fun onResume() {
-//        super.onResume()
-//
-//        // Update HomeFragment lead counts
-//        val allLocalLeads = getLocalLeads(requireContext())
-//        val newLeads = allLocalLeads.filter { it.status.equals("new", ignoreCase = true) }
-//        binding.txtNewLeadCount.text = newLeads.size.toString()
-//
-//        if (newLeads.isEmpty()) {
-//            binding.txtLeadNotAssign.visibility = View.VISIBLE
-//            binding.leadsRecyclerView.visibility = View.GONE
-//        } else {
-//            binding.txtLeadNotAssign.visibility = View.GONE
-//            binding.leadsRecyclerView.visibility = View.VISIBLE
-//        }
-//        binding.leadsRecyclerView.adapter = HotLeadAdapter(newLeads) { clickedLead ->
-//
-//        }
-//        setupHotLeads(newLeads)
-//
-//        (activity as? MainActivity)?.setupDrawer()
-//    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
@@ -283,16 +261,23 @@ class HomeFragment : Fragment() {
         binding.taskRecyclerView.adapter = homeTaskAdapter
     }
 
+//    @RequiresApi(Build.VERSION_CODES.O)
+//    private fun checkAndShowSimSyncDialog() {
+//        val prefs = requireContext().getSharedPreferences(PREF_SIM_SYNC, Context.MODE_PRIVATE)
+//        val syncedNumbers = prefs.getStringSet(KEY_SYNCED_NUMBERS, emptySet())
+//
+//        // If no SIM synced → show dialog
+//        if (syncedNumbers.isNullOrEmpty()) {
+//            checkPermissionAndShowDialog()
+//        }
+//    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun checkAndShowSimSyncDialog() {
-        val prefs = requireContext().getSharedPreferences(PREF_SIM_SYNC, Context.MODE_PRIVATE)
-        val syncedNumbers = prefs.getStringSet(KEY_SYNCED_NUMBERS, emptySet())
-
-        // If no SIM synced → show dialog
-        if (syncedNumbers.isNullOrEmpty()) {
-            checkPermissionAndShowDialog()
-        }
+        val synced = com.technfest.technfestcrm.utils.SimSyncStore.getSynced(requireContext())
+        if (synced.isEmpty()) checkPermissionAndShowDialog()
     }
+
     private fun checkPermissionAndShowDialog() {
         if (
             ActivityCompat.checkSelfPermission(
@@ -316,6 +301,64 @@ class HomeFragment : Fragment() {
         }
     }
 
+//    @SuppressLint("MissingPermission")
+//    private fun showSimSyncDialog() {
+//
+//        val dialogView = layoutInflater.inflate(R.layout.alert_sim_sync, null)
+//        val container = dialogView.findViewById<LinearLayout>(R.id.layoutSimContainer)
+//        val btnSave = dialogView.findViewById<Button>(R.id.btnSave)
+//        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
+//
+//        val dialog = AlertDialog.Builder(requireContext())
+//            .setView(dialogView)
+//            .setCancelable(false)
+//            .create()
+//
+//        val subscriptionManager =
+//            requireContext().getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
+//
+//        val subscriptions = subscriptionManager.activeSubscriptionInfoList
+//        val selectedNumbers = mutableSetOf<String>()
+//
+//        container.removeAllViews()
+//
+//        if (subscriptions.isNullOrEmpty()) {
+//            val tv = TextView(requireContext()).apply {
+//                text = "No SIM cards detected"
+//            }
+//            container.addView(tv)
+//        } else {
+//            for (info in subscriptions) {
+//
+//                val simView = layoutInflater.inflate(
+//                    R.layout.item_sim_sync,
+//                    container,
+//                    false
+//                )
+//
+//                val txtName = simView.findViewById<TextView>(R.id.txtSimName)
+//                val txtNumber = simView.findViewById<TextView>(R.id.txtSimNumber)
+//                val switchSync = simView.findViewById<Switch>(R.id.switchSync)
+//
+//                val simName = info.displayName?.toString() ?: "SIM ${info.simSlotIndex + 1}"
+//                val simNumber = info.number?.takeIf { it.isNotEmpty() } ?: "Unknown"
+//
+//                txtName.text = simName
+//                txtNumber.text = simNumber
+//
+//                switchSync.setOnCheckedChangeListener { _, isChecked ->
+//                    if (isChecked) {
+//                        selectedNumbers.add(simNumber)
+//                    } else {
+//                        selectedNumbers.remove(simNumber)
+//                    }
+//                }
+//
+//                container.addView(simView)
+//            }
+//        }
+
+
     @SuppressLint("MissingPermission")
     private fun showSimSyncDialog() {
 
@@ -333,86 +376,122 @@ class HomeFragment : Fragment() {
             requireContext().getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
 
         val subscriptions = subscriptionManager.activeSubscriptionInfoList
-        val selectedNumbers = mutableSetOf<String>()
+        val newList = mutableListOf<com.technfest.technfestcrm.utils.SimSyncStore.SyncedSim>()
 
         container.removeAllViews()
 
         if (subscriptions.isNullOrEmpty()) {
-            val tv = TextView(requireContext()).apply {
-                text = "No SIM cards detected"
-            }
+            val tv = TextView(requireContext()).apply { text = "No SIM cards detected" }
             container.addView(tv)
         } else {
+
+            // load old saved list (so switches show correctly)
+            val saved = com.technfest.technfestcrm.utils.SimSyncStore.getAll(requireContext())
+
             for (info in subscriptions) {
 
-                val simView = layoutInflater.inflate(
-                    R.layout.item_sim_sync,
-                    container,
-                    false
-                )
+                val simView = layoutInflater.inflate(R.layout.item_sim_sync, container, false)
 
                 val txtName = simView.findViewById<TextView>(R.id.txtSimName)
                 val txtNumber = simView.findViewById<TextView>(R.id.txtSimNumber)
                 val switchSync = simView.findViewById<Switch>(R.id.switchSync)
 
                 val simName = info.displayName?.toString() ?: "SIM ${info.simSlotIndex + 1}"
-                val simNumber = info.number?.takeIf { it.isNotEmpty() } ?: "Unknown"
+                val simNumber = info.number?.takeIf { it.isNotBlank() } // can be null
+                val subId = info.subscriptionId
+                val slot = info.simSlotIndex
 
                 txtName.text = simName
-                txtNumber.text = simNumber
+                txtNumber.text = simNumber ?: "Unknown"
+
+                val alreadySynced = saved.any { it.subId == subId && it.isSynced }
+                switchSync.isChecked = alreadySynced
 
                 switchSync.setOnCheckedChangeListener { _, isChecked ->
-                    if (isChecked) {
-                        selectedNumbers.add(simNumber)
-                    } else {
-                        selectedNumbers.remove(simNumber)
-                    }
+                    // we will rebuild list on Save
                 }
 
                 container.addView(simView)
+
+                // store initial (we’ll update isSynced on save by reading switches)
+                newList.add(
+                    com.technfest.technfestcrm.utils.SimSyncStore.SyncedSim(
+                        subId = subId,
+                        slotIndex = slot,
+                        displayName = simName,
+                        number = simNumber,
+                        isSynced = alreadySynced
+                    )
+                )
             }
         }
 
         btnSave.setOnClickListener {
-            if (selectedNumbers.isNotEmpty()) {
-                saveSyncedSims(selectedNumbers)
-                dialog.dismiss()
-            } else {
-                Toast.makeText(
-                    requireContext(),
-                    "Please sync at least one SIM",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
+            // rebuild from UI switches
+            val finalList = mutableListOf<com.technfest.technfestcrm.utils.SimSyncStore.SyncedSim>()
+            for (i in 0 until container.childCount) {
+                val row = container.getChildAt(i)
+                val sw = row.findViewById<Switch>(R.id.switchSync) ?: continue
 
-        btnCancel.setOnClickListener {
-            // User skipped → dialog will appear next time again
+                val sim = newList.getOrNull(i) ?: continue
+                finalList.add(sim.copy(isSynced = sw.isChecked))
+            }
+
+            val syncedCount = finalList.count { it.isSynced }
+            if (syncedCount == 0) {
+                Toast.makeText(requireContext(), "Please sync at least one SIM", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            com.technfest.technfestcrm.utils.SimSyncStore.saveAll(requireContext(), finalList)
             dialog.dismiss()
         }
 
+        btnCancel.setOnClickListener { dialog.dismiss() }
+
         dialog.show()
     }
-    private fun saveSyncedSims(numbers: Set<String>) {
-        val prefs = requireContext().getSharedPreferences(PREF_SIM_SYNC, Context.MODE_PRIVATE)
-        prefs.edit()
-            .putStringSet(KEY_SYNCED_NUMBERS, numbers)
-            .apply()
-    }
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        if (requestCode == 201 &&
-            grantResults.isNotEmpty() &&
-            grantResults.all { it == PackageManager.PERMISSION_GRANTED }
-        ) {
-            showSimSyncDialog()
-        }
-    }
+//    btnSave.setOnClickListener {
+//            if (selectedNumbers.isNotEmpty()) {
+//                saveSyncedSims(selectedNumbers)
+//                dialog.dismiss()
+//            } else {
+//                Toast.makeText(
+//                    requireContext(),
+//                    "Please sync at least one SIM",
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//            }
+//        }
+//
+//        btnCancel.setOnClickListener {
+//            // User skipped → dialog will appear next time again
+//            dialog.dismiss()
+//        }
+//
+//        dialog.show()
+//    }
+//    private fun saveSyncedSims(numbers: Set<String>) {
+//        val prefs = requireContext().getSharedPreferences(PREF_SIM_SYNC, Context.MODE_PRIVATE)
+//        prefs.edit()
+//            .putStringSet(KEY_SYNCED_NUMBERS, numbers)
+//            .apply()
+//    }
+//    override fun onRequestPermissionsResult(
+//        requestCode: Int,
+//        permissions: Array<out String>,
+//        grantResults: IntArray
+//    ) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//
+//        if (requestCode == 201 &&
+//            grantResults.isNotEmpty() &&
+//            grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+//        ) {
+//            showSimSyncDialog()
+//        }
+//    }
 
 
 }
