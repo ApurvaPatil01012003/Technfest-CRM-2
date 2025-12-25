@@ -67,18 +67,18 @@ class SimFragment : Fragment() {
 
         Log.d("SIM FRag","$simName")
         Log.d("SIM FRag","$simNumber")
-        val allCalls = listOf(
-            Calls("Abc", "Outgoing", "0909090909", "Today", "11:00 AM", "3 min", "User 1", "1234567890", "Lead Linked", "Note A", "A"),
-            Calls("Pqr", "Incoming", "0808080808", "Yesterday", "10:00 AM", "2 min", "User 2", "1234567890", "Lead Linked", "Note B", "P"),
-            Calls("Xyz", "Missed", "0707070707", "Today", "09:00 AM", "0 min", "User 3", "1234567890", "Lead Linked", "Note C", "X"),
-            // Add more calls here…
-        )
+//        val allCalls = listOf(
+////            Calls("Abc", "Outgoing", "0909090909", "Today", "11:00 AM", "3 min", "User 1", "1234567890", "Lead Linked", "Note A", "A"),
+////            Calls("Pqr", "Incoming", "0808080808", "Yesterday", "10:00 AM", "2 min", "User 2", "1234567890", "Lead Linked", "Note B", "P"),
+////            Calls("Xyz", "Missed", "0707070707", "Today", "09:00 AM", "0 min", "User 3", "1234567890", "Lead Linked", "Note C", "X"),
+//            // Add more calls here…
+//        )
 
-        val recentCalls = allCalls.take(10)
+      //  val recentCalls = allCalls.take(10)
 
         // 🔹 Setup RecyclerView
         binding.callRecyclerview.layoutManager = LinearLayoutManager(requireContext())
-        binding.callRecyclerview.adapter = CallsAdapter(recentCalls)
+     //   binding.callRecyclerview.adapter = CallsAdapter(recentCalls)
 
         return binding.root
     }

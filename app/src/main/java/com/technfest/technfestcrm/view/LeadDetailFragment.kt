@@ -61,6 +61,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.technfest.technfestcrm.utils.SimSyncStore
 import com.technfest.technfestcrm.model.RecentCallItem
+import androidx.core.content.edit
+import com.technfest.technfestcrm.localdatamanager.LocalLeadMapper
 
 
 class LeadDetailFragment : Fragment() {
@@ -105,50 +107,29 @@ class LeadDetailFragment : Fragment() {
         userId = arguments?.getInt("ownerUserId") ?: 0
         campaignId = arguments?.getInt("campaignId") ?: 0
 
+        val localLead = getLocalLeadResponse()
+        val args = arguments
+
+
         telephonyManager =
             requireContext().getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
 
         fetchCategories()
-//        binding.btnCall.setOnClickListener {
-//
-//            // Overlay permission check (your existing)
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-//                !Settings.canDrawOverlays(requireContext())
-//            ) {
-//                val intent = Intent(
-//                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-//                    Uri.parse("package:${requireContext().packageName}")
-//                )
-//                startActivity(intent)
-//                Toast.makeText(requireContext(), "Allow overlay permission to show call popup", Toast.LENGTH_LONG).show()
-//                return@setOnClickListener
-//            }
-//
-//            // ✅ CALL_PHONE runtime permission check
-//            val hasCallPermission =
-//                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CALL_PHONE) ==
-//                        android.content.pm.PackageManager.PERMISSION_GRANTED
-//
-//            if (!hasCallPermission) {
-//                callPhonePermissionLauncher.launch(Manifest.permission.CALL_PHONE)
-//                return@setOnClickListener
-//            }
-//
-//            // ✅ Now safe
-//            prepareLeadMetaForService()
-//            startCallWithSyncedSimChooser()
-//        }
-
 
         binding.btnCall.setOnClickListener {
 
-            // 1) Overlay permission (your existing)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                !Settings.canDrawOverlays(requireContext())
-            ) {
+            // 0) Validate lead number
+            val phone = leadNumber.trim()
+            if (phone.isBlank() || phone.equals("N/A", true) || phone.length < 8) {
+                Toast.makeText(requireContext(), "Invalid lead number", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
+            // 1) Overlay permission
+            if (true && !Settings.canDrawOverlays(requireContext())) {
                 val intent = Intent(
                     Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:${requireContext().packageName}")
+                    "package:${requireContext().packageName}".toUri()
                 )
                 startActivity(intent)
                 Toast.makeText(requireContext(), "Allow overlay permission to show call popup", Toast.LENGTH_LONG).show()
@@ -165,20 +146,21 @@ class LeadDetailFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            // 3) ✅ Check synced SIMs BEFORE calling
+            // 3) Get synced sims (ONLY from SimSyncStore)
             val synced = SimSyncStore.getSynced(requireContext())
 
+            // Rule 1: If 0 synced => block
             if (synced.isEmpty()) {
-                Toast.makeText(requireContext(), "Please sync number first", Toast.LENGTH_LONG).show()
-                return@setOnClickListener // ✅ STOP here, don't call
+                Toast.makeText(requireContext(), "Please sync at least one SIM first", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
             }
 
-            // 4) Prepare lead meta for service (leadId/name/campaign etc)
+            // 4) Save lead meta (your existing)
             prepareLeadMetaForService()
 
             val meta = requireContext().getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
 
-            // 5) 1 SIM synced -> call directly
+            // Rule 2: If 1 synced => auto call from that SIM
             if (synced.size == 1) {
                 val pick = synced[0]
                 meta.edit()
@@ -186,11 +168,11 @@ class LeadDetailFragment : Fragment() {
                     .putString("selectedSimNumber", pick.number ?: "")
                     .apply()
 
-                placeCallUsingSimSubId(leadNumber, pick.subId)
+                placeCallUsingSimSubId(phone, pick.subId)
                 return@setOnClickListener
             }
 
-            // 6) Multiple SIMs -> ask user
+            // Rule 3: If 2+ synced => show chooser
             val items = synced.map {
                 val num = it.number ?: "Unknown"
                 "${it.displayName} ($num)"
@@ -205,11 +187,12 @@ class LeadDetailFragment : Fragment() {
                         .putString("selectedSimNumber", pick.number ?: "")
                         .apply()
 
-                    placeCallUsingSimSubId(leadNumber, pick.subId)
+                    placeCallUsingSimSubId(phone, pick.subId)
                 }
                 .setCancelable(true)
                 .show()
         }
+
 
         binding.btnMarkCompleted.setOnClickListener {
             val dialogView = layoutInflater.inflate(R.layout.alert_mark_completed, null)
@@ -406,35 +389,86 @@ class LeadDetailFragment : Fragment() {
 
 
 
-        val args = arguments
-        binding.txtName.text = args.getSafeString("name")
-        binding.txtCompanyName.text = args.getSafeString("company")
-        binding.txtLeadLocation.text = args.getSafeString("location")
-        binding.txtLeadNumber.text = args.getSafeString("mobile")
-        binding.txtLeadEmail.text = args.getSafeString("email")
-        binding.txtLeadStatus.text = args.getSafeString("status")
-        binding.txtSource.text = args.getSafeString("source")
-        binding.txtStage.text = args.getSafeString("stage")
-        binding.txtPriority.text = args.getSafeString("priority")
-        binding.txtCampaignName.text = args.getSafeString("campaignName")
-        binding.txtLeadRequirement.text = args.getSafeString("leadRequirement")
-
-        val leadFromLocal: LeadRequest? = if (leadNumber.isNotBlank()) {
-            LocalLeadManager.getLeads(requireContext()).find { it.mobile == leadNumber }
-        } else null
+        //val args = arguments
+//        binding.txtName.text = args.getSafeString("name")
+//        binding.txtCompanyName.text = args.getSafeString("company")
+//        binding.txtLeadLocation.text = args.getSafeString("location")
+//        binding.txtLeadNumber.text = args.getSafeString("mobile")
+//        binding.txtLeadEmail.text = args.getSafeString("email")
+//        binding.txtLeadStatus.text = args.getSafeString("status")
+//        binding.txtSource.text = args.getSafeString("source")
+//        binding.txtStage.text = args.getSafeString("stage")
+//        binding.txtPriority.text = args.getSafeString("priority")
+//        binding.txtCampaignName.text = args.getSafeString("campaignName")
+//        binding.txtLeadRequirement.text = args.getSafeString("leadRequirement")
 
 
-        val followUpDate = leadFromLocal?.nextFollowupAt ?: args.getSafeString("nextFollowupAt")
-        binding.txtScheduledFollowUp.text = followUpDate
-        binding.txtFllowUpStatus.text =
-            if (!followUpDate.isNullOrBlank() && followUpDate != "N/A") "Scheduled" else "Not Scheduled"
+
+//        val leadFromLocal: LeadRequest? = if (leadNumber.isNotBlank()) {
+//            LocalLeadManager.getLeads(requireContext()).find { it.mobile == leadNumber }
+//        } else null
+//
+//
+//        val followUpDate = leadFromLocal?.nextFollowupAt ?: args.getSafeString("nextFollowupAt")
+//        binding.txtScheduledFollowUp.text = followUpDate
+//        binding.txtFllowUpStatus.text =
+//            if (!followUpDate.isNullOrBlank() && followUpDate != "N/A") "Scheduled" else "Not Scheduled"
+//
+//
+//        binding.txtOwnerName.text = args.getSafeString("ownerName")
+//        binding.txtTeam.text = args.getSafeString("teamName")
+//        binding.txtNote.text = args.getSafeString("note")
 
 
-        binding.txtOwnerName.text = args.getSafeString("ownerName")
-        binding.txtTeam.text = args.getSafeString("teamName")
-        binding.txtNote.text = args.getSafeString("note")
+
+       // binding.txtName.text = (args.getArgOrNull("name") ?: localLead?.fullName).orNA()
+
+        val editedName = com.technfest.technfestcrm.utils.EditedLeadNameStore.get(requireContext(), leadNumber)
+
+        binding.txtName.text = (editedName ?: args.getArgOrNull("name") ?: localLead?.fullName).orNA()
+
+        binding.txtLeadNumber.text = (args.getArgOrNull("mobile") ?: localLead?.mobile).orNA()
+
+        binding.txtCompanyName.text =
+            args.getArgOrNull("company") ?: localLead?.company.asTextOrNA()
+        binding.txtLeadLocation.text =
+            args.getArgOrNull("location") ?: localLead?.location.asTextOrNA()
+        binding.txtLeadEmail.text = (args.getArgOrNull("email") ?: localLead?.email).orNA()
+
+        binding.txtLeadStatus.text = (args.getArgOrNull("status") ?: localLead?.status).orNA()
+        binding.txtStage.text = (args.getArgOrNull("stage") ?: localLead?.stage?.toString()).orNA()
+        binding.txtPriority.text = (args.getArgOrNull("priority") ?: localLead?.priority).orNA()
+
+        binding.txtStage.text =
+            args.getArgOrNull("stage") ?: localLead?.stage.asTextOrNA()
+        binding.txtCampaignName.text = (args.getArgOrNull("campaignName") ?: localLead?.campaignName).orNA()
+        binding.txtLeadRequirement.text =
+            args.getArgOrNull("leadRequirement") ?: localLead?.leadRequirement.asTextOrNA()
+
+
+
+        val followUpRaw = localLead?.nextFollowupAt?.takeIf { it.isValidFollowup() }
+            ?: args.getArgOrNull("nextFollowupAt")
+
+        val followUp = followUpRaw?.takeIf { it.isValidFollowup() }
+
+        binding.txtScheduledFollowUp.text = followUp ?: "N/A"
+        binding.txtFllowUpStatus.text = if (followUp != null) "Scheduled" else "Not Scheduled"
+
+        binding.txtOwnerName.text = (args.getArgOrNull("ownerName") ?: localLead?.ownerName?.toString()).orNA()
+        binding.txtTeam.text =
+            args.getArgOrNull("teamName") ?: localLead?.teamName.asTextOrNA()
+
+// note (if you store note in local lead)
+        binding.txtNote.text = (args.getArgOrNull("note") ?: localLead?.notes?.toString()).orNA()
+
+        Log.d("LeadDetail",
+            "argsLeadId=$leadId argsMobile=$leadNumber " +
+                    "localLeadId=${localLead?.id} localEmail=${localLead?.email} localTeam=${localLead?.teamName}"
+        )
 
         val leadName = args?.getString("name") ?: "N/A"
+
         binding.btnZoom.setOnClickListener {
             val dialogView = layoutInflater.inflate(R.layout.alert_zoom_task, null)
             AlertDialog.Builder(requireContext())
@@ -543,17 +577,21 @@ class LeadDetailFragment : Fragment() {
     private fun prepareLeadMetaForService() {
         val prefs = requireContext().getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
 
+        val edited = com.technfest.technfestcrm.utils.EditedLeadNameStore.get(requireContext(), leadNumber)
+        val finalName = edited ?: leadName
+
         val e164 = normalizeToE164(requireContext(), leadNumber)
 
         prefs.edit()
             .putInt("leadId", leadId)
-            .putString("leadName", leadName)
+            .putString("leadName", finalName)
             .putInt("campaignId", campaignId)
             .putInt("campaignCategoryId", arguments?.getInt("campaignCategoryId") ?: 0)
             .putString("customerNumber", leadNumber)
             .putString("customerNumberE164", e164)
             .apply()
     }
+
     private fun normalizeToE164(context: Context, raw: String): String {
         if (raw.isBlank()) return ""
         return try {
@@ -627,18 +665,20 @@ class LeadDetailFragment : Fragment() {
         val meta = requireContext().getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
 
         if (synced.size == 1) {
-            meta.edit()
-                .putInt("selectedSubId", synced[0].subId)
-                .putString("selectedSimNumber", synced[0].number ?: "")
-                .apply()
+            meta.edit() {
+                putInt("selectedSubId", synced[0].subId)
+                    .putString("selectedSimNumber", synced[0].number ?: "")
+            }
 
-            placeCallUsingSimSubId(leadNumber, synced[0].subId)
+            placeCallUsingSimSubId(leadNumber.trim(), synced[0].subId)
+
             return
         }
 
         val items = synced.map {
             val num = it.number ?: "Unknown"
             "${it.displayName} ($num)"
+
         }.toTypedArray()
 
         AlertDialog.Builder(requireContext())
@@ -694,14 +734,21 @@ class LeadDetailFragment : Fragment() {
             return
         }
 
+        // ✅ Extra safety: if user has no synced sims, block here also
+        val synced = SimSyncStore.getSynced(requireContext())
+        if (synced.isEmpty()) {
+            Toast.makeText(requireContext(), "Please sync at least one SIM first", Toast.LENGTH_LONG).show()
+            return
+        }
+
         val telecom = requireContext().getSystemService(Context.TELECOM_SERVICE) as TelecomManager
         val uri = Uri.fromParts("tel", phone, null)
 
         val handle = resolvePhoneAccountHandleForSubId(requireContext(), subId)
 
+        // ✅ STRICT: if handle not found, don't call
         if (handle == null) {
-            Toast.makeText(requireContext(), "SIM mapping failed, calling default SIM", Toast.LENGTH_SHORT).show()
-            startActivity(Intent(Intent.ACTION_CALL, uri))
+            Toast.makeText(requireContext(), "SIM mapping failed. Please re-sync SIM.", Toast.LENGTH_LONG).show()
             return
         }
 
@@ -711,6 +758,7 @@ class LeadDetailFragment : Fragment() {
 
         telecom.placeCall(uri, extras)
     }
+
 
 
     @RequiresPermission(Manifest.permission.READ_PHONE_STATE)
@@ -826,12 +874,75 @@ class LeadDetailFragment : Fragment() {
                 ContextCompat.RECEIVER_NOT_EXPORTED
             )
         }
+
+        val filter1 = IntentFilter("com.technfest.technfestcrm.CALL_ACTIVITY_UPDATED")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireContext().registerReceiver(activityUpdateReceiver, filter1, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            ContextCompat.registerReceiver(requireContext(), activityUpdateReceiver, filter1, ContextCompat.RECEIVER_NOT_EXPORTED)
+        }
+
+        // ✅ NEW: lead name update receiver
+        val filter2 = IntentFilter("com.technfest.technfestcrm.LEAD_NAME_UPDATED")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireContext().registerReceiver(nameUpdateReceiver, filter2, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            ContextCompat.registerReceiver(requireContext(), nameUpdateReceiver, filter2, ContextCompat.RECEIVER_NOT_EXPORTED)
+        }
     }
 
 
     override fun onStop() {
         super.onStop()
         try { requireContext().unregisterReceiver(activityUpdateReceiver) } catch (_: Exception) {}
+        try { requireContext().unregisterReceiver(nameUpdateReceiver) } catch (_: Exception) {}
+    }
+
+    private fun String?.orNA(): String = if (this.isNullOrBlank()) "N/A" else this
+
+    private fun Bundle?.getArgOrNull(key: String): String? {
+        val v = this?.getString(key)
+        return if (v.isNullOrBlank() || v.equals("N/A", true)) null else v
+    }
+
+    private fun getLocalLeadResponse(): LeadResponseItem? {
+        val locals = LocalLeadManager.getLeads(requireContext())
+        if (locals.isEmpty()) return null
+
+        val normalizedArg = normalizeToE164(requireContext(), leadNumber)
+
+        // ✅ ALWAYS prefer number match (because argsLeadId is not local id)
+        val byNumber = locals.firstOrNull { req ->
+            normalizeToE164(requireContext(), req.mobile ?: "") == normalizedArg
+        }
+
+        // optional fallback by id if it matches
+        val byId = locals.firstOrNull { it.id == leadId }
+
+        val picked = byNumber ?: byId ?: return null
+
+        return LocalLeadMapper.toResponse(picked, picked.id)
+    }
+
+
+    private fun String?.isValidFollowup(): Boolean {
+        if (this.isNullOrBlank()) return false
+        val v = this.trim()
+        return v.length >= 16 && !v.equals("N/A", true)
+    }
+
+    private fun Any?.asTextOrNA(): String {
+        val s = this?.toString()?.trim()
+        return if (s.isNullOrBlank() || s.equals("null", true) || s.equals("N/A", true)) "N/A" else s
+    }
+    private val nameUpdateReceiver = object : android.content.BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val editedName = com.technfest.technfestcrm.utils.EditedLeadNameStore.get(requireContext(), leadNumber)
+            if (!editedName.isNullOrBlank()) {
+                binding.txtName.text = editedName
+                leadName = editedName
+            }
+        }
     }
 
 

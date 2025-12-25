@@ -59,6 +59,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/txtTotalCalls"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="128"
@@ -96,6 +97,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/txtIncomingCalls"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="56"
@@ -133,6 +135,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/txtOutgoingCalls"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="72"
@@ -170,6 +173,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/txtMissedCalls"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="14"

@@ -1,6 +1,9 @@
 package com.technfest.technfestcrm.view
 
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -315,10 +318,16 @@ binding.filterMyLead.setOnClickListener {
         fullLeadList.clear()
 
         localLeads.forEachIndexed { index, leadRequest ->
-            val responseItem =
-                LocalLeadMapper.toResponse(leadRequest, index + 1)
+            val responseItem = LocalLeadMapper.toResponse(leadRequest, index + 1)
+
+            val edited = com.technfest.technfestcrm.utils.EditedLeadNameStore.get(requireContext(), responseItem.mobile)
+            if (!edited.isNullOrBlank()) {
+                responseItem.fullName = edited
+            }
+
             fullLeadList.add(responseItem)
         }
+
 
         leadList.clear()
         leadList.addAll(fullLeadList)
@@ -327,5 +336,31 @@ binding.filterMyLead.setOnClickListener {
         binding.txtCountLead.text = "Leads Count: ${fullLeadList.size}"
     }
 
+    private val nameUpdateReceiver = object : android.content.BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            loadLocalLeads()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val filter = IntentFilter("com.technfest.technfestcrm.LEAD_NAME_UPDATED")
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireContext().registerReceiver(nameUpdateReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            androidx.core.content.ContextCompat.registerReceiver(
+                requireContext(),
+                nameUpdateReceiver,
+                filter,
+                androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
+            )
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        try { requireContext().unregisterReceiver(nameUpdateReceiver) } catch (_: Exception) {}
+    }
 
 }

@@ -129,7 +129,27 @@ object FeedbackOverlay {
         val editedName = etLeadName.text.toString().trim()
         val number = etNumber.text.toString().trim()
         if (editedName.isNotEmpty() && number.isNotEmpty()) {
-            saveEditedLeadName(context, number, editedName)
+            //saveEditedLeadName(context, number, editedName)
+
+
+            com.technfest.technfestcrm.utils.EditedLeadNameStore.save(context, number, editedName)
+
+// also update active call meta so next screen uses latest name
+            context.getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
+                .edit()
+                .putString("leadName", editedName)
+                .apply()
+
+// refresh LeadsFragment + LeadDetailFragment if open
+            context.sendBroadcast(
+                Intent("com.technfest.technfestcrm.LEAD_NAME_UPDATED")
+                    .setPackage(context.packageName)
+                    .putExtra("number", number)
+                    .putExtra("name", editedName)
+            )
+
+
+
         }
 
         val etNote = view!!.findViewById<EditText>(R.id.etNote)
