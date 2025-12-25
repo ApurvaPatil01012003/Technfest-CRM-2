@@ -72,34 +72,8 @@ class HomeFragment : Fragment() {
 
         setupHotLeads(newLeads)
 
-//        binding.leadsRecyclerView.adapter = HotLeadAdapter(newLeads) { clickedLead ->
-//            val prefs = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE)
-//            val fragment = LeadsFragment().apply {
-//                arguments = Bundle().apply {
-//                    putInt("leadId", clickedLead.id)
-//                    putString("Token", prefs.getString("token", ""))
-//                    putInt("WorkspaceId", prefs.getInt("workspaceId", -1))
-//                    putString("Name", prefs.getString("fullName", "User"))
-//                    putString("WorkspaceName", prefs.getString("workspaceName", ""))
-//                }
-//            }
-//            loadFragment(fragment)
-//        }
-
 
         binding.taskRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-//        homeTaskAdapter = HomeTaskAdapter(emptyList()) { task ->
-//            val fragment = TaskFragment()
-//            val bundle = Bundle().apply {
-//                putInt("highlightTaskId", task.id)
-//            }
-//            fragment.arguments = bundle
-//            loadFragment(fragment)
-//        }
-//        binding.taskRecyclerView.adapter = homeTaskAdapter
-
-
 
         val allLocalTasks = getLocalTasks(requireContext())
 
@@ -205,7 +179,7 @@ class HomeFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
         super.onResume()
-
+        checkAndShowSimSyncDialog()
         // Refresh Leads
         val allLocalLeads = getLocalLeads(requireContext())
         val newLeads = allLocalLeads.filter { it.status.equals("new", true) }
@@ -261,16 +235,6 @@ class HomeFragment : Fragment() {
         binding.taskRecyclerView.adapter = homeTaskAdapter
     }
 
-//    @RequiresApi(Build.VERSION_CODES.O)
-//    private fun checkAndShowSimSyncDialog() {
-//        val prefs = requireContext().getSharedPreferences(PREF_SIM_SYNC, Context.MODE_PRIVATE)
-//        val syncedNumbers = prefs.getStringSet(KEY_SYNCED_NUMBERS, emptySet())
-//
-//        // If no SIM synced → show dialog
-//        if (syncedNumbers.isNullOrEmpty()) {
-//            checkPermissionAndShowDialog()
-//        }
-//    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun checkAndShowSimSyncDialog() {
@@ -300,64 +264,6 @@ class HomeFragment : Fragment() {
             showSimSyncDialog()
         }
     }
-
-//    @SuppressLint("MissingPermission")
-//    private fun showSimSyncDialog() {
-//
-//        val dialogView = layoutInflater.inflate(R.layout.alert_sim_sync, null)
-//        val container = dialogView.findViewById<LinearLayout>(R.id.layoutSimContainer)
-//        val btnSave = dialogView.findViewById<Button>(R.id.btnSave)
-//        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
-//
-//        val dialog = AlertDialog.Builder(requireContext())
-//            .setView(dialogView)
-//            .setCancelable(false)
-//            .create()
-//
-//        val subscriptionManager =
-//            requireContext().getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
-//
-//        val subscriptions = subscriptionManager.activeSubscriptionInfoList
-//        val selectedNumbers = mutableSetOf<String>()
-//
-//        container.removeAllViews()
-//
-//        if (subscriptions.isNullOrEmpty()) {
-//            val tv = TextView(requireContext()).apply {
-//                text = "No SIM cards detected"
-//            }
-//            container.addView(tv)
-//        } else {
-//            for (info in subscriptions) {
-//
-//                val simView = layoutInflater.inflate(
-//                    R.layout.item_sim_sync,
-//                    container,
-//                    false
-//                )
-//
-//                val txtName = simView.findViewById<TextView>(R.id.txtSimName)
-//                val txtNumber = simView.findViewById<TextView>(R.id.txtSimNumber)
-//                val switchSync = simView.findViewById<Switch>(R.id.switchSync)
-//
-//                val simName = info.displayName?.toString() ?: "SIM ${info.simSlotIndex + 1}"
-//                val simNumber = info.number?.takeIf { it.isNotEmpty() } ?: "Unknown"
-//
-//                txtName.text = simName
-//                txtNumber.text = simNumber
-//
-//                switchSync.setOnCheckedChangeListener { _, isChecked ->
-//                    if (isChecked) {
-//                        selectedNumbers.add(simNumber)
-//                    } else {
-//                        selectedNumbers.remove(simNumber)
-//                    }
-//                }
-//
-//                container.addView(simView)
-//            }
-//        }
-
 
     @SuppressLint("MissingPermission")
     private fun showSimSyncDialog() {
@@ -452,46 +358,20 @@ class HomeFragment : Fragment() {
         dialog.show()
     }
 
-//    btnSave.setOnClickListener {
-//            if (selectedNumbers.isNotEmpty()) {
-//                saveSyncedSims(selectedNumbers)
-//                dialog.dismiss()
-//            } else {
-//                Toast.makeText(
-//                    requireContext(),
-//                    "Please sync at least one SIM",
-//                    Toast.LENGTH_SHORT
-//                ).show()
-//            }
-//        }
-//
-//        btnCancel.setOnClickListener {
-//            // User skipped → dialog will appear next time again
-//            dialog.dismiss()
-//        }
-//
-//        dialog.show()
-//    }
-//    private fun saveSyncedSims(numbers: Set<String>) {
-//        val prefs = requireContext().getSharedPreferences(PREF_SIM_SYNC, Context.MODE_PRIVATE)
-//        prefs.edit()
-//            .putStringSet(KEY_SYNCED_NUMBERS, numbers)
-//            .apply()
-//    }
-//    override fun onRequestPermissionsResult(
-//        requestCode: Int,
-//        permissions: Array<out String>,
-//        grantResults: IntArray
-//    ) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//
-//        if (requestCode == 201 &&
-//            grantResults.isNotEmpty() &&
-//            grantResults.all { it == PackageManager.PERMISSION_GRANTED }
-//        ) {
-//            showSimSyncDialog()
-//        }
-//    }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == 201 &&
+            grantResults.isNotEmpty() &&
+            grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+        ) {
+            showSimSyncDialog()
+        }
+    }
 
 
 }

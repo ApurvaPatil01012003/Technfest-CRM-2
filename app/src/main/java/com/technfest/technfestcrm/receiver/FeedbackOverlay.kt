@@ -3,6 +3,7 @@ package com.technfest.technfestcrm.receiver
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.os.Build
@@ -153,7 +154,10 @@ object FeedbackOverlay {
         val metaPrefs =
             context.getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
 
-        val leadId = metaPrefs.getInt("leadId", 0)
+        val resolvedLeadId = resolveLeadIdForNumber(context, number)
+        val leadId = if (resolvedLeadId > 0) resolvedLeadId else metaPrefs.getInt("leadId", 0)
+
+        Log.d("FeedbackOverlay", "Resolved leadId=$leadId number=$number")
 
 
 
@@ -172,7 +176,13 @@ object FeedbackOverlay {
         saveFeedbackToPrefs(context, feedback)
 
         context.getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
-            .edit().clear().apply()
+            .edit()
+            .remove("campaignId")
+            .remove("campaignCode")
+            // keep leadId, leadName, customerNumber, selectedSubId
+            .apply()
+
+        Log.d("FeedbackOverlay", "Saving feedback leadId=$leadId number=$number")
 
         Toast.makeText(context, "Feedback Saved", Toast.LENGTH_SHORT).show()
         hide() // hide overlay only after successful save
@@ -198,6 +208,13 @@ object FeedbackOverlay {
         prefs.edit()
             .putString("feedback_list", gson.toJson(list))
             .apply()
+
+
+        context.sendBroadcast(
+            Intent("com.technfest.technfestcrm.CALL_ACTIVITY_UPDATED")
+                .setPackage(context.packageName)
+        )
+
     }
 
 
@@ -448,5 +465,33 @@ object FeedbackOverlay {
     }
 
 
+    private fun resolveLeadIdForNumber(context: Context, number: String): Int {
+        val normalized = normalizeToE164(context, number)
+        if (normalized.isBlank()) return 0
+
+        // 1) Try LeadCache map (best)
+        val cachePrefs = context.getSharedPreferences("LeadCache", Context.MODE_PRIVATE)
+        val json = cachePrefs.getString("lead_map", null)
+        if (!json.isNullOrBlank()) {
+            val type = object : com.google.gson.reflect.TypeToken<Map<String, com.technfest.technfestcrm.view.LeadsFragment.LeadCacheItem>>() {}.type
+            val map: Map<String, com.technfest.technfestcrm.view.LeadsFragment.LeadCacheItem> =
+                try { com.google.gson.Gson().fromJson(json, type) } catch (_: Exception) { emptyMap() }
+
+            val hit = map[normalized]
+            if (hit != null && hit.id > 0) return hit.id
+            Log.d("FeedbackOverlay", "LeadCache keys sample=${map.keys.take(5)}")
+
+        }
+
+        // 2) Try LocalLeadManager (fallback)
+        val local = com.technfest.technfestcrm.localdatamanager.LocalLeadManager
+            .getLeads(context)
+            .firstOrNull { normalizeToE164(context, it.mobile) == normalized }
+        Log.d("FeedbackOverlay", "resolveLeadIdForNumber normalized=$normalized")
+        Log.d("FeedbackOverlay", "LeadCache json size=${json?.length ?: 0}")
+
+
+        return local?.id ?: 0
+    }
 
 }

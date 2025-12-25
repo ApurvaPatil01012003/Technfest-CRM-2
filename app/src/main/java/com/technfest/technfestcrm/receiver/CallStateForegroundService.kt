@@ -1,472 +1,6 @@
-//package com.technfest.technfestcrm.receiver
-//
-//import android.app.Notification
-//import android.app.NotificationChannel
-//import android.app.NotificationManager
-//import android.app.Service
-//import android.content.Context
-//import android.content.Intent
-//import android.os.Build
-//import android.os.IBinder
-//import android.telephony.PhoneStateListener
-//import android.telephony.TelephonyManager
-//import android.util.Log
-//import androidx.core.app.NotificationCompat
-//import androidx.work.ExistingWorkPolicy
-//import androidx.work.OneTimeWorkRequestBuilder
-//import androidx.work.WorkManager
-//import com.technfest.technfestcrm.R
-//import com.technfest.technfestcrm.model.CallLogRequest
-//import com.technfest.technfestcrm.repository.CallLogRepository
-//import com.technfest.technfestcrm.worker.MoveRecordingsWorker
-//import kotlinx.coroutines.CoroutineScope
-//import kotlinx.coroutines.Dispatchers
-//import kotlinx.coroutines.launch
-//import java.text.SimpleDateFormat
-//import java.util.Calendar
-//import java.util.Date
-//import java.util.Locale
-//import java.util.TimeZone
-//import androidx.core.content.edit
-//import com.technfest.technfestcrm.view.LeadsFragment.LeadCacheItem
-//
-//
-//class CallStateForegroundService : Service() {
-//
-//    private lateinit var telephonyManager: TelephonyManager
-//    private var phoneStateListener: PhoneStateListener? = null
-//
-//    private var currentNumber: String? = null
-//    private var currentDirection: String = "unknown"
-//
-//    private var callAnswered: Boolean = false
-//
-//    private var callStartTimeMs: Long = 0L
-//
-//    private val ANSWERED_MIN_SECONDS = 5
-//
-//    override fun onCreate() {
-//        super.onCreate()
-//        createNotificationChannel()
-//        startForeground(1001, buildNotification())
-//
-//        telephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-//        registerPhoneStateListener()
-//    }
-//
-//    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-//        return START_STICKY
-//    }
-//
-//    private fun registerPhoneStateListener() {
-//        if (phoneStateListener != null) return
-//
-//        var wasRinging = false
-//        var wasOffhook = false
-//        var activeNumber: String? = null
-//
-//        phoneStateListener = object : PhoneStateListener() {
-//            override fun onCallStateChanged(state: Int, incomingNumber: String?) {
-//                super.onCallStateChanged(state, incomingNumber)
-//
-//                if (!incomingNumber.isNullOrEmpty()) {
-//                    activeNumber = incomingNumber
-//                    currentNumber = incomingNumber
-//                    currentNumberGlobal = incomingNumber
-//                }
-//
-//                when (state) {
-//
-//                    TelephonyManager.CALL_STATE_RINGING -> {
-//                        fillMetaFromLeadCacheIfNeeded(incomingNumber)
-//                        wasRinging = true
-//                        wasOffhook = false
-//                        currentDirection = "incoming"
-//                        callAnswered = false
-//                        Log.d(TAG, "RINGING -> number=$activeNumber")
-//                    }
-//
-//                    TelephonyManager.CALL_STATE_OFFHOOK -> {
-//                        fillMetaFromLeadCacheIfNeeded(incomingNumber ?: currentNumber)
-//                        CallPopupOverlay.show(this@CallStateForegroundService)
-//                        wasOffhook = true
-//
-//                        // If we never saw RINGING, this is likely outgoing dial
-//                        if (!wasRinging) {
-//                            currentDirection = "outgoing"
-//                        }
-//
-//                        // 🔹 Conversation start = when we go OFFHOOK
-//                        if (callStartTimeMs == 0L) {
-//                            callStartTimeMs = System.currentTimeMillis()
-//                        }
-//
-//                        // 🔹 For INCOMING calls: OFFHOOK after RINGING = user picked the call
-//                        if (wasRinging && !callAnswered) {
-//                            callAnswered = true
-//                            Log.d(
-//                                TAG,
-//                                "INCOMING CALL PICKED at ${formatIso(callStartTimeMs)}"
-//                            )
-//                        } else if (!wasRinging) {
-//                            // Outgoing call considered "answered" from our side
-//                            callAnswered = true
-//                            Log.d(
-//                                TAG,
-//                                "OUTGOING CALL STARTED at ${formatIso(callStartTimeMs)}"
-//                            )
-//                        }
-//
-//                        if (!incomingNumber.isNullOrEmpty()) {
-//                            currentNumber = incomingNumber
-//                            currentNumberGlobal = incomingNumber
-//                        }
-//
-//                        CallPopupOverlay.show(this@CallStateForegroundService)
-//                    }
-//
-//                    TelephonyManager.CALL_STATE_IDLE -> {
-//                        val endTimeMs = System.currentTimeMillis()
-//
-//                        val noRealCall =
-//                            !wasRinging && !wasOffhook &&
-//                                    callStartTimeMs == 0L &&
-//                                    !callAnswered &&
-//                                    currentNumber.isNullOrEmpty()
-//
-//                        if (noRealCall) {
-//                            Log.d(TAG, "IDLE -> initial state, no call. Ignoring.")
-//                            return
-//                        }
-//
-//                        val callStatus: String
-//                        val durationSec: Int
-//                        val startStr: String
-//                        val endStr: String
-//
-//                        // For answered logic we still use threshold for outgoing
-//                        val calculatedDurationSec =
-//                            if (callStartTimeMs > 0L) {
-//                                ((endTimeMs - callStartTimeMs) / 1000)
-//                                    .toInt()
-//                                    .coerceAtLeast(0)
-//                            } else {
-//                                0
-//                            }
-//
-//                        val isAnswered = when (currentDirection) {
-//                            "incoming" -> callAnswered
-//                            "outgoing" -> calculatedDurationSec >= ANSWERED_MIN_SECONDS
-//                            else -> calculatedDurationSec >= ANSWERED_MIN_SECONDS
-//                        }
-//
-//                        if (isAnswered && callStartTimeMs > 0L) {
-//                            // ✅ Answered call:
-//                            // start = OFFHOOK (pickup), end = hangup, duration = talk time
-//                            callStatus = "answered"
-//                            durationSec = calculatedDurationSec
-//                            startStr = formatIso(callStartTimeMs)
-//                            endStr = formatIso(endTimeMs)
-//                        } else {
-//
-//                            callStatus = "unanswered"
-//                            durationSec = 0
-//                            val midnight = todayMidnightMs()
-//                            startStr = formatIso(midnight)
-//                            endStr = startStr
-//                        }
-//
-//                        Log.d(
-//                            TAG,
-//                            "IDLE -> call ended. number=$currentNumber dir=$currentDirection " +
-//                                    "status=$callStatus duration=$durationSec s start=$startStr end=$endStr"
-//                        )
-//
-//
-//
-//
-//                        // send to server
-//                        sendCallLogToServer(
-//                            phoneNumber = currentNumber,
-//                            direction = currentDirection,
-//                            durationSeconds = durationSec,
-//                            callStatus = callStatus,
-//                            startIso = startStr,   // now in ISO
-//                            endIso = endStr
-//                        )
-//
-//                        wasRinging = false
-//                        wasOffhook = false
-//                        callAnswered = false
-//                        callStartTimeMs = 0L
-//                        currentDirection = "unknown"
-//                        currentNumber = null
-//
-//                        CallPopupOverlay.hide()
-//                        FeedbackOverlay.show(this@CallStateForegroundService)
-//                    }
-//                }
-//            }
-//        }
-//
-//        telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE)
-//    }
-//
-//    private fun sendCallLogToServer(
-//        phoneNumber: String?,
-//        direction: String,
-//        durationSeconds: Int,
-//        callStatus: String,
-//        startIso: String?,
-//        endIso: String
-//    ) {
-//        val ctx = this
-//
-//        val sessionPrefs = ctx.getSharedPreferences("UserSession", Context.MODE_PRIVATE)
-//        val token = sessionPrefs.getString("token", null)
-//        val workspaceId = sessionPrefs.getInt("workspaceId", 0)
-//        val userId = sessionPrefs.getInt("userId", 0)
-//
-//        if (token.isNullOrEmpty() || workspaceId == 0) {
-//            Log.e(TAG, "Missing session token/workspaceId — skipping call log")
-//            return
-//        }
-//
-//        val meta = ctx.getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
-//        val metaLeadId = meta.getInt("leadId", 0)
-//        val metaLeadName = meta.getString("leadName", "") ?: ""
-//        val campaignId = meta.getInt("campaignId", 0)
-//        val campaignCode = meta.getString("campaignCode", "") ?: ""
-//        val savedCustomerNumber = meta.getString("customerNumber", "") ?: ""
-//
-//        // 1) Final display number (universal format)
-//        val rawNumber = (phoneNumber ?: savedCustomerNumber).trim()
-//        val finalNumber = formatInternationalNumber(rawNumber, "IN")
-//
-//
-//        val normIncoming = normalizeForCompare(phoneNumber)
-//        val normSaved = normalizeForCompare(savedCustomerNumber)
-//
-//
-//        val effectiveLeadId: Int? = when {
-//
-//            metaLeadId <= 0 -> null
-//
-//            normIncoming.isBlank() && normSaved.isNotBlank() -> metaLeadId
-//
-//            normIncoming.isNotBlank() && normIncoming == normSaved -> metaLeadId
-//
-//            else -> null
-//        }
-//
-////        val effectiveCustomerName: String =
-////            if (effectiveLeadId != null) metaLeadName else ""
-//
-//        val effectiveCustomerName: String =
-//            if (effectiveLeadId != null && metaLeadName.isNotBlank()) metaLeadName else ""
-//
-//
-//        val request = CallLogRequest(
-//            workspaceId = workspaceId,
-//            userId = userId,
-//            leadId = effectiveLeadId,
-//            campaignId = campaignId,
-//            campaignCode = campaignCode,
-//            customerNumber = finalNumber,
-//            customerName = effectiveCustomerName,
-//            direction = direction,
-//            callStatus = callStatus,
-//            startTime = startIso ?: "",
-//            endTime = endIso,
-//            durationSeconds = durationSeconds,
-//            recordingUrl = "",
-//            source = "mobile",
-//            notes = "",
-//            externalEventId = ""
-//        )
-//
-//        CoroutineScope(Dispatchers.IO).launch {
-//            try {
-//                val webhookSecret = "super-secret-webhook-key"
-//                val resp = CallLogRepository().sendCallLog(webhookSecret, request)
-//                if (resp.isSuccessful) {
-//                    val id = resp.body()?.id ?: 0
-//                    if (id > 0) {
-//                        ctx.getSharedPreferences("CallLogPrefs", Context.MODE_PRIVATE)
-//                            .edit { putInt("lastCallLogId", id) }
-//
-////                        val work = OneTimeWorkRequestBuilder<MoveRecordingsWorker>().build()
-////                        WorkManager.getInstance(ctx)
-////                            .enqueueUniqueWork("auto_move_recordings_foreground", ExistingWorkPolicy.REPLACE, work)
-//
-//
-//                        val callEndMs = System.currentTimeMillis()
-//
-//                        val work = OneTimeWorkRequestBuilder<MoveRecordingsWorker>()
-//                            .setInputData(
-//                                androidx.work.workDataOf(
-//                                    "CALL_LOG_ID" to id,
-//                                    "CALL_END_MS" to callEndMs
-//                                )
-//                            )
-//                            .build()
-//
-//                        WorkManager.getInstance(ctx)
-//                            // ✅ unique per call log id, so same call won't run twice
-//                            .enqueueUniqueWork(
-//                                "move_recording_call_$id",
-//                                ExistingWorkPolicy.KEEP,
-//                                work
-//                            )
-//
-//                    }
-//                }
-//
-//            } catch (e: Exception) {
-//                Log.e(TAG, "Exception sending call log", e)
-//            }
-//        }
-//    }
-//
-//    fun formatIso(epochMs: Long): String {
-//        return try {
-//            val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-//            sdf.timeZone = TimeZone.getTimeZone("UTC")
-//            sdf.format(Date(epochMs))
-//        } catch (e: Exception) {
-//            ""
-//        }
-//    }
-//
-//    private fun todayMidnightMs(): Long {
-//        val cal = Calendar.getInstance()
-//        cal.set(Calendar.HOUR_OF_DAY, 0)
-//        cal.set(Calendar.MINUTE, 0)
-//        cal.set(Calendar.SECOND, 0)
-//        cal.set(Calendar.MILLISECOND, 0)
-//        return cal.timeInMillis
-//    }
-//
-//    private fun buildNotification(): Notification {
-//        val channel = "call_state_service_channel"
-//        return NotificationCompat.Builder(this, channel)
-//            .setContentTitle("Technfest CRM – Call sync active")
-//            .setContentText("Syncing call logs & recordings…")
-//            .setSmallIcon(R.drawable.ic_launcher_foreground)
-//            .setPriority(NotificationCompat.PRIORITY_MIN)
-//            .setOngoing(true)
-//            .build()
-//    }
-//    private fun fillMetaFromLeadCacheIfNeeded(numberRaw: String?) {
-//        if (numberRaw.isNullOrBlank()) return
-//
-//        val e164 = normalizeForCompare(numberRaw)
-//        if (e164.isBlank()) return
-//
-//        val cachePrefs = getSharedPreferences("LeadCache", Context.MODE_PRIVATE)
-//        val json = cachePrefs.getString("lead_map", null) ?: return
-//
-//        val type = object : com.google.gson.reflect.TypeToken<Map<String, LeadCacheItem>>() {}.type
-//        val map: Map<String, LeadCacheItem> = com.google.gson.Gson().fromJson(json, type)
-//
-//        val hit = map[e164] ?: return
-//
-//        // ✅ write ActiveCallLeadMeta so overlay can show name even for default dialer first call
-//        val meta = getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
-//        meta.edit()
-//            .putInt("leadId", hit.id)
-//            .putString("leadName", hit.name)
-//            .putInt("campaignId", hit.campaignId)
-//            .putString("campaignCode", hit.campaignCode)
-//            .putString("customerNumber", hit.customerNumber)
-//            .apply()
-//    }
-//
-//
-//    private fun createNotificationChannel() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            val ch = NotificationChannel(
-//                "call_state_service_channel",
-//                "Technfest CRM Call Sync",
-//                NotificationManager.IMPORTANCE_MIN
-//            )
-//            getSystemService(NotificationManager::class.java).createNotificationChannel(ch)
-//        }
-//    }
-//
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        phoneStateListener?.let { telephonyManager.listen(it, PhoneStateListener.LISTEN_NONE) }
-//        phoneStateListener = null
-//    }
-//
-//    override fun onBind(intent: Intent?): IBinder? = null
-//
-//    companion object {
-//        private const val TAG = "CallStateService"
-//        var currentNumberGlobal: String? = null
-//    }
-//
-//}
-//private fun lookupLeadNameByNumber(ctx: Context, rawNumber: String?): Pair<Int, String>? {
-//    if (rawNumber.isNullOrBlank()) return null
-//
-//    val e164 = normalizeForCompare(rawNumber) // returns E164 like +9198...
-//    if (e164.isBlank()) return null
-//
-//    val prefs = ctx.getSharedPreferences("LeadCache", Context.MODE_PRIVATE)
-//    val name = prefs.getString("lead_name_$e164", null)
-//    val id = prefs.getInt("lead_id_$e164", 0)
-//
-//    return if (!name.isNullOrBlank() && id > 0) Pair(id, name) else null
-//}
-//
-//private fun formatInternationalNumber(rawNumber: String?, defaultRegion: String = "IN"): String {
-//    if (rawNumber.isNullOrEmpty()) return ""
-//
-//    return try {
-//        val cleaned = rawNumber.replace("[^0-9+]".toRegex(), "")
-//        val phoneUtil = com.google.i18n.phonenumbers.PhoneNumberUtil.getInstance()
-//        val region = if (cleaned.startsWith("+")) null else defaultRegion
-//        val numberProto = phoneUtil.parse(cleaned, region)
-//        phoneUtil.format(
-//            numberProto,
-//            com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL
-//        )
-//    } catch (e: Exception) {
-//        rawNumber
-//    }
-//}
-//private fun normalizeForCompare(number: String?, defaultRegion: String = "IN"): String {
-//    if (number.isNullOrBlank()) return ""
-//    return try {
-//        val phoneUtil = com.google.i18n.phonenumbers.PhoneNumberUtil.getInstance()
-//        val cleaned = number.replace("[^0-9+]".toRegex(), "")
-//        val region = if (cleaned.startsWith("+")) null else defaultRegion
-//        val proto = phoneUtil.parse(cleaned, region)
-//
-//        phoneUtil.format(
-//            proto,
-//            com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat.E164
-//        )
-//    } catch (e: Exception) {
-//
-//        val digits = number.filter { it.isDigit() }
-//        if (digits.length > 10) digits.takeLast(10) else digits
-//    }
-//
-//
-//
-//
-//}
-//
-//
-//
-//
-
-
 package com.technfest.technfestcrm.receiver
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -491,7 +25,6 @@ import com.technfest.technfestcrm.R
 import com.technfest.technfestcrm.localdatamanager.LocalLeadManager
 import com.technfest.technfestcrm.model.CallLogRequest
 import com.technfest.technfestcrm.model.LeadRequest
-import com.technfest.technfestcrm.model.RecentCallItem
 import com.technfest.technfestcrm.repository.CallLogRepository
 import com.technfest.technfestcrm.view.LeadsFragment.LeadCacheItem
 import com.technfest.technfestcrm.worker.MoveRecordingsWorker
@@ -503,6 +36,11 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import android.provider.CallLog
+import android.content.ComponentName
+import android.database.Cursor
+import com.technfest.technfestcrm.utils.SimPhoneAccountResolver
+
 
 class CallStateForegroundService : Service() {
 
@@ -636,23 +174,104 @@ class CallStateForegroundService : Service() {
                             "IDLE -> end. number=$currentNumber dir=$currentDirection status=$callStatus dur=$durationSec start=$startStr end=$endStr"
                         )
 
+                        val last = readLatestCallLog()
+
+
+                        // ✅ Override direction using CallLog TYPE (more reliable)
+                        if (last != null) {
+                            currentDirection = when (last.type) {
+                                CallLog.Calls.INCOMING_TYPE,
+                                CallLog.Calls.MISSED_TYPE,
+                                CallLog.Calls.REJECTED_TYPE,
+                                CallLog.Calls.BLOCKED_TYPE -> "incoming"
+
+                                CallLog.Calls.OUTGOING_TYPE -> "outgoing"
+                                else -> currentDirection
+                            }
+                        }
+
+// ✅ Use CallLog times (actual connected start)
+                        val callStatus2: String
+                        val durationSec2: Int
+                        val startStr2: String
+                        val endStr2: String
+
+                        if (last != null && last.durationSec > 0) {
+                            // Connected/picked call ✅
+                            callStatus2 = "answered"
+                            durationSec2 = last.durationSec
+                            startStr2 = formatLocalDateTime(last.dateMs)
+                            endStr2 = formatLocalDateTime(last.dateMs + (last.durationSec * 1000L))
+
+                        } else {
+                            // Not connected ❌ (missed / not picked / rejected)
+                            callStatus2 = "unanswered"
+                            durationSec2 = 0
+                            val midnight = todayMidnightMs()
+                            startStr2 = formatLocalDateTime(midnight)
+                            endStr2 = startStr2
+
+                        }
+
+
+                        if (last != null) {
+                            val ok = isCallFromSyncedSim(last.phoneAccountId, last.phoneAccountComponent)
+                            if (!ok) {
+                                Log.d(TAG, "Ignoring call: not from synced SIM. accId=${last.phoneAccountId}")
+                                // reset like normal and return
+                                wasRinging = false
+                                wasOffhook = false
+                                callAnswered = false
+                                callStartTimeMs = 0L
+                                currentDirection = "unknown"
+                                currentNumber = null
+                                CallPopupOverlay.hide()
+                                return
+                            }
+                        }
+
+//                        saveRecentCallLocal(
+//                            number = currentNumber,
+//                            direction = currentDirection,
+//                            status = callStatus,
+//                            duration = durationSec,
+//                            startIso = startStr,
+//                            endIso = endStr,
+//                            phoneAccountId = last?.phoneAccountId,
+//                            phoneAccountComponent = last?.phoneAccountComponent
+//                        )
+
                         saveRecentCallLocal(
                             number = currentNumber,
                             direction = currentDirection,
-                            status = callStatus,
-                            duration = durationSec,
-                            startIso = startStr,
-                            endIso = endStr
+                            status = callStatus2,
+                            duration = durationSec2,
+                            startIso = startStr2,
+                            endIso = endStr2,
+                            phoneAccountId = last?.phoneAccountId,
+                            phoneAccountComponent = last?.phoneAccountComponent
                         )
 
+
+                        Log.d(TAG, "Before saveRecentCallLocal() last=$last")
+
+//                        sendCallLogToServer(
+//                            phoneNumber = currentNumber,
+//                            direction = currentDirection,
+//                            durationSeconds = durationSec,
+//                            callStatus = callStatus,
+//                            startIso = startStr,
+//                            endIso = endStr
+//                        )
                         sendCallLogToServer(
                             phoneNumber = currentNumber,
                             direction = currentDirection,
-                            durationSeconds = durationSec,
-                            callStatus = callStatus,
-                            startIso = startStr,
-                            endIso = endStr
+                            durationSeconds = durationSec2,
+                            callStatus = callStatus2,
+                            startIso = startStr2,
+                            endIso = endStr2
                         )
+
 
                         // reset
                         wasRinging = false
@@ -709,63 +328,66 @@ class CallStateForegroundService : Service() {
             .apply()
     }
 
-    // ----------------------------
-    // ✅ Local Recent Calls Store
-    // ----------------------------
-    data class RecentCallItem(
-        val id: Long,
-        val leadId: Int,
-        val leadName: String,
-        val number: String,
-        val direction: String,
-        val status: String,
-        val durationSec: Int,
-        val startIso: String,
-        val endIso: String,
-        val timestampMs: Long
-    )
-
     private fun saveRecentCallLocal(
         number: String?,
         direction: String,
         status: String,
         duration: Int,
         startIso: String,
-        endIso: String
+        endIso: String,
+        phoneAccountId: String?,
+        phoneAccountComponent: String?
     ) {
         val meta = getSharedPreferences("ActiveCallLeadMeta", MODE_PRIVATE)
         val leadId = meta.getInt("leadId", 0)
         val leadName = meta.getString("leadName", "Unknown") ?: "Unknown"
         val num = number ?: meta.getString("customerNumber", "") ?: ""
 
+        val selectedSubId = meta.getInt("selectedSubId", -1).takeIf { it != -1 }
+
+        val statusLabel = when {
+            direction == "incoming" && status == "answered" -> "Incoming • Answered"
+            direction == "incoming" && status == "unanswered" -> "Incoming • Missed"
+            direction == "outgoing" && status == "answered" -> "Outgoing • Connected"
+            direction == "outgoing" && status == "unanswered" -> "Outgoing • Not Picked"
+            else -> "$direction • $status"
+        }
+
         val prefs = getSharedPreferences("RecentCallsStore", MODE_PRIVATE)
         val gson = Gson()
         val json = prefs.getString("recent_calls", null)
 
-        val type = object : TypeToken<MutableList<RecentCallItem>>() {}.type
-        val list: MutableList<RecentCallItem> = if (!json.isNullOrBlank()) {
-            try { gson.fromJson(json, type) } catch (_: Exception) { mutableListOf() }
-        } else mutableListOf()
+        val type = object : TypeToken<MutableList<com.technfest.technfestcrm.model.RecentCallItem>>() {}.type
+        val list: MutableList<com.technfest.technfestcrm.model.RecentCallItem> =
+            if (!json.isNullOrBlank()) {
+                try { gson.fromJson(json, type) } catch (_: Exception) { mutableListOf() }
+            } else mutableListOf()
 
         list.add(
             0,
-            RecentCallItem(
+            com.technfest.technfestcrm.model.RecentCallItem(
                 id = System.currentTimeMillis(),
                 leadId = leadId,
                 leadName = leadName,
                 number = num,
                 direction = direction,
                 status = status,
+                statusLabel = statusLabel,
                 durationSec = duration,
                 startIso = startIso,
                 endIso = endIso,
-                timestampMs = System.currentTimeMillis()
+                timestampMs = System.currentTimeMillis(),
+                phoneAccountId = phoneAccountId,
+                phoneAccountComponent = phoneAccountComponent,
+                usedSubId = selectedSubId
             )
+
         )
+        Log.d(TAG, "Saving recent call leadId=$leadId leadName=$leadName num=$num")
 
         while (list.size > 200) list.removeAt(list.size - 1)
 
-        prefs.edit { putString("recent_calls", gson.toJson(list)) }
+        prefs.edit().putString("recent_calls", gson.toJson(list)).apply()
 
         sendBroadcast(Intent("com.technfest.technfestcrm.CALL_ACTIVITY_UPDATED"))
     }
@@ -906,9 +528,6 @@ class CallStateForegroundService : Service() {
         }
     }
 
-    // ----------------------------
-    // Utils
-    // ----------------------------
     private fun buildNotification(): Notification {
         val channel = "call_state_service_channel"
         return NotificationCompat.Builder(this, channel)
@@ -950,6 +569,113 @@ class CallStateForegroundService : Service() {
         }
     }
 
+    private data class LastCallLogRow(
+        val number: String?,
+        val type: Int,
+        val durationSec: Int,
+        val dateMs: Long,
+        val phoneAccountId: String?,
+        val phoneAccountComponent: String?
+    )
+
+    @SuppressLint("MissingPermission")
+    private fun readLatestCallLog(): LastCallLogRow? {
+        return try {
+            val projection = arrayOf(
+                CallLog.Calls.NUMBER,
+                CallLog.Calls.TYPE,
+                CallLog.Calls.DURATION,
+                CallLog.Calls.DATE,
+                CallLog.Calls.PHONE_ACCOUNT_ID,
+                CallLog.Calls.PHONE_ACCOUNT_COMPONENT_NAME
+            )
+
+            contentResolver.query(
+                CallLog.Calls.CONTENT_URI,
+                projection,
+                null,
+                null,
+                CallLog.Calls.DATE + " DESC"
+
+            )?.use { c ->
+                if (!c.moveToFirst()) return null
+
+                LastCallLogRow(
+                    number = c.getStringSafe(CallLog.Calls.NUMBER),
+                    type = c.getIntSafe(CallLog.Calls.TYPE),
+                    durationSec = c.getIntSafe(CallLog.Calls.DURATION),
+                    dateMs = c.getLongSafe(CallLog.Calls.DATE),
+                    phoneAccountId = c.getStringSafe(CallLog.Calls.PHONE_ACCOUNT_ID),
+                    phoneAccountComponent = c.getStringSafe(CallLog.Calls.PHONE_ACCOUNT_COMPONENT_NAME)
+                )
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "readLatestCallLog failed", e)
+            null
+        }
+    }
+
+    private fun isCallFromSyncedSim(phoneAccountId: String?, phoneAccountComponent: String?): Boolean {
+        val synced = com.technfest.technfestcrm.utils.SimSyncStore.getSynced(this)
+        if (synced.isEmpty()) return false
+
+        // If CallLog doesn't provide phoneAccount fields -> fallback logic
+        if (phoneAccountId.isNullOrBlank() || phoneAccountComponent.isNullOrBlank()) {
+            val meta = getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
+            val selectedSubId = meta.getInt("selectedSubId", -1)
+
+            if (selectedSubId != -1) {
+                return synced.any { it.subId == selectedSubId }
+            }
+
+            return synced.size == 1
+        }
+
+        val comp = ComponentName.unflattenFromString(phoneAccountComponent) ?: return false
+        if (!hasReadPhoneState(this)) {
+            Log.w(TAG, "READ_PHONE_STATE missing; cannot match SIM accurately. Using safe fallback.")
+            return synced.size == 1
+        }
+
+        val allowedHandles = mutableListOf<android.telecom.PhoneAccountHandle>()
+        for (ss in synced) {
+            try {
+                val h = SimPhoneAccountResolver.resolvePhoneAccountHandleForSubId(this, ss.subId)
+                if (h != null) allowedHandles.add(h)
+            } catch (se: SecurityException) {
+                Log.w(TAG, "SecurityException resolving handle for subId=${ss.subId}", se)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error resolving handle for subId=${ss.subId}", e)
+            }
+        }
+
+        // If still no handles (OEM restriction etc), fallback safely
+        if (allowedHandles.isEmpty()) {
+            Log.w(TAG, "No phone account handles resolved; fallback.")
+            return synced.size == 1
+        }
+
+        // Exact match by (component + id)
+        return allowedHandles.any { h ->
+            h.componentName == comp && h.id == phoneAccountId
+        }
+    }
+
+
+    private fun Cursor.getStringSafe(col: String): String? {
+        val i = getColumnIndex(col)
+        return if (i >= 0 && !isNull(i)) getString(i) else null
+    }
+    private fun Cursor.getIntSafe(col: String): Int {
+        val i = getColumnIndex(col)
+        return if (i >= 0 && !isNull(i)) getInt(i) else 0
+    }
+    private fun Cursor.getLongSafe(col: String): Long {
+        val i = getColumnIndex(col)
+        return if (i >= 0 && !isNull(i)) getLong(i) else 0L
+    }
+
+
     override fun onDestroy() {
         super.onDestroy()
         phoneStateListener?.let { telephonyManager.listen(it, PhoneStateListener.LISTEN_NONE) }
@@ -963,6 +689,14 @@ class CallStateForegroundService : Service() {
         var currentNumberGlobal: String? = null
     }
 }
+
+private fun hasReadPhoneState(context: Context): Boolean {
+    return androidx.core.content.ContextCompat.checkSelfPermission(
+        context,
+        android.Manifest.permission.READ_PHONE_STATE
+    ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+}
+
 
 // ----------------------------
 // Number helpers
@@ -980,6 +714,9 @@ private fun formatInternationalNumber(rawNumber: String?, defaultRegion: String 
     }
 }
 
+
+
+
 private fun normalizeForCompare(number: String?, defaultRegion: String = "IN"): String {
     if (number.isNullOrBlank()) return ""
     return try {
@@ -991,5 +728,30 @@ private fun normalizeForCompare(number: String?, defaultRegion: String = "IN"): 
     } catch (_: Exception) {
         val digits = number.filter { it.isDigit() }
         if (digits.length > 10) digits.takeLast(10) else digits
+    }
+
+
+
+
+}
+
+private fun formatLocalDateTime(epochMs: Long): String {
+    val sdf = SimpleDateFormat("yyyy-MM-dd hh:mm a", Locale.ENGLISH)
+    sdf.timeZone = TimeZone.getDefault() // IST on device
+    return sdf.format(Date(epochMs))
+}
+
+private fun formatLocalFromIso(isoUtc: String): String {
+    // isoUtc like: 2025-12-24T06:14:00.000Z
+    return try {
+        val inFmt = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+        inFmt.timeZone = TimeZone.getTimeZone("UTC")
+
+        val d = inFmt.parse(isoUtc) ?: return isoUtc
+        val outFmt = SimpleDateFormat("yyyy-MM-dd hh:mm a", Locale.ENGLISH)
+        outFmt.timeZone = TimeZone.getDefault()
+        outFmt.format(d)
+    } catch (e: Exception) {
+        isoUtc
     }
 }

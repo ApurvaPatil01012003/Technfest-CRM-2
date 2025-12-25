@@ -14,6 +14,7 @@ import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -59,8 +60,61 @@ import com.technfest.technfestcrm.model.RecentActivityItem
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.technfest.technfestcrm.utils.SimSyncStore
+import com.technfest.technfestcrm.model.RecentCallItem
+
 
 class LeadDetailFragment : Fragment() {
+    private val callPhonePermissionLauncher =
+        registerForActivityResult(
+            androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+        ) { granted ->
+        if (granted) {
+
+            val synced = SimSyncStore.getSynced(requireContext())
+            if (synced.isEmpty()) {
+                Toast.makeText(requireContext(), "Please sync number first", Toast.LENGTH_LONG).show()
+                return@registerForActivityResult
+            }
+
+            prepareLeadMetaForService()
+
+            val meta = requireContext().getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
+
+            if (synced.size == 1) {
+                val pick = synced[0]
+                meta.edit()
+                    .putInt("selectedSubId", pick.subId)
+                    .putString("selectedSimNumber", pick.number ?: "")
+                    .apply()
+
+                placeCallUsingSimSubId(leadNumber, pick.subId)
+            } else {
+                val items = synced.map {
+                    val num = it.number ?: "Unknown"
+                    "${it.displayName} ($num)"
+                }.toTypedArray()
+
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Call from which SIM?")
+                    .setItems(items) { _, which ->
+                        val pick = synced[which]
+                        meta.edit()
+                            .putInt("selectedSubId", pick.subId)
+                            .putString("selectedSimNumber", pick.number ?: "")
+                            .apply()
+
+                        placeCallUsingSimSubId(leadNumber, pick.subId)
+                    }
+                    .setCancelable(true)
+                    .show()
+            }
+
+        } else {
+            Toast.makeText(requireContext(), "Call permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
     private lateinit var binding: FragmentLeadDetailBinding
     private lateinit var telephonyManager: TelephonyManager
     private var workspaceId = 0
@@ -90,13 +144,44 @@ class LeadDetailFragment : Fragment() {
         userId = arguments?.getInt("ownerUserId") ?: 0
         campaignId = arguments?.getInt("campaignId") ?: 0
 
-
-
         telephonyManager =
             requireContext().getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
 
         fetchCategories()
-        binding.btnCall.setOnClickListener @androidx.annotation.RequiresPermission(android.Manifest.permission.CALL_PHONE) {
+//        binding.btnCall.setOnClickListener {
+//
+//            // Overlay permission check (your existing)
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+//                !Settings.canDrawOverlays(requireContext())
+//            ) {
+//                val intent = Intent(
+//                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+//                    Uri.parse("package:${requireContext().packageName}")
+//                )
+//                startActivity(intent)
+//                Toast.makeText(requireContext(), "Allow overlay permission to show call popup", Toast.LENGTH_LONG).show()
+//                return@setOnClickListener
+//            }
+//
+//            // ✅ CALL_PHONE runtime permission check
+//            val hasCallPermission =
+//                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CALL_PHONE) ==
+//                        android.content.pm.PackageManager.PERMISSION_GRANTED
+//
+//            if (!hasCallPermission) {
+//                callPhonePermissionLauncher.launch(Manifest.permission.CALL_PHONE)
+//                return@setOnClickListener
+//            }
+//
+//            // ✅ Now safe
+//            prepareLeadMetaForService()
+//            startCallWithSyncedSimChooser()
+//        }
+
+
+        binding.btnCall.setOnClickListener {
+
+            // 1) Overlay permission (your existing)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                 !Settings.canDrawOverlays(requireContext())
             ) {
@@ -105,20 +190,64 @@ class LeadDetailFragment : Fragment() {
                     Uri.parse("package:${requireContext().packageName}")
                 )
                 startActivity(intent)
-
-                Toast.makeText(
-                    requireContext(),
-                    "Allow overlay permission to show call popup",
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast.makeText(requireContext(), "Allow overlay permission to show call popup", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
-//            prepareLeadMetaForService()
-//            makeCall()
 
+            // 2) CALL_PHONE permission
+            val hasCallPermission =
+                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CALL_PHONE) ==
+                        android.content.pm.PackageManager.PERMISSION_GRANTED
+
+            if (!hasCallPermission) {
+                callPhonePermissionLauncher.launch(Manifest.permission.CALL_PHONE)
+                return@setOnClickListener
+            }
+
+            // 3) ✅ Check synced SIMs BEFORE calling
+            val synced = SimSyncStore.getSynced(requireContext())
+
+            if (synced.isEmpty()) {
+                Toast.makeText(requireContext(), "Please sync number first", Toast.LENGTH_LONG).show()
+                return@setOnClickListener // ✅ STOP here, don't call
+            }
+
+            // 4) Prepare lead meta for service (leadId/name/campaign etc)
             prepareLeadMetaForService()
-            startCallWithSyncedSimChooser()
 
+            val meta = requireContext().getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
+
+            // 5) 1 SIM synced -> call directly
+            if (synced.size == 1) {
+                val pick = synced[0]
+                meta.edit()
+                    .putInt("selectedSubId", pick.subId)
+                    .putString("selectedSimNumber", pick.number ?: "")
+                    .apply()
+
+                placeCallUsingSimSubId(leadNumber, pick.subId)
+                return@setOnClickListener
+            }
+
+            // 6) Multiple SIMs -> ask user
+            val items = synced.map {
+                val num = it.number ?: "Unknown"
+                "${it.displayName} ($num)"
+            }.toTypedArray()
+
+            AlertDialog.Builder(requireContext())
+                .setTitle("Call from which SIM?")
+                .setItems(items) { _, which ->
+                    val pick = synced[which]
+                    meta.edit()
+                        .putInt("selectedSubId", pick.subId)
+                        .putString("selectedSimNumber", pick.number ?: "")
+                        .apply()
+
+                    placeCallUsingSimSubId(leadNumber, pick.subId)
+                }
+                .setCancelable(true)
+                .show()
         }
 
         binding.btnMarkCompleted.setOnClickListener {
@@ -512,70 +641,47 @@ class LeadDetailFragment : Fragment() {
 
         val json = prefs.getString("feedback_list", null) ?: return emptyList()
 
-        val type =
-            object : com.google.gson.reflect.TypeToken<List<CallFeedback>>() {}.type
+        val type = object : TypeToken<List<CallFeedback>>() {}.type
 
-        return com.google.gson.Gson()
-            .fromJson<List<CallFeedback>>(json, type)
-            .filter { it.leadId == leadId }
+        val list = Gson().fromJson<List<CallFeedback>>(json, type) ?: emptyList()
+
+        val currentLeadE164 = normalizeToE164(requireContext(), leadNumber)
+
+        return list
+            .filter { fb ->
+                fb.leadId == leadId ||
+                        (currentLeadE164.isNotBlank() &&
+                                normalizeToE164(requireContext(), fb.number ?: "") == currentLeadE164)
+            }
             .sortedByDescending { it.timestamp }
     }
+
 
     private fun Bundle?.getSafeString(key: String): String {
         val value = this?.getString(key)
         return if (value.isNullOrBlank()) "N/A" else value
     }
-//    private fun startCallWithSyncedSimChooser() {
-//        val synced = com.technfest.technfestcrm.utils.SimSyncStore
-//            .getSyncedNumbers(requireContext())
-//            .map { it.trim() }
-//            .filter { it.isNotBlank() && !it.equals("Unknown", true) }
-//
-//        // ✅ If nothing synced => block call
-//        if (synced.isEmpty()) {
-//            Toast.makeText(requireContext(), "Please sync number first", Toast.LENGTH_LONG).show()
-//            return
-//        }
-//
-//        // ✅ 1 synced => call directly (still save selectedSimNumber for tagging)
-//        if (synced.size == 1) {
-//            val meta = requireContext().getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
-//            meta.edit().putString("selectedSimNumber", synced[0]).apply()
-//            makeCall()
-//            return
-//        }
-//
-//        // ✅ Multiple synced => ask which SIM
-//        val items = synced.toTypedArray()
-//
-//        AlertDialog.Builder(requireContext())
-//            .setTitle("Call from which SIM?")
-//            .setItems(items) { _, which ->
-//                val selectedSimNumber = items[which]
-//
-//                val meta = requireContext().getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
-//                meta.edit().putString("selectedSimNumber", selectedSimNumber).apply()
-//
-//                makeCall()
-//            }
-//            .setCancelable(true)
-//            .show()
-//    }
 
-    @RequiresPermission(Manifest.permission.CALL_PHONE)
     private fun startCallWithSyncedSimChooser() {
-        val synced = SimSyncStore
-            .getSynced(requireContext())
+
+        val hasCallPermission =
+            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CALL_PHONE) ==
+                    android.content.pm.PackageManager.PERMISSION_GRANTED
+
+        if (!hasCallPermission) {
+            callPhonePermissionLauncher.launch(Manifest.permission.CALL_PHONE)
+            return
+        }
+
+        val synced = SimSyncStore.getSynced(requireContext())
 
         if (synced.isEmpty()) {
             Toast.makeText(requireContext(), "Please sync number first", Toast.LENGTH_LONG).show()
             return
         }
 
-        // store dialed customer number in meta (already done in prepareLeadMetaForService)
         val meta = requireContext().getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
 
-        // one synced -> directly use that subId
         if (synced.size == 1) {
             meta.edit()
                 .putInt("selectedSubId", synced[0].subId)
@@ -586,7 +692,6 @@ class LeadDetailFragment : Fragment() {
             return
         }
 
-        // multiple -> ask
         val items = synced.map {
             val num = it.number ?: "Unknown"
             "${it.displayName} ($num)"
@@ -606,6 +711,7 @@ class LeadDetailFragment : Fragment() {
             .setCancelable(true)
             .show()
     }
+
 
     private fun scheduleTaskNotification(context: Context, task: LocalTask) {
         val dueAt = task.dueAt ?: return
@@ -633,12 +739,22 @@ class LeadDetailFragment : Fragment() {
         androidx.work.WorkManager.getInstance(context)
             .enqueueUniqueWork("task_notify_$safeId", androidx.work.ExistingWorkPolicy.REPLACE, work)
     }
-    @RequiresPermission(Manifest.permission.CALL_PHONE)
     private fun placeCallUsingSimSubId(phone: String, subId: Int) {
+
+        val hasCallPermission =
+            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CALL_PHONE) ==
+                    android.content.pm.PackageManager.PERMISSION_GRANTED
+
+        if (!hasCallPermission) {
+            callPhonePermissionLauncher.launch(Manifest.permission.CALL_PHONE)
+            return
+        }
+
         val telecom = requireContext().getSystemService(Context.TELECOM_SERVICE) as TelecomManager
         val uri = Uri.fromParts("tel", phone, null)
 
         val handle = resolvePhoneAccountHandleForSubId(requireContext(), subId)
+
         if (handle == null) {
             Toast.makeText(requireContext(), "SIM mapping failed, calling default SIM", Toast.LENGTH_SHORT).show()
             startActivity(Intent(Intent.ACTION_CALL, uri))
@@ -651,6 +767,7 @@ class LeadDetailFragment : Fragment() {
 
         telecom.placeCall(uri, extras)
     }
+
 
     @RequiresPermission(Manifest.permission.READ_PHONE_STATE)
     private fun resolvePhoneAccountHandleForSubId(ctx: Context, subId: Int): PhoneAccountHandle? {
@@ -680,45 +797,44 @@ class LeadDetailFragment : Fragment() {
     }
 
     private fun refreshRecentActivity() {
-        val feedback = getFeedbackForLead(leadId)
-            .map { RecentActivityItem.FeedbackItem(it, it.timestamp) }
 
-        val calls = getCallsForLead(leadId)
-            .map {
-                RecentActivityItem.CallItem(
-                    leadId = it.leadId,
-                    leadName = it.leadName,
-                    leadNumber = it.number,
-                    callStatusLabel = it.statusLabel,
-                    startIso = it.startIso,
-                    endIso = it.endIso,
-                    durationSec = it.durationSec,
-                    timestamp = it.timestampMs
-                )
+        // 1) Feedback -> RecentActivityItem.FeedbackItem
+        val feedbackItems: List<RecentActivityItem> = getFeedbackForLead(leadId).map { fb ->
+            RecentActivityItem.FeedbackItem(feedback = fb, timestamp = fb.timestamp)
+        }
+
+        // 2) Calls -> RecentActivityItem.CallItem
+        // NOTE: Calls already saved only for synced SIM in service (because you return early if not synced)
+        val callItems: List<RecentActivityItem> = getCallsForLead(leadId).map { c ->
+            RecentActivityItem.CallItem(
+                leadId = c.leadId,
+                leadName = c.leadName,
+                leadNumber = c.number,
+                callStatusLabel = c.statusLabel,
+                startIso = c.startIso,
+                endIso = c.endIso,
+                durationSec = c.durationSec,
+                timestamp = c.timestampMs
+            )
+        }
+
+        // 3) Merge + sort by timestamp
+        val merged: List<RecentActivityItem> = (callItems + feedbackItems).sortedByDescending { item ->
+            when (item) {
+                is RecentActivityItem.CallItem -> item.timestamp
+                is RecentActivityItem.FeedbackItem -> item.timestamp   // OR item.feedback.timestamp (both same)
             }
+        }
 
-        val merged = (calls + feedback).sortedByDescending { it.timestamp }
-
+        // 4) Update recycler
         activityAdapter.update(merged)
+
+        // 5) Show/hide recycler
         binding.rvRecentActivity.visibility = if (merged.isNotEmpty()) View.VISIBLE else View.GONE
+        Log.d("LeadDetail", "Loading feedback for leadId=$leadId total=${getFeedbackForLead(leadId).size}")
+        Log.d("LeadDetail", "Calls for leadId=$leadId totalCalls=${getCallsForLead(leadId).size}")
+
     }
-
-
-
-    data class RecentCallItem(
-        val id: Long,
-        val leadId: Int,
-        val leadName: String,
-        val number: String,
-        val direction: String,
-        val status: String,
-        val statusLabel: String,
-        val durationSec: Int,
-        val startIso: String,
-        val endIso: String,
-        val timestampMs: Long
-    )
-
 
     private fun getCallsForLead(leadId: Int): List<RecentCallItem> {
         val prefs = requireContext().getSharedPreferences("RecentCallsStore", Context.MODE_PRIVATE)
@@ -726,14 +842,54 @@ class LeadDetailFragment : Fragment() {
 
         val type = object : TypeToken<List<RecentCallItem>>() {}.type
 
+        val currentLeadE164 = normalizeToE164(requireContext(), leadNumber)
+
         return try {
             Gson().fromJson<List<RecentCallItem>>(json, type)
-                .filter { it.leadId == leadId }
+                .filter { c ->
+                    c.leadId == leadId ||
+                            (currentLeadE164.isNotBlank() &&
+                                    normalizeToE164(requireContext(), c.number) == currentLeadE164)
+                }
                 .sortedByDescending { it.timestampMs }
         } catch (e: Exception) {
             emptyList()
         }
     }
+
+
+    private val activityUpdateReceiver = object : android.content.BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            refreshRecentActivity()
+        }
+    }
+    override fun onStart() {
+        super.onStart()
+
+        val filter = IntentFilter("com.technfest.technfestcrm.CALL_ACTIVITY_UPDATED")
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireContext().registerReceiver(
+                activityUpdateReceiver,
+                filter,
+                Context.RECEIVER_NOT_EXPORTED
+            )
+        } else {
+            ContextCompat.registerReceiver(
+                requireContext(),
+                activityUpdateReceiver,
+                filter,
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
+        }
+    }
+
+
+    override fun onStop() {
+        super.onStop()
+        try { requireContext().unregisterReceiver(activityUpdateReceiver) } catch (_: Exception) {}
+    }
+
 
 
 }
