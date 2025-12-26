@@ -36,7 +36,7 @@ class HomeTaskAdapter(
         val task = taskList[position]
 
         holder.txtTaskName.text = task.title ?: "No Title"
-        holder.txtLeadName.text = "Lead Name : ${task.leadName}" ?: "No Lead"
+        holder.txtLeadName.text = "Lead Name : ${task.leadName ?: "No Lead"}"
         holder.leadStatus.text = task.status ?: "Pending"
 
         val formattedTime = try {

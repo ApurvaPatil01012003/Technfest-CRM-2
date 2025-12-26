@@ -338,9 +338,30 @@ binding.filterMyLead.setOnClickListener {
 
     private val nameUpdateReceiver = object : android.content.BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            loadLocalLeads()
+            val number = intent?.getStringExtra("number") ?: return
+            val name = intent.getStringExtra("name") ?: return
+
+            val idxFull = fullLeadList.indexOfFirst {
+                normalizeForCompare(it.mobile) == number
+            }
+            if (idxFull != -1) {
+                fullLeadList[idxFull].fullName = name
+            }
+
+            val idxShown = leadList.indexOfFirst {
+                normalizeForCompare(it.mobile) == number
+            }
+            if (idxShown != -1) {
+                leadList[idxShown].fullName = name
+                leadAdapter.notifyItemChanged(idxShown)
+            } else {
+                // if filtered/search list does not contain it, no need to refresh UI
+            }
+
+            saveLeadCache(requireContext(), fullLeadList)
         }
     }
+
 
     override fun onStart() {
         super.onStart()
@@ -362,5 +383,7 @@ binding.filterMyLead.setOnClickListener {
         super.onStop()
         try { requireContext().unregisterReceiver(nameUpdateReceiver) } catch (_: Exception) {}
     }
+
+
 
 }

@@ -370,6 +370,7 @@ class LeadDetailFragment : Fragment() {
                     taskType = spinnerTaskType.selectedItem.toString(),
                     source = "Manual",
                     leadName = leadNameText.text.toString(),
+                    leadNumber = leadNumber,
                     assignedToUser = spinnerAssignToUser.selectedItem.toString(),
                     estimatedHours = edtEstimateHours.text.toString().ifEmpty { "0" }
                 )
@@ -387,41 +388,6 @@ class LeadDetailFragment : Fragment() {
             dialog.show()
         }
 
-
-
-        //val args = arguments
-//        binding.txtName.text = args.getSafeString("name")
-//        binding.txtCompanyName.text = args.getSafeString("company")
-//        binding.txtLeadLocation.text = args.getSafeString("location")
-//        binding.txtLeadNumber.text = args.getSafeString("mobile")
-//        binding.txtLeadEmail.text = args.getSafeString("email")
-//        binding.txtLeadStatus.text = args.getSafeString("status")
-//        binding.txtSource.text = args.getSafeString("source")
-//        binding.txtStage.text = args.getSafeString("stage")
-//        binding.txtPriority.text = args.getSafeString("priority")
-//        binding.txtCampaignName.text = args.getSafeString("campaignName")
-//        binding.txtLeadRequirement.text = args.getSafeString("leadRequirement")
-
-
-
-//        val leadFromLocal: LeadRequest? = if (leadNumber.isNotBlank()) {
-//            LocalLeadManager.getLeads(requireContext()).find { it.mobile == leadNumber }
-//        } else null
-//
-//
-//        val followUpDate = leadFromLocal?.nextFollowupAt ?: args.getSafeString("nextFollowupAt")
-//        binding.txtScheduledFollowUp.text = followUpDate
-//        binding.txtFllowUpStatus.text =
-//            if (!followUpDate.isNullOrBlank() && followUpDate != "N/A") "Scheduled" else "Not Scheduled"
-//
-//
-//        binding.txtOwnerName.text = args.getSafeString("ownerName")
-//        binding.txtTeam.text = args.getSafeString("teamName")
-//        binding.txtNote.text = args.getSafeString("note")
-
-
-
-       // binding.txtName.text = (args.getArgOrNull("name") ?: localLead?.fullName).orNA()
 
         val editedName = com.technfest.technfestcrm.utils.EditedLeadNameStore.get(requireContext(), leadNumber)
 
@@ -501,6 +467,9 @@ class LeadDetailFragment : Fragment() {
 
         tasks.add(task)
         prefs.edit().putString("task_list", com.google.gson.Gson().toJson(tasks)).apply()
+        Log.d("TASK_SAVE", "Saving task: id=${task.id} leadName=${task.leadName} leadNumber=${task.leadNumber} dueAt=${task
+            .dueAt}")
+
     }
 
 
@@ -858,36 +827,20 @@ class LeadDetailFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        val filter = IntentFilter("com.technfest.technfestcrm.CALL_ACTIVITY_UPDATED")
-
+        // CALL ACTIVITY UPDATED
+        val activityFilter = IntentFilter("com.technfest.technfestcrm.CALL_ACTIVITY_UPDATED")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requireContext().registerReceiver(
-                activityUpdateReceiver,
-                filter,
-                Context.RECEIVER_NOT_EXPORTED
-            )
+            requireContext().registerReceiver(activityUpdateReceiver, activityFilter, Context.RECEIVER_NOT_EXPORTED)
         } else {
-            ContextCompat.registerReceiver(
-                requireContext(),
-                activityUpdateReceiver,
-                filter,
-                ContextCompat.RECEIVER_NOT_EXPORTED
-            )
+            ContextCompat.registerReceiver(requireContext(), activityUpdateReceiver, activityFilter, ContextCompat.RECEIVER_NOT_EXPORTED)
         }
 
-        val filter1 = IntentFilter("com.technfest.technfestcrm.CALL_ACTIVITY_UPDATED")
+        // LEAD NAME UPDATED
+        val nameFilter = IntentFilter("com.technfest.technfestcrm.LEAD_NAME_UPDATED")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requireContext().registerReceiver(activityUpdateReceiver, filter1, Context.RECEIVER_NOT_EXPORTED)
+            requireContext().registerReceiver(nameUpdateReceiver, nameFilter, Context.RECEIVER_NOT_EXPORTED)
         } else {
-            ContextCompat.registerReceiver(requireContext(), activityUpdateReceiver, filter1, ContextCompat.RECEIVER_NOT_EXPORTED)
-        }
-
-        // ✅ NEW: lead name update receiver
-        val filter2 = IntentFilter("com.technfest.technfestcrm.LEAD_NAME_UPDATED")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requireContext().registerReceiver(nameUpdateReceiver, filter2, Context.RECEIVER_NOT_EXPORTED)
-        } else {
-            ContextCompat.registerReceiver(requireContext(), nameUpdateReceiver, filter2, ContextCompat.RECEIVER_NOT_EXPORTED)
+            ContextCompat.registerReceiver(requireContext(), nameUpdateReceiver, nameFilter, ContextCompat.RECEIVER_NOT_EXPORTED)
         }
     }
 
@@ -937,14 +890,70 @@ class LeadDetailFragment : Fragment() {
     }
     private val nameUpdateReceiver = object : android.content.BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            val editedName = com.technfest.technfestcrm.utils.EditedLeadNameStore.get(requireContext(), leadNumber)
-            if (!editedName.isNullOrBlank()) {
-                binding.txtName.text = editedName
-                leadName = editedName
+            val updatedNumber = intent?.getStringExtra("number") ?: return
+            val updatedName = intent.getStringExtra("name") ?: return
+
+            val myKey = key10(leadNumber)
+            val updatedKey = key10(updatedNumber)
+
+            Log.d("LeadDetail", "nameUpdateReceiver myKey=$myKey updatedKey=$updatedKey name=$updatedName")
+
+            if (myKey.isNotBlank() && myKey == updatedKey) {
+                binding.txtName.text = updatedName
+                leadName = updatedName
+
+                // ✅ save edited name (already)
+                com.technfest.technfestcrm.utils.EditedLeadNameStore.save(requireContext(), leadNumber, updatedName)
+
+                // ✅ NEW: update saved recent calls with latest name
+                updateRecentCallsLeadName(requireContext(), leadNumber, updatedName)
+
+                // ✅ NEW: refresh recycler instantly
+                refreshRecentActivity()
             }
         }
     }
 
 
+
+    private fun key10(num: String?): String {
+        if (num.isNullOrBlank()) return ""
+        val d = num.filter { it.isDigit() }
+        return if (d.length >= 10) d.takeLast(10) else d
+    }
+
+    private fun updateRecentCallsLeadName(context: Context, numberAny: String, newName: String) {
+        if (newName.isBlank()) return
+
+        val prefs = context.getSharedPreferences("RecentCallsStore", Context.MODE_PRIVATE)
+        val json = prefs.getString("recent_calls", null) ?: return
+
+        val type = object : TypeToken<MutableList<RecentCallItem>>() {}.type
+        val list = try {
+            Gson().fromJson<MutableList<RecentCallItem>>(json, type)
+        } catch (e: Exception) {
+            mutableListOf()
+        }
+
+        if (list.isEmpty()) return
+
+        val key = key10(numberAny)
+
+        var changed = false
+        for (i in list.indices) {
+            val item = list[i]
+            if (key10(item.number) == key) {
+                if (item.leadName != newName) {
+                    list[i] = item.copy(leadName = newName)
+                    changed = true
+                }
+            }
+        }
+
+        if (changed) {
+            prefs.edit().putString("recent_calls", Gson().toJson(list)).apply()
+            Log.d("RecentCallsStore", "Updated call leadName for key=$key -> $newName")
+        }
+    }
 
 }

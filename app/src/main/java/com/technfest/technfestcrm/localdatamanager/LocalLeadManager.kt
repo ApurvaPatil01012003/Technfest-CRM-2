@@ -37,6 +37,50 @@ object LocalLeadManager {
             .remove(KEY_LEADS)
             .apply()
     }
+    fun upsertLead(context: Context, lead: LeadRequest) {
+        val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        val gson = Gson()
+
+        val list = getLeads(context).toMutableList()
+
+        // Match by ID first (best), else by mobile (fallback)
+        val idx = list.indexOfFirst { it.id == lead.id && lead.id != 0 }
+            .takeIf { it >= 0 }
+            ?: list.indexOfFirst {
+                it.mobile?.filter { ch -> ch.isDigit() }?.takeLast(10) ==
+                        lead.mobile?.filter { ch -> ch.isDigit() }?.takeLast(10)
+            }
+
+        if (idx >= 0) {
+            list[idx] = lead
+        } else {
+            list.add(lead)
+        }
+
+        prefs.edit()
+            .putString(KEY_LEADS, gson.toJson(list))
+            .apply()
+    }
+    fun updateLeadName(context: Context, number: String, newName: String) {
+        val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        val gson = Gson()
+
+        val list = getLeads(context).toMutableList()
+        val key10 = number.filter { it.isDigit() }.takeLast(10)
+
+        val idx = list.indexOfFirst {
+            it.mobile?.filter { ch -> ch.isDigit() }?.takeLast(10) == key10
+        }
+        if (idx < 0) return
+
+        val old = list[idx]
+        list[idx] = old.copy(fullName = newName)
+
+        prefs.edit()
+            .putString(KEY_LEADS, gson.toJson(list))
+            .apply()
+    }
+
 
 
 }

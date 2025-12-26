@@ -29,7 +29,9 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import android.telephony.SubscriptionManager
+import android.util.Log
 import android.widget.Switch
+import com.technfest.technfestcrm.utils.EditedLeadNameStore
 
 
 class HomeFragment : Fragment() {
@@ -132,48 +134,57 @@ class HomeFragment : Fragment() {
         val localTasks: List<LocalTask> =
             com.google.gson.Gson().fromJson(json, type)
 
-        return localTasks.map { it.toTaskResponseItem() }
+        return localTasks.map { it.toTaskResponseItem(requireContext()) }
+
     }
 
-    private fun LocalTask.toTaskResponseItem(): TaskResponseItem {
+    private fun LocalTask.toTaskResponseItem(context: Context): TaskResponseItem {
+
+        val rawNumber = this.leadNumber
+        val rawName = this.leadName
+
+        Log.d("TASK_MAP", "TaskId=${this.id} rawLeadNumber='$rawNumber' rawLeadName='$rawName'")
+
+        val edited = EditedLeadNameStore.get(context, rawNumber)
+        Log.d("TASK_MAP", "TaskId=${this.id} editedName='$edited'")
+
+        val finalName = if (!edited.isNullOrBlank()) edited else (rawName ?: "")
+        Log.d("TASK_MAP", "TaskId=${this.id} finalName='$finalName'")
+
         return TaskResponseItem(
-            assignedEmployeeName = "Self",
-            assignedToEmployeeId = 0,
-            assignedToUserId = 0,
-            assignedUserName = "Self",
-            completedAt = "",
-            createdAt = "",
-            createdByName = "System",
-            createdByUserId = 0,
-            currentVersion = 1,
-            departmentId = "",
-            departmentName = "",
-            description = this.description,
-            dueAt = this.dueAt.toString(),
-            dueDate = this.dueAt.toString(),
-            estimatedHours = "0",
             id = this.id,
-            isActive = true,
-            lastActivityAt = "",
-            leadId = 0,
-            leadName = this.leadName.toString(),
-            priority = this.priority.toString(),
-            projectId = 0,
-            projectName = "",
-            status = this.status.toString(),
-            taskType = this.taskType,
             title = this.title,
-            totalLoggedMinutes = 0,
-            updatedAt = "",
-            workspaceId = 0
+            description = "Follow-up with ${finalName.ifBlank { rawNumber ?: "" }}",
+            dueAt = this.dueAt ?: "",
+            status = this.status ?: "Pending",
+            priority = this.priority ?: "",
+            taskType = this.taskType ?: "CALL_FOLLOW_UP",
+            leadName = finalName,
+            assignedEmployeeName = this.assignedToUser ?: "Self",
+            projectName = "Local",
+            estimatedHours = this.estimatedHours ?: "0",
+            dueDate = this.dueAt ?: ""
         )
     }
-    private fun getLocalLeads(context: Context): List<com.technfest.technfestcrm.model.LeadResponseItem> {
+
+
+    private fun getLocalLeads(context: Context): List<LeadResponseItem> {
         val localLeads = com.technfest.technfestcrm.localdatamanager.LocalLeadManager.getLeads(context)
+
         return localLeads.mapIndexed { index, lead ->
-            com.technfest.technfestcrm.localdatamanager.LocalLeadMapper.toResponse(lead, index + 1)
+            val res = com.technfest.technfestcrm.localdatamanager.LocalLeadMapper.toResponse(lead, index + 1)
+
+            // ✅ apply edited name override (if exists)
+            val edited = com.technfest.technfestcrm.utils.EditedLeadNameStore.get(context, lead.mobile)
+
+            if (!edited.isNullOrBlank()) {
+                res.copy(fullName = edited)
+            } else {
+                res
+            }
         }
     }
+
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -371,6 +382,39 @@ class HomeFragment : Fragment() {
         ) {
             showSimSyncDialog()
         }
+    }
+    private val leadNameUpdateReceiver = object : android.content.BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: android.content.Intent?) {
+            // simplest + safest: reload local leads & refresh adapters
+            val allLocalLeads = getLocalLeads(requireContext())
+            val newLeads = allLocalLeads.filter { it.status.equals("new", true) }
+
+            binding.txtNewLeadCount.text = newLeads.size.toString()
+            setupHotLeads(newLeads)
+
+            // optional: refresh task list also (if you want)
+            // setupTodayTasks(getTodayPendingTasks())
+        }
+    }
+    override fun onStart() {
+        super.onStart()
+        val filter = android.content.IntentFilter("com.technfest.technfestcrm.LEAD_NAME_UPDATED")
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireContext().registerReceiver(leadNameUpdateReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            androidx.core.content.ContextCompat.registerReceiver(
+                requireContext(),
+                leadNameUpdateReceiver,
+                filter,
+                androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
+            )
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        try { requireContext().unregisterReceiver(leadNameUpdateReceiver) } catch (_: Exception) {}
     }
 
 

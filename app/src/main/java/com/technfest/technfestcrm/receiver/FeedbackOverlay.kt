@@ -32,9 +32,8 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.technfest.technfestcrm.R
 import com.technfest.technfestcrm.model.CallFeedback
 import com.technfest.technfestcrm.model.LocalTask
-import java.text.SimpleDateFormat
+import com.technfest.technfestcrm.view.LeadsFragment.LeadCacheItem
 import java.util.Calendar
-import java.util.Locale
 
 object FeedbackOverlay {
 
@@ -100,18 +99,29 @@ object FeedbackOverlay {
         val btnSave = view!!.findViewById<MaterialButton>(R.id.btnSaveFeedback)
 
         val prefs = context.getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
+
         val savedNumber = prefs.getString("customerNumber", "") ?: ""
-        val leadName = prefs.getString("leadName", "")
+        val metaName = prefs.getString("leadName", "") ?: ""
 
         val currentNumber = CallStateForegroundService.currentNumberGlobal ?: ""
 
-        etLeadName.setText(if (currentNumber == savedNumber) leadName else "")
-        etNumber.setText(currentNumber.ifEmpty { savedNumber })
+        // ✅ ALWAYS prefer savedNumber because LeadDetail sets it before call
+        val primaryNumber = savedNumber.ifBlank { currentNumber }
+
+        etNumber.setText(primaryNumber)
+
+        // ✅ Use key10 based edited name store
+        val edited = com.technfest.technfestcrm.utils.EditedLeadNameStore.get(context, primaryNumber)
+
+        // ✅ Priority: Edited name > Meta name
+        val finalName = edited ?: metaName
+
+        Log.d("FeedbackOverlay", "setupUI savedNumber='$savedNumber' currentNumber='$currentNumber' primary='$primaryNumber' metaName='$metaName' edited='$edited' final='$finalName'")
+
+        etLeadName.setText(finalName)
 
         ivClose.setOnClickListener { hide() }
-
-        btnSave.setOnClickListener {
-            saveFeedback(context) }
+        btnSave.setOnClickListener { saveFeedback(context) }
     }
 
     private fun saveFeedback(context: Context) {
@@ -125,32 +135,34 @@ object FeedbackOverlay {
             return // exit, overlay stays open
         }
 
-        // --- proceed to save ---
+
         val editedName = etLeadName.text.toString().trim()
         val number = etNumber.text.toString().trim()
+
         if (editedName.isNotEmpty() && number.isNotEmpty()) {
-            //saveEditedLeadName(context, number, editedName)
 
-
-            com.technfest.technfestcrm.utils.EditedLeadNameStore.save(context, number, editedName)
-
-// also update active call meta so next screen uses latest name
             context.getSharedPreferences("ActiveCallLeadMeta", Context.MODE_PRIVATE)
                 .edit()
                 .putString("leadName", editedName)
+                .putString("customerNumber", number)
                 .apply()
 
-// refresh LeadsFragment + LeadDetailFragment if open
+
+            com.technfest.technfestcrm.localdatamanager.LocalLeadManager
+                .updateLeadName(context, number, editedName)
+
+
             context.sendBroadcast(
                 Intent("com.technfest.technfestcrm.LEAD_NAME_UPDATED")
                     .setPackage(context.packageName)
                     .putExtra("number", number)
                     .putExtra("name", editedName)
             )
-
-
+            Log.d("TASK_DEBUG", "Overlay save editedName='$editedName' numberRaw='$number'")
+            Log.d("TASK_DEBUG", "Overlay key10='${number.filter { it.isDigit() }.takeLast(10)}'")
 
         }
+
 
         val etNote = view!!.findViewById<EditText>(R.id.etNote)
         val ratingBar = view!!.findViewById<RatingBar>(R.id.ratingBar)
@@ -199,13 +211,12 @@ object FeedbackOverlay {
             .edit()
             .remove("campaignId")
             .remove("campaignCode")
-            // keep leadId, leadName, customerNumber, selectedSubId
             .apply()
 
         Log.d("FeedbackOverlay", "Saving feedback leadId=$leadId number=$number")
 
         Toast.makeText(context, "Feedback Saved", Toast.LENGTH_SHORT).show()
-        hide() // hide overlay only after successful save
+        hide()
     }
 
     private fun saveFeedbackToPrefs(context: Context, feedback: CallFeedback) {
@@ -436,7 +447,7 @@ object FeedbackOverlay {
 
         val list: MutableList<LocalTask> =
             if (oldJson != null) gson.fromJson(oldJson, type) else mutableListOf()
-
+        val normalized10 = number.filter { it.isDigit() }.takeLast(10)
         val task = LocalTask(
             id = System.currentTimeMillis().toInt(),
             title = "Call Follow-up",
@@ -447,7 +458,10 @@ object FeedbackOverlay {
             source = "Local",
             taskType = "Auto generated",
             leadName = leadName ?: "Unknown",
-            assignedToUser = assignedUser,
+
+        leadNumber = normalized10,
+
+        assignedToUser = assignedUser,
             estimatedHours = " "
 
         )
@@ -513,5 +527,49 @@ object FeedbackOverlay {
 
         return local?.id ?: 0
     }
+    private fun updateRecentCallsLeadName(context: Context, number: String, newName: String) {
+        val prefs = context.getSharedPreferences("RecentCallsStore", Context.MODE_PRIVATE)
+        val json = prefs.getString("recent_calls", null) ?: return
+
+        val type = object : TypeToken<MutableList<com.technfest.technfestcrm.model.RecentCallItem>>() {}.type
+        val list: MutableList<com.technfest.technfestcrm.model.RecentCallItem> = try {
+            Gson().fromJson(json, type) ?: mutableListOf()
+        } catch (_: Exception) {
+            mutableListOf()
+        }
+
+        if (list.isEmpty()) return
+
+        val keyIncoming = normalizeKey10(number)
+
+        var changed = false
+        for (i in list.indices) {
+            val item = list[i]
+            val itemKey = normalizeKey10(item.number)
+
+            if (itemKey.isNotBlank() && itemKey == keyIncoming) {
+                // update name in store
+                list[i] = item.copy(
+                    leadName = newName
+                )
+                changed = true
+            }
+        }
+
+        if (changed) {
+            prefs.edit().putString("recent_calls", Gson().toJson(list)).apply()
+            Log.d("FeedbackOverlay", "RecentCallsStore updated for $number => $newName")
+        } else {
+            Log.d("FeedbackOverlay", "No RecentCallsStore match for $number")
+        }
+    }
+
+    private fun normalizeKey10(num: String?): String {
+        if (num.isNullOrBlank()) return ""
+        val digits = num.filter { it.isDigit() }
+        return if (digits.length >= 10) digits.takeLast(10) else digits
+    }
+
+
 
 }

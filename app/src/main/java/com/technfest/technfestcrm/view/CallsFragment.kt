@@ -265,21 +265,44 @@ class CallsFragment : Fragment() {
     }
 
 
+//    override fun onStart() {
+//        super.onStart()
+//        val filter = IntentFilter("com.technfest.technfestcrm.CALL_ACTIVITY_UPDATED")
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//            requireContext().registerReceiver(callsUpdateReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+//        } else {
+//            ContextCompat.registerReceiver(requireContext(), callsUpdateReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
+//        }
+//    }
+
     override fun onStart() {
         super.onStart()
-        val filter = IntentFilter("com.technfest.technfestcrm.CALL_ACTIVITY_UPDATED")
 
+        // CALL_ACTIVITY_UPDATED
+        val filter = IntentFilter("com.technfest.technfestcrm.CALL_ACTIVITY_UPDATED")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requireContext().registerReceiver(callsUpdateReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
         } else {
             ContextCompat.registerReceiver(requireContext(), callsUpdateReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
         }
+
+        // LEAD_NAME_UPDATED
+        val nameFilter = IntentFilter("com.technfest.technfestcrm.LEAD_NAME_UPDATED")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireContext().registerReceiver(leadNameUpdateReceiver, nameFilter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            ContextCompat.registerReceiver(requireContext(), leadNameUpdateReceiver, nameFilter, ContextCompat.RECEIVER_NOT_EXPORTED)
+        }
     }
+
 
     override fun onStop() {
         super.onStop()
         try { requireContext().unregisterReceiver(callsUpdateReceiver) } catch (_: Exception) {}
+        try { requireContext().unregisterReceiver(leadNameUpdateReceiver) } catch (_: Exception) {}
     }
+
 
     private fun loadAllRecentCalls(): List<RecentCallItem> {
         val prefs = requireContext().getSharedPreferences("RecentCallsStore", Context.MODE_PRIVATE)
@@ -343,6 +366,54 @@ class CallsFragment : Fragment() {
             .replace(R.id.fragmentContainer, fragment)
             .addToBackStack("LeadDetails")
             .commit()
+    }
+
+
+    private fun normalizeKey10(num: String?): String {
+        if (num.isNullOrBlank()) return ""
+        val digits = num.filter { it.isDigit() }
+        return if (digits.length >= 10) digits.takeLast(10) else digits
+    }
+
+
+    private val leadNameUpdateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+
+            val number = intent?.getStringExtra("number") ?: return
+            val name = intent.getStringExtra("name") ?: return
+
+            val incomingKey = normalizeKey10(number)
+
+            // DEBUG LOG (must check in Logcat)
+            android.util.Log.d("CallsFragment", "LEAD_NAME_UPDATED number=$number key=$incomingKey name=$name")
+
+            // Rebuild list with updated name
+            val updatedList = allCalls.map { call ->
+                val callKey = normalizeKey10(call.number)
+
+                if (callKey.isNotBlank() && callKey == incomingKey) {
+                    // create new Calls object (no copy needed)
+                    Calls(
+                        name = name,
+                        CallType = call.CallType,
+                        number = call.number,
+                        day = call.day,
+                        time = call.time,
+                        duration = call.duration,
+                        note = call.note,
+                        img = call.img,
+                        a = call.a,
+                        b = call.b,
+                        c = call.c,
+                        initial = name.firstOrNull()?.toString() ?: "U",
+                        leadId = call.leadId
+                    )
+                } else call
+            }
+
+            allCalls = updatedList
+            callAdapter.updateData(allCalls)
+        }
     }
 
 

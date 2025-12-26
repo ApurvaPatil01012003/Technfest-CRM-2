@@ -2,46 +2,39 @@ package com.technfest.technfestcrm.utils
 
 import android.content.Context
 import android.telephony.TelephonyManager
+import android.util.Log
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 
 object EditedLeadNameStore {
 
-    fun normalizeToE164(context: Context, raw: String?): String {
-        if (raw.isNullOrBlank()) return ""
-        return try {
-            val cleaned = raw.replace("[^0-9+]".toRegex(), "")
-            val phoneUtil = PhoneNumberUtil.getInstance()
-            val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-            val region = (tm.networkCountryIso ?: tm.simCountryIso)
-                ?.uppercase()
-                ?.takeIf { it.isNotBlank() } ?: "IN"
-
-            val proto = if (cleaned.startsWith("+")) phoneUtil.parse(cleaned, null)
-            else phoneUtil.parse(cleaned, region)
-
-            phoneUtil.format(proto, PhoneNumberUtil.PhoneNumberFormat.E164)
-        } catch (e: Exception) {
-            ""
-        }
+    private fun key10(number: String?): String {
+        if (number.isNullOrBlank()) return ""
+        val digits = number.filter { it.isDigit() }
+        return if (digits.length >= 10) digits.takeLast(10) else digits
     }
 
     fun save(context: Context, number: String, name: String) {
-        val e164 = normalizeToE164(context, number)
-        if (e164.isBlank() || name.isBlank()) return
+        val key = key10(number)
+        if (key.isBlank() || name.isBlank()) return
 
         context.getSharedPreferences("EditedLeadNames", Context.MODE_PRIVATE)
             .edit()
-            .putString(e164, name.trim())
+            .putString(key, name.trim())
             .apply()
+
+        Log.d("EDIT_NAME_STORE", "save key10='$key' name='${name.trim()}'")
     }
 
     fun get(context: Context, number: String?): String? {
-        val e164 = normalizeToE164(context, number)
-        if (e164.isBlank()) return null
+        val key = key10(number)
+        if (key.isBlank()) return null
 
-        return context.getSharedPreferences("EditedLeadNames", Context.MODE_PRIVATE)
-            .getString(e164, null)
+        val value = context.getSharedPreferences("EditedLeadNames", Context.MODE_PRIVATE)
+            .getString(key, null)
             ?.trim()
             ?.takeIf { it.isNotBlank() }
+
+        Log.d("EDIT_NAME_STORE", "get key10='$key' value='$value'")
+        return value
     }
 }

@@ -3,6 +3,7 @@ package com.technfest.technfestcrm.view
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,7 @@ import com.technfest.technfestcrm.R
 import com.technfest.technfestcrm.adapter.TaskAdapter
 import com.technfest.technfestcrm.model.LocalTask
 import com.technfest.technfestcrm.model.TaskResponseItem
+import com.technfest.technfestcrm.utils.EditedLeadNameStore
 import com.technfest.technfestcrm.worker.TaskNotificationWorker
 import java.time.LocalDate
 
@@ -176,10 +178,39 @@ class TaskFragment : Fragment() {
         val type = object : com.google.gson.reflect.TypeToken<List<LocalTask>>() {}.type
         val localTasks: List<LocalTask> = com.google.gson.Gson().fromJson(json, type)
 
-        // Convert each LocalTask to TaskResponseItem
-      //  return localTasks.map { it.toTaskResponseItem() }
-        return localTasks.map { it.toTaskResponseItem() }
+        return localTasks.map { it.toTaskResponseItem(context) }  // ✅ important
     }
+
+    private fun LocalTask.toTaskResponseItem(context: Context): TaskResponseItem {
+
+        val rawNumber = this.leadNumber
+        val rawName = this.leadName
+
+        Log.d("TASK_MAP", "TaskId=${this.id} rawLeadNumber='$rawNumber' rawLeadName='$rawName'")
+
+        val edited = EditedLeadNameStore.get(context, rawNumber)
+        Log.d("TASK_MAP", "TaskId=${this.id} editedName='$edited'")
+
+        val finalName = if (!edited.isNullOrBlank()) edited else (rawName ?: "")
+        Log.d("TASK_MAP", "TaskId=${this.id} finalName='$finalName'")
+
+        return TaskResponseItem(
+            id = this.id,
+            title = this.title,
+            description = "Follow-up with ${finalName.ifBlank { rawNumber ?: "" }}",
+            dueAt = this.dueAt ?: "",
+            status = this.status ?: "Pending",
+            priority = this.priority ?: "",
+            taskType = this.taskType ?: "CALL_FOLLOW_UP",
+            leadName = finalName,
+            assignedEmployeeName = this.assignedToUser ?: "Self",
+            projectName = "Local",
+            estimatedHours = this.estimatedHours ?: "0",
+            dueDate = this.dueAt ?: ""
+        )
+    }
+
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun scheduleDueTasksOnly(context: Context, tasks: List<TaskResponseItem>) {
@@ -239,41 +270,39 @@ class TaskFragment : Fragment() {
         }
     }
 
+    private val leadNameUpdateReceiver = object : android.content.BroadcastReceiver() {
+        @RequiresApi(Build.VERSION_CODES.O)
+        override fun onReceive(context: Context?, intent: android.content.Intent?) {
+            val num = intent?.getStringExtra("number")
+            val name = intent?.getStringExtra("name")
+            Log.d("TASK_DEBUG", "LEAD_NAME_UPDATED received num=$num name=$name")
 
-    private fun LocalTask.toTaskResponseItem(): TaskResponseItem {
-        return TaskResponseItem(
-            assignedEmployeeName = this.assignedToUser ?: "Self",
-            assignedToEmployeeId = 0,
-            assignedToUserId = 0,
-            assignedUserName = this.assignedToUser ?: "Self",
-            completedAt = "",
-            createdAt = this.dueAt ?: "",
-            createdByName = "",
-            createdByUserId = 0,
-            currentVersion = 1,
-            departmentId = "",
-            departmentName = "",
-            description = this.description ?: "",
-            dueAt = this.dueAt ?: "",
-            dueDate = this.dueAt ?: "",
-            estimatedHours = this.estimatedHours ?: "0",
-            id = this.id,
-            isActive = true,
-            lastActivityAt = "",
-            leadId = 0,
-            leadName = this.leadName ?: "",
-            priority = this.priority ?: "",
-            projectId = 0,
-            projectName = "Local",
-            status = this.status ?: "Pending",
-            taskType = this.taskType ?: "CALL_FOLLOW_UP",
-            title = this.title ?: "",
-            totalLoggedMinutes = 0,
-            updatedAt = "",
-            workspaceId = 0
-        )
-
+            loadLocalTasks()
+            applyFilter("All")
+        }
 
     }
+
+    override fun onStart() {
+        super.onStart()
+        val filter = android.content.IntentFilter("com.technfest.technfestcrm.LEAD_NAME_UPDATED")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireContext().registerReceiver(leadNameUpdateReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            androidx.core.content.ContextCompat.registerReceiver(
+                requireContext(),
+                leadNameUpdateReceiver,
+                filter,
+                androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
+            )
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        try { requireContext().unregisterReceiver(leadNameUpdateReceiver) } catch (_: Exception) {}
+    }
+
+
 }
 

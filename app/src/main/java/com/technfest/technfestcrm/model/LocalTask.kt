@@ -9,7 +9,8 @@ data class LocalTask(
     val priority: String? ,
     val taskType: String ,   // "general" or "CALL_FOLLOW_UP"
     val source: String,       // "Manual" or "Auto"
-    val leadName: String? ,         // lead name
+    val leadName: String? ,
+    val leadNumber: String? = null,
     val assignedToUser: String? ,  // user assigned
     val estimatedHours: String?        // estimated hours
 )
