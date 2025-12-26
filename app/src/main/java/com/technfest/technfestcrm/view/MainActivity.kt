@@ -74,6 +74,7 @@ class MainActivity : AppCompatActivity() {
                 token,
                 prefs.getInt("workspaceId", -1)
             )
+            handleNotificationNavigation(intent)
         }
 
 
@@ -100,7 +101,6 @@ class MainActivity : AppCompatActivity() {
                 requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 2001)
             }
         }
-
 
     }
 
@@ -139,6 +139,7 @@ class MainActivity : AppCompatActivity() {
         }
         homeFragment.arguments = bundle
         loadFragment(homeFragment)
+        handleNotificationNavigation(intent)
     }
 
 
@@ -303,6 +304,7 @@ class MainActivity : AppCompatActivity() {
         handleLeadOpenIntent(intent)
         handleNotificationIntent(intent)
         handleIntent(intent)
+        handleNotificationNavigation(intent)
     }
 
     private fun handleLeadOpenIntent(intent: Intent?) {
@@ -361,6 +363,24 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    private fun handleNotificationNavigation(intent: Intent?) {
+        if (intent == null) return
 
+        val open = intent.getStringExtra("OPEN_SCREEN") ?: return
+        if (open != "CALLS") return
+
+        // If you use BottomNavigation
+        // bottomNav.selectedItemId = R.id.menu_calls
+
+        // If you use NavController
+        // findNavController(R.id.nav_host_fragment).navigate(R.id.callsFragment)
+
+        openCallsFragment()
+    }
+
+
+    private fun openCallsFragment() {
+        loadFragment(CallsFragment())
+    }
 
 }

@@ -286,6 +286,7 @@ class SettingFragment : Fragment() {
                         putString("simName", simName)
                         putString("simNumber", simNumber)
                         putInt("slotIndex", info.simSlotIndex)
+                        putInt("subId", info.subscriptionId)
                     }
                 }
                 parentFragmentManager.beginTransaction()

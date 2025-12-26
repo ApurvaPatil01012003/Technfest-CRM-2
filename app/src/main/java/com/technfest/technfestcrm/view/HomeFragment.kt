@@ -32,6 +32,7 @@ import android.telephony.SubscriptionManager
 import android.util.Log
 import android.widget.Switch
 import com.technfest.technfestcrm.utils.EditedLeadNameStore
+import com.technfest.technfestcrm.utils.SimSyncStore
 
 
 class HomeFragment : Fragment() {
@@ -41,8 +42,7 @@ class HomeFragment : Fragment() {
 
     private lateinit var homeTaskAdapter: HomeTaskAdapter
     private lateinit  var fullName :String
-    private val PREF_SIM_SYNC = "SimSyncPrefs"
-    private val KEY_SYNCED_NUMBERS = "synced_numbers" // Set<String>
+    private var simCheckedOnce = false
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -92,8 +92,6 @@ class HomeFragment : Fragment() {
         }.sortedBy { it.dueAt }
 
         binding.txtTodayPendingTaskCount.text = todayPendingTasks.size.toString()
-
-        //homeTaskAdapter.updateList(todayPendingTasks)
         setupTodayTasks(todayPendingTasks)
 
         if (todayPendingTasks.isEmpty()) {
@@ -190,8 +188,10 @@ class HomeFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
         super.onResume()
-        checkAndShowSimSyncDialog()
-        // Refresh Leads
+        if (!simCheckedOnce) {
+            simCheckedOnce = true
+            checkAndShowSimSyncDialog()
+        }
         val allLocalLeads = getLocalLeads(requireContext())
         val newLeads = allLocalLeads.filter { it.status.equals("new", true) }
         binding.txtNewLeadCount.text = newLeads.size.toString()
@@ -314,53 +314,61 @@ class HomeFragment : Fragment() {
                 val switchSync = simView.findViewById<Switch>(R.id.switchSync)
 
                 val simName = info.displayName?.toString() ?: "SIM ${info.simSlotIndex + 1}"
-                val simNumber = info.number?.takeIf { it.isNotBlank() } // can be null
+                val simNumber = info.number?.takeIf { it.isNotBlank() }
                 val subId = info.subscriptionId
                 val slot = info.simSlotIndex
 
+                // ✅ calculate alreadySynced FIRST
+                val alreadySynced = saved.any { it.subId == subId && it.isSynced }
+
                 txtName.text = simName
                 txtNumber.text = simNumber ?: "Unknown"
-
-                val alreadySynced = saved.any { it.subId == subId && it.isSynced }
                 switchSync.isChecked = alreadySynced
 
-                switchSync.setOnCheckedChangeListener { _, isChecked ->
-                    // we will rebuild list on Save
+                // ✅ store Sim object in tag (so Save button can read it)
+                simView.tag = com.technfest.technfestcrm.utils.SimSyncStore.SyncedSim(
+                    subId = subId,
+                    slotIndex = slot,
+                    displayName = simName,
+                    number = simNumber,
+                    isSynced = alreadySynced
+                )
+
+                val simObj = SimSyncStore.SyncedSim(
+                    subId = subId,
+                    slotIndex = slot,
+                    displayName = simName,
+                    number = simNumber,
+                    isSynced = alreadySynced
+                )
+                simView.tag = simObj
+
+                switchSync.setOnCheckedChangeListener { _, checked ->
+                    val old = simView.tag as SimSyncStore.SyncedSim
+                    simView.tag = old.copy(isSynced = checked)
                 }
 
                 container.addView(simView)
-
-                // store initial (we’ll update isSynced on save by reading switches)
-                newList.add(
-                    com.technfest.technfestcrm.utils.SimSyncStore.SyncedSim(
-                        subId = subId,
-                        slotIndex = slot,
-                        displayName = simName,
-                        number = simNumber,
-                        isSynced = alreadySynced
-                    )
-                )
             }
+
         }
 
+
         btnSave.setOnClickListener {
-            // rebuild from UI switches
-            val finalList = mutableListOf<com.technfest.technfestcrm.utils.SimSyncStore.SyncedSim>()
+            val finalList = mutableListOf<SimSyncStore.SyncedSim>()
+
             for (i in 0 until container.childCount) {
                 val row = container.getChildAt(i)
-                val sw = row.findViewById<Switch>(R.id.switchSync) ?: continue
-
-                val sim = newList.getOrNull(i) ?: continue
-                finalList.add(sim.copy(isSynced = sw.isChecked))
+                val sim = row.tag as? SimSyncStore.SyncedSim ?: continue
+                finalList.add(sim)
             }
 
-            val syncedCount = finalList.count { it.isSynced }
-            if (syncedCount == 0) {
+            if (finalList.none { it.isSynced }) {
                 Toast.makeText(requireContext(), "Please sync at least one SIM", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            com.technfest.technfestcrm.utils.SimSyncStore.saveAll(requireContext(), finalList)
+            SimSyncStore.saveAll(requireContext(), finalList) // save
             dialog.dismiss()
         }
 

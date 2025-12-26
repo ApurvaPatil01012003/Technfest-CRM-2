@@ -132,7 +132,7 @@ object FeedbackOverlay {
         val selectedId = rgStatus.checkedRadioButtonId
         if (selectedId == -1) {
             Toast.makeText(context, "Please select call status", Toast.LENGTH_SHORT).show()
-            return // exit, overlay stays open
+            return
         }
 
 
@@ -173,14 +173,15 @@ object FeedbackOverlay {
         val receivedBy = spinner.selectedItem?.toString()
 
         val followUpText = edtFollowUp.text.toString().trim()
-
+        val noteText = etNote.text.toString().trim()
         if (followUpText.isNotEmpty()) {
             createLocalFollowUpTask(
                 context = context,
                 number = number,
                 leadName = editedName.ifBlank { etLeadName.text.toString() },
                 followUpDate = followUpText,
-                assignedUser = receivedBy.toString()
+                assignedUser = receivedBy.toString(),
+                note = noteText
             )
         }
         val metaPrefs =
@@ -437,7 +438,8 @@ object FeedbackOverlay {
         number: String,
         leadName: String?,
         assignedUser: String,
-        followUpDate: String
+        followUpDate: String,
+        note: String?
     ) {
         val prefs = context.getSharedPreferences("LocalTasks", Context.MODE_PRIVATE)
         val gson = Gson()
@@ -448,10 +450,14 @@ object FeedbackOverlay {
         val list: MutableList<LocalTask> =
             if (oldJson != null) gson.fromJson(oldJson, type) else mutableListOf()
         val normalized10 = number.filter { it.isDigit() }.takeLast(10)
+
+        val finalDescription = note?.trim().takeIf { !it.isNullOrBlank() }
+            ?: "Follow-up with ${leadName ?: number}"
+
         val task = LocalTask(
             id = System.currentTimeMillis().toInt(),
             title = "Call Follow-up",
-            description = "Follow-up with ${leadName ?: number}",
+            description = finalDescription,
             dueAt = followUpDate,
             priority = "High",
             status = "Pending",

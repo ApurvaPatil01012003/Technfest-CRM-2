@@ -902,13 +902,10 @@ class LeadDetailFragment : Fragment() {
                 binding.txtName.text = updatedName
                 leadName = updatedName
 
-                // ✅ save edited name (already)
                 com.technfest.technfestcrm.utils.EditedLeadNameStore.save(requireContext(), leadNumber, updatedName)
 
-                // ✅ NEW: update saved recent calls with latest name
                 updateRecentCallsLeadName(requireContext(), leadNumber, updatedName)
 
-                // ✅ NEW: refresh recycler instantly
                 refreshRecentActivity()
             }
         }

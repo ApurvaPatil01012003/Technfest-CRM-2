@@ -3,6 +3,7 @@ package com.technfest.technfestcrm.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.technfest.technfestcrm.R
@@ -24,7 +25,6 @@ class RecentActivityAdapter(
         }
     }
 
-    // ---------- CALL VIEW ----------
     inner class CallVH(view: View) : RecyclerView.ViewHolder(view) {
         val title = view.findViewById<TextView>(R.id.txtTitle)
         val line1 = view.findViewById<TextView>(R.id.txtLine1)
@@ -33,7 +33,6 @@ class RecentActivityAdapter(
         val dateTime = view.findViewById<TextView>(R.id.txtDateTime)
     }
 
-    // ---------- FEEDBACK VIEW ----------
     inner class FeedbackVH(view: View) : RecyclerView.ViewHolder(view) {
         val status = view.findViewById<TextView>(R.id.txtStatus)
         val rating = view.findViewById<TextView>(R.id.txtRating)

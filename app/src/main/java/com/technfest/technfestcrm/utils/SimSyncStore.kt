@@ -27,45 +27,34 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 object SimSyncStore {
-
     private const val PREF = "SimSyncPrefs"
-    private const val KEY = "synced_sims_json" // JSON list
+    private const val KEY = "sim_list"
 
     data class SyncedSim(
         val subId: Int,
         val slotIndex: Int,
         val displayName: String,
-        val number: String?,   // can be null/unknown
+        val number: String?,
         val isSynced: Boolean
     )
 
-    fun getAll(context: Context): MutableList<SyncedSim> {
-        val prefs = context.getSharedPreferences(PREF, Context.MODE_PRIVATE)
-        val json = prefs.getString(KEY, null) ?: return mutableListOf()
-        val type = object : TypeToken<MutableList<SyncedSim>>() {}.type
-        return Gson().fromJson(json, type) ?: mutableListOf()
+    fun saveAll(context: Context, list: List<SyncedSim>) {
+        val json = com.google.gson.Gson().toJson(list)
+        context.getSharedPreferences(PREF, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY, json)
+            .commit()   // ✅ IMPORTANT (sync write)
+    }
+
+    fun getAll(context: Context): List<SyncedSim> {
+        val json = context.getSharedPreferences(PREF, Context.MODE_PRIVATE)
+            .getString(KEY, null) ?: return emptyList()
+
+        val type = object : com.google.gson.reflect.TypeToken<List<SyncedSim>>() {}.type
+        return try { com.google.gson.Gson().fromJson(json, type) } catch (_: Exception) { emptyList() }
     }
 
     fun getSynced(context: Context): List<SyncedSim> {
         return getAll(context).filter { it.isSynced }
-    }
-
-    fun saveAll(context: Context, list: List<SyncedSim>) {
-        val prefs = context.getSharedPreferences(PREF, Context.MODE_PRIVATE)
-        prefs.edit().putString(KEY, Gson().toJson(list)).apply()
-    }
-
-    fun setSynced(context: Context, subId: Int, synced: Boolean) {
-        val all = getAll(context)
-        val idx = all.indexOfFirst { it.subId == subId }
-        if (idx >= 0) {
-            all[idx] = all[idx].copy(isSynced = synced)
-            saveAll(context, all)
-        }
-    }
-
-    // helpful for old code which expects number list
-    fun getSyncedNumbers(context: Context): List<String> {
-        return getSynced(context).mapNotNull { it.number }.filter { it.isNotBlank() && !it.equals("Unknown", true) }
     }
 }

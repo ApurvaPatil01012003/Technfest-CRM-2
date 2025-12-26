@@ -178,7 +178,7 @@ class TaskFragment : Fragment() {
         val type = object : com.google.gson.reflect.TypeToken<List<LocalTask>>() {}.type
         val localTasks: List<LocalTask> = com.google.gson.Gson().fromJson(json, type)
 
-        return localTasks.map { it.toTaskResponseItem(context) }  // ✅ important
+        return localTasks.map { it.toTaskResponseItem(context) }
     }
 
     private fun LocalTask.toTaskResponseItem(context: Context): TaskResponseItem {
@@ -194,10 +194,12 @@ class TaskFragment : Fragment() {
         val finalName = if (!edited.isNullOrBlank()) edited else (rawName ?: "")
         Log.d("TASK_MAP", "TaskId=${this.id} finalName='$finalName'")
 
+        val defaultDesc = "Follow-up with ${finalName.ifBlank { rawNumber ?: "" }}"
+        val finalDesc = this.description?.trim().takeIf { !it.isNullOrBlank() } ?: defaultDesc
         return TaskResponseItem(
             id = this.id,
             title = this.title,
-            description = "Follow-up with ${finalName.ifBlank { rawNumber ?: "" }}",
+            description = finalDesc,
             dueAt = this.dueAt ?: "",
             status = this.status ?: "Pending",
             priority = this.priority ?: "",

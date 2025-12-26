@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.ComponentName
 import android.content.Context
@@ -36,6 +37,7 @@ import com.technfest.technfestcrm.repository.CallLogRepository
 import com.technfest.technfestcrm.utils.SimPhoneAccountResolver
 import com.technfest.technfestcrm.utils.SimSyncStore
 import com.technfest.technfestcrm.view.LeadsFragment.LeadCacheItem
+import com.technfest.technfestcrm.view.MainActivity
 import com.technfest.technfestcrm.worker.MoveRecordingsWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -114,8 +116,6 @@ class CallStateForegroundService : Service() {
 
                     TelephonyManager.CALL_STATE_OFFHOOK -> {
                         wasOffhook = true
-
-                        // best-effort direction; final direction will be from CallLog in IDLE
                         if (!wasRinging) currentDirection = "outgoing"
 
                         if (callStartTimeMs == 0L) callStartTimeMs = System.currentTimeMillis()
@@ -133,97 +133,6 @@ class CallStateForegroundService : Service() {
                         CallPopupOverlay.show(this@CallStateForegroundService)
                         Log.d(TAG, "OFFHOOK -> dir=$currentDirection number=$num")
                     }
-//
-//                    TelephonyManager.CALL_STATE_IDLE -> {
-//                        val noRealCall =
-//                            !wasRinging && !wasOffhook && callStartTimeMs == 0L && !callAnswered && currentNumber.isNullOrEmpty()
-//
-//                        if (noRealCall) {
-//                            Log.d(TAG, "IDLE -> initial state, no call. Ignoring.")
-//                            return
-//                        }
-//
-//                        // ✅ Read latest actual CallLog row (Dialer truth)
-//                        val last = readLatestCallLog()
-//                        if (last == null) {
-//                            Log.w(TAG, "IDLE -> No call log row found. Skipping save.")
-//                            wasRinging = false
-//                            wasOffhook = false
-//                            resetState()
-//                            FeedbackOverlay.show(this@CallStateForegroundService)
-//                            return
-//                        }
-//
-//                        // ✅ Filter: only save if from synced sim
-//                        val ok = isCallFromSyncedSim(last.phoneAccountId, last.phoneAccountComponent)
-//                        if (!ok) {
-//                            Log.d(TAG, "Ignoring call: not from synced SIM. accId=${last.phoneAccountId}")
-//                            wasRinging = false
-//                            wasOffhook = false
-//                            resetState()
-//                            return
-//                        }
-//
-//                        // ✅ Use CallLog number (more reliable than PhoneState incomingNumber)
-//                        currentNumber = last.number
-//
-//                        // ✅ Determine direction from CallLog type
-//                        currentDirection = when (last.type) {
-//                            CallLog.Calls.OUTGOING_TYPE -> "outgoing"
-//                            CallLog.Calls.INCOMING_TYPE,
-//                            CallLog.Calls.MISSED_TYPE,
-//                            CallLog.Calls.REJECTED_TYPE,
-//                            CallLog.Calls.BLOCKED_TYPE -> "incoming"
-//                            else -> currentDirection
-//                        }
-//
-//                        // ✅ Determine status from type + duration
-//                        val status = when (last.type) {
-//                            CallLog.Calls.MISSED_TYPE,
-//                            CallLog.Calls.REJECTED_TYPE,
-//                            CallLog.Calls.BLOCKED_TYPE -> "unanswered"
-//                            else -> if (last.durationSec > 0) "answered" else "unanswered"
-//                        }
-//
-//                        val durationSec = last.durationSec
-//
-//                        // ✅ Dialer time
-//                        val startStr = formatLocalDateTime(last.dateMs)
-//                        val endStr = formatLocalDateTime(last.dateMs + (last.durationSec * 1000L))
-//
-//                        Log.d(
-//                            TAG,
-//                            "IDLE -> lastCallLog number=${last.number} type=${last.type} dur=${last.durationSec}s dateMs=${last.dateMs}"
-//                        )
-//
-//                        saveRecentCallLocal(
-//                            number = last.number,
-//                            direction = currentDirection,
-//                            status = status,
-//                            duration = durationSec,
-//                            startIso = startStr,
-//                            endIso = endStr,
-//                            phoneAccountId = last.phoneAccountId,
-//                            phoneAccountComponent = last.phoneAccountComponent,
-//                            timestampMsOverride = last.dateMs // ✅ important
-//                        )
-//
-//                        sendCallLogToServer(
-//                            phoneNumber = last.number,
-//                            direction = currentDirection,
-//                            durationSeconds = durationSec,
-//                            callStatus = status,
-//                            startIso = startStr,
-//                            endIso = endStr
-//                        )
-//
-//                        wasRinging = false
-//                        wasOffhook = false
-//                        resetState()
-//                        FeedbackOverlay.show(this@CallStateForegroundService)
-//                    }
-
-
                     TelephonyManager.CALL_STATE_IDLE -> {
 
                         val noRealCall =
@@ -253,7 +162,7 @@ class CallStateForegroundService : Service() {
                                 return@launch
                             }
 
-                            // ✅ update baseline (so next time we won't pick old row)
+                            // ✅ update baseline
                             lastKnownCallLogDateMs = maxOf(lastKnownCallLogDateMs, last.dateMs)
 
                             // ✅ Filter: only synced SIM
@@ -266,7 +175,6 @@ class CallStateForegroundService : Service() {
                                 return@launch
                             }
 
-                            // ✅ direction from CallLog type
                             val direction = when (last.type) {
                                 CallLog.Calls.OUTGOING_TYPE -> "outgoing"
                                 CallLog.Calls.INCOMING_TYPE,
@@ -276,7 +184,6 @@ class CallStateForegroundService : Service() {
                                 else -> currentDirection
                             }
 
-                            // ✅ status
                             val status = when (last.type) {
                                 CallLog.Calls.MISSED_TYPE,
                                 CallLog.Calls.REJECTED_TYPE,
@@ -287,7 +194,17 @@ class CallStateForegroundService : Service() {
                             val startStr = formatLocalDateTime(last.dateMs)
                             val endStr = formatLocalDateTime(last.dateMs + (last.durationSec * 1000L))
 
-                            // ✅ Save local (important: timestampMsOverride = last.dateMs)
+                            // ✅ Lead name for missed call notification
+                            val meta = getSharedPreferences("ActiveCallLeadMeta", MODE_PRIVATE)
+                            val leadName = meta.getString("leadName", "Unknown Lead") ?: "Unknown Lead"
+                            val numberToShow = (last.number ?: meta.getString("customerNumber", "") ?: "").trim()
+
+                            val isMissedLike =
+                                last.type == CallLog.Calls.MISSED_TYPE ||
+                                        last.type == CallLog.Calls.REJECTED_TYPE ||
+                                        last.type == CallLog.Calls.BLOCKED_TYPE
+
+                            // ✅ Save local + server for all calls (optional, you can skip for missed if you want)
                             saveRecentCallLocal(
                                 number = last.number,
                                 direction = direction,
@@ -300,7 +217,6 @@ class CallStateForegroundService : Service() {
                                 timestampMsOverride = last.dateMs
                             )
 
-                            // ✅ Send to server (optional)
                             sendCallLogToServer(
                                 phoneNumber = last.number,
                                 direction = direction,
@@ -310,24 +226,88 @@ class CallStateForegroundService : Service() {
                                 endIso = endStr
                             )
 
-                            // ✅ Now broadcast - UI will instantly show this call
-                            sendBroadcast(Intent("com.technfest.technfestcrm.CALL_ACTIVITY_UPDATED"))
+                            // ✅ MISSED: notification only, NO feedback form
+                            if (isMissedLike) {
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    showMissedCallNotification(leadName, numberToShow)
+                                }
+
+                                wasRinging = false
+                                wasOffhook = false
+                                resetState()
+                                return@launch
+                            }
+
+                            // ✅ ANSWERED (incoming/outgoing): show feedback form
+                            CoroutineScope(Dispatchers.Main).launch {
+                                FeedbackOverlay.show(this@CallStateForegroundService)
+                            }
 
                             wasRinging = false
                             wasOffhook = false
                             resetState()
                         }
-
-                        FeedbackOverlay.show(this@CallStateForegroundService)
                     }
 
 
                 }
             }
+
+
         }
 
         telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE)
+
+
+
     }
+    private fun showMissedCallNotification(leadName: String, number: String) {
+
+        val channelId = "missed_call_channel"
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // ✅ Intent to open app + CallsFragment
+        val openIntent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra("OPEN_SCREEN", "CALLS")
+            putExtra("CALL_NUMBER", number)   // optional (if you want to auto-highlight/search)
+            putExtra("LEAD_NAME", leadName)   // optional
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            2001,
+            openIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or
+                    (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0)
+        )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                "Missed Calls",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val title = "Missed Call"
+        val body = "${leadName.ifBlank { "Unknown Lead" }}\n$number"
+
+        val notification = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle(title)
+            .setContentText(leadName)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(body))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent) // ✅ IMPORTANT
+            .build()
+
+        notificationManager.notify((System.currentTimeMillis() % 100000).toInt(), notification)
+    }
+
 
     private fun resetState() {
         callAnswered = false
@@ -448,9 +428,7 @@ class CallStateForegroundService : Service() {
         sendBroadcast(Intent("com.technfest.technfestcrm.CALL_ACTIVITY_UPDATED"))
     }
 
-    // ----------------------------
-    // Create/Reuse Unknown lead locally
-    // ----------------------------
+
     private fun getOrCreateUnknownLead(context: Context, rawNumber: String): LeadRequest {
         val normalized = normalizeForCompare(rawNumber)
 
@@ -811,4 +789,6 @@ private fun formatLocalDateTime(epochMs: Long): String {
     sdf.timeZone = TimeZone.getDefault()
     return sdf.format(Date(epochMs))
 }
+
+
 
